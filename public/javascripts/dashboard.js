@@ -7,13 +7,13 @@ var Dashboard = React.createClass({
           <article>
           <BuildStatus
             buildName="CI Build Status"
-            url="http://lnz-bobthebuilder/hudson/job/SilkTest%20CI/api/json" 
+            url="http://lnz-bobthebuilder/hudson/job/SilkTest%20CI" 
             pollInterval={2000}/>
           </article>
           <article>
           <BuildStatus
             buildName="Nightly Build Status"
-            url="http://lnz-bobthebuilder/hudson/job/SilkTest/api/json" 
+            url="http://lnz-bobthebuilder/hudson/job/SilkTest" 
             pollInterval={2000}/>
           </article>
         </div>
@@ -29,14 +29,37 @@ var BuildStatus = React.createClass({
 
   loadStatus: function() {
     $.ajax({
-      url: '/fetchJson/'+ encodeURIComponent(this.props.url),
+      url: '/fetchJson/'+ encodeURIComponent(this.props.url + "/api/json"),
       dataType: 'json',
       success: function(data) {
-        this.setState({ 
-          lastCompletedBuild: data.lastCompletedBuild.number,
-          lastSuccessfulBuild: data.lastSuccessfulBuild.number,
-          lastStableBuild: data.lastStableBuild.number
-        });
+    	var newState = {
+              lastCompletedBuild: data.lastCompletedBuild.number,
+              lastSuccessfulBuild: data.lastSuccessfulBuild.number,
+              lastStableBuild: data.lastStableBuild.number,
+              culprits: this.state.culprits
+            };
+	    var isStable = newState.lastStableBuild === newState.lastCompletedBuild;
+	    var isSuccessful = newState.lastSuccessfulBuild === newState.lastCompletedBuild;
+
+    	if(!isStable || !isSuccessful) {
+		    $.ajax({
+		        url: '/fetchJson/'+ encodeURIComponent(this.props.url + "/" + data.lastCompletedBuild.number + "/api/json?tree=culprits[fullName]" ),
+		        dataType: 'json',
+		        success: function(data) {
+		          this.setState({ 
+		        	culprits: data.culprits,
+		            lastCompletedBuild: this.state.lastCompletedBuild,
+		            lastSuccessfulBuild: this.state.lastSuccessfulBuild,
+		            lastStableBuild: this.state.lastStableBuild
+		          })
+		        }.bind(this),
+		        error: function(xhr, status, err) {
+		          console.error(this.props.url, status, err.toString());
+		        }.bind(this)
+		      });
+    	}
+    	  
+        this.setState(newState);
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(this.props.url, status, err.toString());
@@ -59,6 +82,15 @@ var BuildStatus = React.createClass({
       'successful': isSuccessful,
       'failed': !isStable && !isSuccessful
     });
+    var authorNodes = []
+    if(this.state.culprits) {
+    	var culprits = this.state.culprits;
+    	authorNodes = culprits.map(function(item) {
+    	return(
+    		<div>{item.fullName}</div>
+    	);
+    });
+    }
     
     return (
       <section>
@@ -67,6 +99,9 @@ var BuildStatus = React.createClass({
         </div>
         <div className="label">
           {this.props.buildName}
+        </div>
+        <div className="contributes" >
+          {authorNodes}
         </div>
       </section>
     );
