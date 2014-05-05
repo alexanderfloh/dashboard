@@ -1,0 +1,105 @@
+
+/* Eric Meyer's Reset CSS v2.0 - http://cssreset.com */
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{border:0;font-size:100%;font:inherit;vertical-align:baseline;margin:0;padding:0}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:none}table{border-collapse:collapse;border-spacing:0}
+
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,800italic,400,300,800);
+//@import url(http://netdna.bootstrapcdn.com/font-awesome/3.1.1/css/font-awesome.css);
+@import url(http://fonts.googleapis.com/css?family=Quicksand);
+@import url(http://fonts.googleapis.com/css?family=Fugaz+One);
+
+.font {
+  font-family: 'Quicksand', sans-serif;
+  //font-weight: 400;
+}
+.font-light {
+  font-family: 'Open Sans Light', sans-serif;
+  font-weight: 300;
+}
+.font-bold {
+  font-family: 'Open Sans Extrabold', sans-serif;
+  font-weight: 800;
+}
+
+.transform (@string) {
+  -webkit-transform: @string;
+  -moz-transform: @string;
+  -ms-transform: @string;
+  -o-transform: @string;
+  transform: @string;
+}
+
+
+@green: #458B00;
+@yellow: #f1c40f;
+@red: #c0392b;
+
+@background: white;
+@labels: lighten(black, 60%);
+       
+
+.flex-container {
+  display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
+  display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
+  display: -ms-flexbox;      /* TWEENER - IE 10 */
+  display: -webkit-flex;     /* NEW - Chrome */
+  display: flex;             /* NEW, Spec - Opera 12.1, Firefox 20+ */
+
+  // columns should not all be full height
+    -webkit-align-content: flex-start;
+    -ms-flex-line-pack: start;
+    align-content: flex-start;
+    -webkit-box-align: start;
+    -moz-box-align: start;
+    -webkit-align-items: flex-start;
+    -ms-flex-align: start;
+    align-items: flex-start;
+}
+.flex-element {
+  -webkit-box-flex: 1;      /* OLD - iOS 6-, Safari 3.1-6 */
+  -moz-box-flex: 1;         /* OLD - Firefox 19- */
+  width: 20%;               /* For old syntax, otherwise collapses. */
+  -webkit-flex: 1;          /* Chrome */
+  -ms-flex: 1;              /* IE 10 */
+  flex: 1;                  /* NEW, Spec - Opera 12.1, Firefox 20+ */
+}
+
+
+
+
+
+* {
+  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+  -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+  box-sizing: border-box; 
+}
+
+body {
+  background-color: @background;
+}
+
+.stable {
+  color: @green;
+}
+.successful {
+  color: @yellow;
+}
+.failed {
+  color: @red;
+}
+
+article {
+  display: inline-block;
+  padding: 20% 12%;
+  max-width: 50%;
+  .label {
+    font-family: 'Fugaz One', cursive;
+    font-size: 1em;
+    color: @labels;
+    text-align: right;
+  }
+  .build-status {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 5em;
+    
+  }
+}
