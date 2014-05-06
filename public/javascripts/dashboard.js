@@ -16,6 +16,9 @@ var Dashboard = React.createClass({
             url="http://lnz-bobthebuilder/hudson/job/SilkTest" 
             pollInterval={2000}/>
           </article>
+          <article>
+          <Devices pollInterval={2000}/>
+          </article>
         </div>
         );
   }
@@ -86,7 +89,7 @@ var BuildStatus = React.createClass({
     var changesetItems = this.state.changesetItems;
     if (changesetItems) {
       msgNodes = changesetItems.map(function(item) {
-    	  console.log(JSON.stringify(item));
+    	  //console.log(JSON.stringify(item));
         return(
           <li className="msg">{item.user} -> {item.msg}</li>
         );
@@ -135,6 +138,58 @@ var BuildStatus = React.createClass({
       }
   }
 });
+
+var Devices = React.createClass({
+	  getInitialState: function() {
+	    return {};
+	  },
+
+	  loadStatus: function() {
+	    $.ajax({
+	      url: '/getDevices/',
+	      dataType: 'json',
+	      success: function(data) {
+	          this.setState({ 
+	            devices: data.devices
+	          })
+	      }.bind(this),
+	      error: function(xhr, status, err) {
+	        console.error(status, err.toString());
+	      }.bind(this)
+	    });
+	  },
+
+	  componentWillMount: function() {
+	    this.loadStatus();
+	    setInterval(this.loadStatus, this.props.pollInterval);
+	  },
+	  
+	  render: function() {
+		  console.log(this.state.devices);
+		  var deviceStr = [];
+		  var i = 0;
+		  for (var dev in this.state.devices) {
+			  deviceStr[i] = (
+					  <div className="device">{dev.split(";")[0] + ": " + this.state.devices[dev]}</div>
+					  );
+			  ++i;
+	     }
+
+
+/*	      deviceStr = this.state.devices.map(function(item) {
+	    	  console.log("ad");
+	        return "s"//(<li className="device">{item}</li>);
+	      });*/
+
+	      return (
+	          <section>
+	            <div className="device">
+	              {deviceStr}
+	            </div>
+	          </section>
+	        );
+	  	}
+	});
 
 React.renderComponent(
     <Dashboard />,
