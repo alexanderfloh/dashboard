@@ -5,16 +5,16 @@ var Dashboard = React.createClass({
     return (
         <div>
           <article>
-          <BuildStatus
+          <BuildStatusCI
             buildName="CI Build Status"
             url="http://lnz-bobthebuilder/hudson/job/SilkTest%20CI" 
-            pollInterval={5000}/>
+            pollInterval={5000} />
           </article>
           <article>
-          <BuildStatus
+          <BuildStatusNightly
             buildName="Nightly Build Status"
             url="http://lnz-bobthebuilder/hudson/job/SilkTest" 
-            pollInterval={5000}/>
+            pollInterval={5000} />
           </article>
           <article>
           <Devices pollInterval={2000}/>
@@ -25,11 +25,7 @@ var Dashboard = React.createClass({
   
 });
 
-var BuildStatus = React.createClass({
-  getInitialState: function() {
-    return {culprits: [], changesetItems: []};
-  },
-
+var LoadStatusMixin = {
   loadStatus: function() {
     $.ajax({
       url: '/fetchJson/'+ encodeURIComponent(this.props.url + "/api/json"),
@@ -58,10 +54,18 @@ var BuildStatus = React.createClass({
       }.bind(this)
     });
   },
-
+  
   componentWillMount: function() {
     this.loadStatus();
     setInterval(this.loadStatus, this.props.pollInterval);
+  }
+};
+
+var BuildStatusCI = React.createClass({
+mixins: [LoadStatusMixin],
+  
+  getInitialState: function() {
+    return {culprits: [], changesetItems: []};
   },
   
   render: function() {
@@ -69,25 +73,37 @@ var BuildStatus = React.createClass({
     var isSuccessful = !isStable && this.state.lastSuccessfulBuild === this.state.lastCompletedBuild;
     var isFailed = !isStable && !isSuccessful;
     
-    if (this.props.buildName.indexOf("Nightly") > -1) {
-        return (
-                <section>
-                  <BuildStatusTrafficLight isStable={isStable} isSuccessful={isSuccessful} isFailed={isFailed} />
-                  <BuildLabel buildName={this.props.buildName} />
-                  <Culprits isFailed={isFailed} culprits={this.state.culprits} />
-                  <BuildStatistics buildnumber={this.state.buildNumber} />
-                </section>
-              );
-      } else {
-          return (
-                  <section>
-                    <BuildStatusTrafficLight isStable={isStable} isSuccessful={isSuccessful} isFailed={isFailed} />
-                    <BuildLabel buildName={this.props.buildName} />
-                    <Culprits isFailed={isFailed} culprits={this.state.culprits} />
-                    <RecentCommits commits={this.state.changesetItems} />
-                  </section>
-                );
-      }
+    return (
+      <section>
+        <BuildStatusTrafficLight isStable={isStable} isSuccessful={isSuccessful} isFailed={isFailed} />
+        <BuildLabel buildName={this.props.buildName} />
+        <Culprits isFailed={isFailed} culprits={this.state.culprits} />
+        <RecentCommits commits={this.state.changesetItems} />
+      </section>
+    );
+  }
+});
+
+var BuildStatusNightly = React.createClass({
+  mixins: [LoadStatusMixin],
+  
+  getInitialState: function() {
+    return {culprits: []};
+  },
+  
+  render: function() {
+    var isStable = this.state.lastStableBuild === this.state.lastCompletedBuild;
+    var isSuccessful = !isStable && this.state.lastSuccessfulBuild === this.state.lastCompletedBuild;
+    var isFailed = !isStable && !isSuccessful;
+    
+    return (
+      <section>
+        <BuildStatusTrafficLight isStable={isStable} isSuccessful={isSuccessful} isFailed={isFailed} />
+        <BuildLabel buildName={this.props.buildName} />
+        <Culprits isFailed={isFailed} culprits={this.state.culprits} />
+        <BuildStatistics buildnumber={this.state.buildNumber} />
+      </section>
+    );
   }
 });
 
@@ -161,56 +177,56 @@ var RecentCommits = React.createClass({
 })
 
 var Devices = React.createClass({
-	  getInitialState: function() {
-	    return {};
-	  },
+    getInitialState: function() {
+      return {};
+    },
 
-	  loadStatus: function() {
-	    $.ajax({
-	      url: '/getDevices/',
-	      dataType: 'json',
-	      success: function(data) {
-	          this.setState({ 
-	            devices: data.devices
-	          })
-	      }.bind(this),
-	      error: function(xhr, status, err) {
-	        console.error(status, err.toString());
-	      }.bind(this)
-	    });
-	  },
+    loadStatus: function() {
+      $.ajax({
+        url: '/getDevices/',
+        dataType: 'json',
+        success: function(data) {
+            this.setState({ 
+              devices: data.devices
+            })
+        }.bind(this),
+        error: function(xhr, status, err) {
+          console.error(status, err.toString());
+        }.bind(this)
+      });
+    },
 
-	  componentWillMount: function() {
-	    this.loadStatus();
-	    setInterval(this.loadStatus, this.props.pollInterval);
-	  },
-	  
-	  render: function() {
-		  console.log(this.state.devices);
-		  var deviceStr = [];
-		  var i = 0;
-		  for (var dev in this.state.devices) {
-			  deviceStr[i] = (
-					  <div className="device">{dev.split(";")[0] + ": " + this.state.devices[dev]}</div>
-					  );
-			  ++i;
-	     }
+    componentWillMount: function() {
+      this.loadStatus();
+      setInterval(this.loadStatus, this.props.pollInterval);
+    },
+    
+    render: function() {
+      console.log(this.state.devices);
+      var deviceStr = [];
+      var i = 0;
+      for (var dev in this.state.devices) {
+        deviceStr[i] = (
+            <div className="device">{dev.split(";")[0] + ": " + this.state.devices[dev]}</div>
+            );
+        ++i;
+       }
 
 
-/*	      deviceStr = this.state.devices.map(function(item) {
-	    	  console.log("ad");
-	        return "s"//(<li className="device">{item}</li>);
-	      });*/
+/*        deviceStr = this.state.devices.map(function(item) {
+          console.log("ad");
+          return "s"//(<li className="device">{item}</li>);
+        });*/
 
-	      return (
-	          <section>
-	            <div className="device">
-	              {deviceStr}
-	            </div>
-	          </section>
-	        );
-	  	}
-	});
+        return (
+            <section>
+              <div className="device">
+                {deviceStr}
+              </div>
+            </section>
+          );
+      }
+  });
 
 React.renderComponent(
     <Dashboard />,
