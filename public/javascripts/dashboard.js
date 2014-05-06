@@ -8,13 +8,13 @@ var Dashboard = React.createClass({
           <BuildStatus
             buildName="CI Build Status"
             url="http://lnz-bobthebuilder/hudson/job/SilkTest%20CI" 
-            pollInterval={2000}/>
+            pollInterval={5000}/>
           </article>
           <article>
           <BuildStatus
             buildName="Nightly Build Status"
             url="http://lnz-bobthebuilder/hudson/job/SilkTest" 
-            pollInterval={2000}/>
+            pollInterval={5000}/>
           </article>
         </div>
         );
@@ -24,7 +24,7 @@ var Dashboard = React.createClass({
 
 var BuildStatus = React.createClass({
   getInitialState: function() {
-    return {};
+    return {culprits: [], changesetItems: []};
   },
 
   loadStatus: function() {
@@ -65,76 +65,97 @@ var BuildStatus = React.createClass({
     var isStable = this.state.lastStableBuild === this.state.lastCompletedBuild;
     var isSuccessful = !isStable && this.state.lastSuccessfulBuild === this.state.lastCompletedBuild;
     var isFailed = !isStable && !isSuccessful;
-    var cx = React.addons.classSet;
-    var classes = cx({
-      'build-status' : true,
-      'stable': isStable,
-      'successful': isSuccessful,
-      'failed': isFailed
-    });
-    var authorNodes = [];
-    if(isFailed && this.state.culprits) {
-      var culprits = this.state.culprits;
-      authorNodes = culprits.map(function(item) {
-        return(
-          <div>{item.fullName}</div>
-        );
-      });
-    }
-
-    var msgNodes = [];
-    var changesetItems = this.state.changesetItems;
-    if (changesetItems) {
-      msgNodes = changesetItems.map(function(item) {
-    	  console.log(JSON.stringify(item));
-        return(
-          <li className="msg">{item.user} -> {item.msg}</li>
-        );
-      });
-    }
-    
-    var buildnumber = this.state.buildNumber;
     
     if (this.props.buildName.indexOf("Nightly") > -1) {
         return (
                 <section>
-                  <div className={classes} id="status">
-                    {isStable ? 'stable.' : (isSuccessful ? 'unstable.' : 'failed.')}
-                  </div>
-                  <div className="label">
-                    {this.props.buildName}
-                  </div>
-                  <div className="contributes" >
-                    {authorNodes}
-                  </div>
-                    <div className="buildstats">
-                      <div className="buildnumber">(build # {buildnumber})</div>
-                    </div>
+                  <BuildStatusTrafficLight isStable={isStable} isSuccessful={isSuccessful} isFailed={isFailed} />
+                  <BuildLabel buildName={this.props.buildName} />
+                  <Culprits isFailed={isFailed} culprits={this.state.culprits} />
+                  <BuildStatistics buildnumber={this.state.buildNumber} />
                 </section>
               );
       } else {
           return (
                   <section>
-                    <div className={classes} id="status">
-                      {isStable ? 'stable.' : (isSuccessful ? 'unstable.' : 'failed.')}
-                    </div>
-                    <div className="label">
-                      {this.props.buildName}
-                    </div>
-                    <div className="contributes" >
-                      {authorNodes}
-                    </div>
-                      <div className="msgs">
-                        <div className="msgsHeading">Commits:</div>
-                        <ul>
-                          {msgNodes}
-                        </ul>
-                      </div>
+                    <BuildStatusTrafficLight isStable={isStable} isSuccessful={isSuccessful} isFailed={isFailed} />
+                    <BuildLabel buildName={this.props.buildName} />
+                    <Culprits isFailed={isFailed} culprits={this.state.culprits} />
+                    <RecentCommits commits={this.state.changesetItems} />
                   </section>
                 );
       }
   }
 });
+
+var BuildStatusTrafficLight = React.createClass({
+  render: function() {
+    var cx = React.addons.classSet;
+    var classes = cx({
+      'build-status' : true,
+      'stable': this.props.isStable,
+      'successful': this.props.isSuccessful,
+      'failed': this.props.isFailed
+    });
+    
+    return (
+      <div className={classes} id="status">
+        {this.props.isStable ? 'stable.' : (this.props.isSuccessful ? 'unstable.' : 'failed.')}
+      </div>
+    );
+  }
+});
+
+var BuildLabel = React.createClass({
+  render: function() {
+    return (
+      <div className="label">
+        {this.props.buildName}
+      </div>
+    );
+  }
+});
+
+var Culprits = React.createClass({
+  render: function() {
+    var culpritNodes = this.props.culprits.map(function(item) {
+      return <div>{item.fullName}</div>;
+    });
+    
+    return(
+      <div className="contributes" >
+        {this.props.isFailed ? culpritNodes : ''}
+      </div>
+    );
+  }
+});
+
+var BuildStatistics = React.createClass({
+  render: function() {
+    return (
+      <div className="buildstats">
+        <div className="buildnumber">(build # {this.props.buildnumber})</div>
+      </div>
+    );
+  }
+});
+
+var RecentCommits = React.createClass({
+  render: function() {
+    var commitNodes = this.props.commits.map(function(item) {
+      return <li className="msg">{item.user} -> {item.msg}</li>;
+    });
+    
+    return (
+      <div className="msgs">
+        <div className="msgsHeading">Commits:</div>
+        <ul>
+          {commitNodes}
+        </ul>
+      </div>
+    );
+  }
+})
 
 React.renderComponent(
     <Dashboard />,
