@@ -33,7 +33,7 @@ var BuildStatus = React.createClass({
       dataType: 'json',
       success: function(data1) {
         $.ajax({
-            url: '/fetchJson/'+ encodeURIComponent(this.props.url + "/" + data1.lastCompletedBuild.number + "/api/json?tree=culprits[fullName],changeSet[items[msg]]" ),
+            url: '/fetchJson/'+ encodeURIComponent(this.props.url + "/" + data1.lastCompletedBuild.number + "/api/json?tree=culprits[fullName],changeSet[items[*]]" ),
             dataType: 'json',
             success: function(data) {
               this.setState({ 
@@ -41,7 +41,7 @@ var BuildStatus = React.createClass({
                 lastCompletedBuild: this.state.lastCompletedBuild,
                 lastSuccessfulBuild: this.state.lastSuccessfulBuild,
                 lastStableBuild: this.state.lastStableBuild,
-                changesetMessages: data.changeSet.items,
+                changesetItems: data.changeSet.items,
                 buildNumber: data1.lastCompletedBuild.number
               })
             }.bind(this),
@@ -83,11 +83,12 @@ var BuildStatus = React.createClass({
     }
 
     var msgNodes = [];
-    var msgs = this.state.changesetMessages;
-    if (msgs) {
-      msgNodes = msgs.map(function(msgitem) {
+    var changesetItems = this.state.changesetItems;
+    if (changesetItems) {
+      msgNodes = changesetItems.map(function(item) {
+    	  console.log(JSON.stringify(item));
         return(
-          <div className="msg">{msgitem.msg}</div>
+          <li className="msg">{item.user} -> {item.msg}</li>
         );
       });
     }
@@ -125,7 +126,9 @@ var BuildStatus = React.createClass({
                     </div>
                       <div className="msgs">
                         <div className="msgsHeading">Commits:</div>
+                        <ul>
                           {msgNodes}
+                        </ul>
                       </div>
                   </section>
                 );
