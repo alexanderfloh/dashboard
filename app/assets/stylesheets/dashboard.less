@@ -4,8 +4,9 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 
 @import url(http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,800italic,400,300,800);
 //@import url(http://netdna.bootstrapcdn.com/font-awesome/3.1.1/css/font-awesome.css);
-@import url(http://fonts.googleapis.com/css?family=Quicksand);
+@import url(http://fonts.googleapis.com/css?family=Quicksand:400,700);
 @import url(http://fonts.googleapis.com/css?family=Fugaz+One);
+@import url(http://fonts.googleapis.com/css?family=Pontano+Sans);
 
 .font {
   font-family: 'Quicksand', sans-serif;
@@ -35,6 +36,7 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 
 @background: white;
 @labels: lighten(black, 60%);
+@contributes: lighten(red, 60%);
        
 
 .flex-container {
@@ -89,7 +91,8 @@ body {
 
 article {
   display: inline-block;
-  padding: 20% 12%;
+  padding: 20% 10%;
+  vertical-align:top;
   max-width: 50%;
   .label {
     font-family: 'Fugaz One', cursive;
@@ -100,6 +103,16 @@ article {
   .build-status {
     font-family: 'Quicksand', sans-serif;
     font-size: 5em;
-    
+    text-align: right;
   }
+  
+  .contributes {
+    margin-top: 30px;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1em;
+    color: @red;
+    font-weight:700;
+    text-align: right;
+  }
+  
 }
