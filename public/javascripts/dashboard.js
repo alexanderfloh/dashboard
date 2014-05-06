@@ -32,34 +32,22 @@ var BuildStatus = React.createClass({
       url: '/fetchJson/'+ encodeURIComponent(this.props.url + "/api/json"),
       dataType: 'json',
       success: function(data) {
-    	var newState = {
-              lastCompletedBuild: data.lastCompletedBuild.number,
-              lastSuccessfulBuild: data.lastSuccessfulBuild.number,
-              lastStableBuild: data.lastStableBuild.number,
-              culprits: this.state.culprits
-            };
-	    var isStable = newState.lastStableBuild === newState.lastCompletedBuild;
-	    var isSuccessful = newState.lastSuccessfulBuild === newState.lastCompletedBuild;
-
-    	if(!isStable || !isSuccessful) {
-		    $.ajax({
-		        url: '/fetchJson/'+ encodeURIComponent(this.props.url + "/" + data.lastCompletedBuild.number + "/api/json?tree=culprits[fullName]" ),
-		        dataType: 'json',
-		        success: function(data) {
-		          this.setState({ 
-		        	culprits: data.culprits,
-		            lastCompletedBuild: this.state.lastCompletedBuild,
-		            lastSuccessfulBuild: this.state.lastSuccessfulBuild,
-		            lastStableBuild: this.state.lastStableBuild
-		          })
-		        }.bind(this),
-		        error: function(xhr, status, err) {
-		          console.error(this.props.url, status, err.toString());
-		        }.bind(this)
-		      });
-    	}
-    	  
-        this.setState(newState);
+        $.ajax({
+            url: '/fetchJson/'+ encodeURIComponent(this.props.url + "/" + data.lastCompletedBuild.number + "/api/json?tree=culprits[fullName],changeSet[items[msg]]" ),
+            dataType: 'json',
+            success: function(data) {
+              this.setState({ 
+                culprits: data.culprits,
+                lastCompletedBuild: this.state.lastCompletedBuild,
+                lastSuccessfulBuild: this.state.lastSuccessfulBuild,
+                lastStableBuild: this.state.lastStableBuild,
+                changesetMessages: data.changeSet.items
+              })
+            }.bind(this),
+            error: function(xhr, status, err) {
+              console.error(this.props.url, status, err.toString());
+            }.bind(this)
+          });
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(this.props.url, status, err.toString());
@@ -75,21 +63,32 @@ var BuildStatus = React.createClass({
   render: function() {
     var isStable = this.state.lastStableBuild === this.state.lastCompletedBuild;
     var isSuccessful = !isStable && this.state.lastSuccessfulBuild === this.state.lastCompletedBuild;
+    var isFailed = !isStable && !isSuccessful;
     var cx = React.addons.classSet;
     var classes = cx({
       'build-status' : true,
       'stable': isStable,
       'successful': isSuccessful,
-      'failed': !isStable && !isSuccessful
+      'failed': isFailed
     });
-    var authorNodes = []
-    if(this.state.culprits) {
-    	var culprits = this.state.culprits;
-    	authorNodes = culprits.map(function(item) {
-    	return(
-    		<div>{item.fullName}</div>
-    	);
-    });
+    var authorNodes = [];
+    if(isFailed && this.state.culprits) {
+      var culprits = this.state.culprits;
+      authorNodes = culprits.map(function(item) {
+        return(
+          <div>{item.fullName}</div>
+        );
+      });
+    }
+
+    var msgNodes = [];
+    var msgs = this.state.changesetMessages;
+    if (msgs) {
+      msgNodes = msgs.map(function(msgitem) {
+        return(
+          <div className="msg">{msgitem.msg}</div>
+        );
+      });
     }
     
     return (
@@ -102,6 +101,10 @@ var BuildStatus = React.createClass({
         </div>
         <div className="contributes" >
           {authorNodes}
+        </div>
+        <div className="msgs">
+        <div className="msgsHeading">Commits:</div>
+          {msgNodes}
         </div>
       </section>
     );

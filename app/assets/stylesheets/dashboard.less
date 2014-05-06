@@ -33,6 +33,7 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 @green: #458B00;
 @yellow: #f1c40f;
 @red: #c0392b;
+@blue: #4671D5;
 
 @background: white;
 @labels: lighten(black, 60%);
@@ -115,4 +116,28 @@ article {
     text-align: right;
   }
   
+  .msgs {
+    margin-top: 30px;
+    font-family: 'Quicksand', sans-serif;
+    font-size: 0.9em;
+    color: @blue;
+    font-weight:700;
+    text-align: left;
+  }
+  
+  .msg {
+    border-bottom: 1px dotted @blue;
+    padding-bottom: 2px;
+    margin-bottom: 6px;
+  }
+  
+  .msgsHeading {
+      margin-top: 30px;
+        font-family: 'Quicksand', sans-serif;
+        font-size: 1.2em;
+        color: @blue;
+        font-weight:700;
+        text-align: left;
+        margin-bottom: 12px;
+  }
 }
