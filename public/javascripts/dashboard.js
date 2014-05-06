@@ -31,9 +31,9 @@ var BuildStatus = React.createClass({
     $.ajax({
       url: '/fetchJson/'+ encodeURIComponent(this.props.url + "/api/json"),
       dataType: 'json',
-      success: function(data) {
+      success: function(data1) {
         $.ajax({
-            url: '/fetchJson/'+ encodeURIComponent(this.props.url + "/" + data.lastCompletedBuild.number + "/api/json?tree=culprits[fullName],changeSet[items[msg]]" ),
+            url: '/fetchJson/'+ encodeURIComponent(this.props.url + "/" + data1.lastCompletedBuild.number + "/api/json?tree=culprits[fullName],changeSet[items[msg]]" ),
             dataType: 'json',
             success: function(data) {
               this.setState({ 
@@ -41,7 +41,8 @@ var BuildStatus = React.createClass({
                 lastCompletedBuild: this.state.lastCompletedBuild,
                 lastSuccessfulBuild: this.state.lastSuccessfulBuild,
                 lastStableBuild: this.state.lastStableBuild,
-                changesetMessages: data.changeSet.items
+                changesetMessages: data.changeSet.items,
+                buildNumber: data1.lastCompletedBuild.number
               })
             }.bind(this),
             error: function(xhr, status, err) {
@@ -91,23 +92,44 @@ var BuildStatus = React.createClass({
       });
     }
     
-    return (
-      <section>
-        <div className={classes} id="status">
-          {isStable ? 'stable.' : (isSuccessful ? 'unstable.' : 'failed.')}
-        </div>
-        <div className="label">
-          {this.props.buildName}
-        </div>
-        <div className="contributes" >
-          {authorNodes}
-        </div>
-        <div className="msgs">
-        <div className="msgsHeading">Commits:</div>
-          {msgNodes}
-        </div>
-      </section>
-    );
+    var buildnumber = this.state.buildNumber;
+    
+    if (this.props.buildName.indexOf("Nightly") > -1) {
+        return (
+                <section>
+                  <div className={classes} id="status">
+                    {isStable ? 'stable.' : (isSuccessful ? 'unstable.' : 'failed.')}
+                  </div>
+                  <div className="label">
+                    {this.props.buildName}
+                  </div>
+                  <div className="contributes" >
+                    {authorNodes}
+                  </div>
+                    <div className="buildstats">
+                      <div className="buildnumber">(build # {buildnumber})</div>
+                    </div>
+                </section>
+              );
+      } else {
+          return (
+                  <section>
+                    <div className={classes} id="status">
+                      {isStable ? 'stable.' : (isSuccessful ? 'unstable.' : 'failed.')}
+                    </div>
+                    <div className="label">
+                      {this.props.buildName}
+                    </div>
+                    <div className="contributes" >
+                      {authorNodes}
+                    </div>
+                      <div className="msgs">
+                        <div className="msgsHeading">Commits:</div>
+                          {msgNodes}
+                      </div>
+                  </section>
+                );
+      }
   }
 });
 
