@@ -13,7 +13,7 @@ import play.api.data.Forms._
 
 object Application extends Controller {
   
-  var devices = Map[String, String]("Apple iPod;82B776F8950C9F0738D32CB91F670E70DAF8C796" -> "none",
+  var devices = Map("Apple iPod;82B776F8950C9F0738D32CB91F670E70DAF8C796" -> "none",
       "GT-I9300;7&10457552&0&0000" -> "none")
 
   def index = Action {
