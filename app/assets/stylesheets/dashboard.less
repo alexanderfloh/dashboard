@@ -8,8 +8,7 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 @import url(http://fonts.googleapis.com/css?family=Fugaz+One);
 @import url(http://fonts.googleapis.com/css?family=Pontano+Sans);
 
-@import url(http://fonts.googleapis.com/css?family=Gloria+Hallelujah);
-@commitMsgFont: 'Gloria Hallelujah';
+@commitMsgFont: 'Quicksand';
 
 .font {
   font-family: 'Quicksand', sans-serif;
@@ -33,7 +32,9 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 }
 
 
-@commitMsgColor: #3923D6;
+@commitColor1: #3923D6;
+@commitColor2: #616161;
+
 @green: #458B00;
 @yellow: #f1c40f;
 @red: #c0392b;
@@ -98,7 +99,7 @@ body {
 article {
   display: inline-block;
   padding: 20% 10%;
-  padding-top: 10px;
+  padding-top: 54px;
   vertical-align:top;
   max-width: 50%;
   .label {
@@ -126,21 +127,26 @@ article {
   .commitMsgs {
     margin-top: 30px;
     font-family: @commitMsgFont, sans-serif;
-    font-size: 1em;
-    color: @commitMsgColor;
+    font-size: 1.2em;
+    color: @commitColor1;
     font-weight:700;
     text-align: left;
     
     .commitMsg {
       margin-top: 0;
-      border-bottom: 1px dotted @commitMsgColor;
+      border-bottom: 1px dotted @commitColor1;
       padding-bottom: 2px;
       margin-bottom: 6px;
     }
     
     .commitMsgsHeading {
-      font-size: 1.8em;
+      font-size: 1.6em;
       margin-bottom: 20px;
+      color: @commitColor2;
+    }
+    
+    .commitTime, .commitUser {
+      color: @commitColor2;
     }
   }
   
