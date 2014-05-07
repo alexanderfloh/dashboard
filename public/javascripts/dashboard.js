@@ -37,9 +37,9 @@ var LoadStatusMixin = {
             success: function(data) {
               this.setState({ 
                 culprits: data.culprits,
-                lastCompletedBuild: this.state.lastCompletedBuild,
-                lastSuccessfulBuild: this.state.lastSuccessfulBuild,
-                lastStableBuild: this.state.lastStableBuild,
+                lastCompletedBuild: data1.lastCompletedBuild,
+                lastSuccessfulBuild: data1.lastSuccessfulBuild,
+                lastStableBuild: data1.lastStableBuild,
                 changesetItems: data.changeSet.items,
                 buildNumber: data1.lastCompletedBuild.number
               })
@@ -162,12 +162,11 @@ var BuildStatistics = React.createClass({
 var RecentCommits = React.createClass({
   render: function() {
     var commitNodes = this.props.commits.map(function(item) {
-      return <li className="commitMsg"><span className="commitTime">[{moment(item.date).fromNow()}]</span> <span className="commitUser">[{item.user}]</span> {item.msg}</li>;
+      return <li className="commitMsg">{item.msg}<br/><span className="commitTime">[{moment(item.date).fromNow()}</span>, <span className="commitUser">{item.user}]</span> </li>;
     });
     
     return (
       <div className="commitMsgs">
-        <div className="commitMsgsHeading">Commits:</div>
         <ul>
           {commitNodes}
         </ul>
