@@ -8,6 +8,9 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 @import url(http://fonts.googleapis.com/css?family=Fugaz+One);
 @import url(http://fonts.googleapis.com/css?family=Pontano+Sans);
 
+@import url(http://fonts.googleapis.com/css?family=Gloria+Hallelujah);
+@commitMsgFont: 'Gloria Hallelujah';
+
 .font {
   font-family: 'Quicksand', sans-serif;
   //font-weight: 400;
@@ -30,11 +33,12 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 }
 
 
+@commitMsgColor: #3923D6;
 @green: #458B00;
 @yellow: #f1c40f;
 @red: #c0392b;
-@blue: #4671D5;
 @orange: #FF800D;
+
 
 @background: white;
 @labels: lighten(black, 60%);
@@ -118,30 +122,29 @@ article {
     text-align: right;
   }
   
-  .msgs {
+  
+  .commitMsgs {
     margin-top: 30px;
-    font-family: 'Quicksand', sans-serif;
-    font-size: 0.9em;
-    color: @blue;
+    font-family: @commitMsgFont, sans-serif;
+    font-size: 1em;
+    color: @commitMsgColor;
     font-weight:700;
     text-align: left;
+    
+    .commitMsg {
+      margin-top: 0;
+      border-bottom: 1px dotted @commitMsgColor;
+      padding-bottom: 2px;
+      margin-bottom: 6px;
+    }
+    
+    .commitMsgsHeading {
+      font-size: 1.8em;
+      margin-bottom: 20px;
+    }
   }
   
-  .msg {
-    border-bottom: 1px dotted @blue;
-    padding-bottom: 2px;
-    margin-bottom: 6px;
-  }
-  
-  .msgsHeading {
-    margin-top: 30px;
-    font-family: 'Quicksand', sans-serif;
-    font-size: 1.2em;
-    color: @blue;
-    font-weight:700;
-    text-align: left;
-    margin-bottom: 12px;
-  }
+
   
   .buildstats {
     margin-top: 30px;
