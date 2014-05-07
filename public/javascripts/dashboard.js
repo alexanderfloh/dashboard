@@ -36,13 +36,13 @@ var LoadStatusMixin = {
             dataType: 'json',
             success: function(data) {
               this.setState({ 
+                lastCompletedBuild: data1.lastCompletedBuild.number,
+                lastSuccessfulBuild: data1.lastSuccessfulBuild.number,
+                lastStableBuild: data1.lastStableBuild.number,
+                buildNumber: data1.lastCompletedBuild.number,
                 culprits: data.culprits,
-                lastCompletedBuild: data1.lastCompletedBuild,
-                lastSuccessfulBuild: data1.lastSuccessfulBuild,
-                lastStableBuild: data1.lastStableBuild,
-                changesetItems: data.changeSet.items,
-                buildNumber: data1.lastCompletedBuild.number
-              })
+                changesetItems: data.changeSet.items
+              });
             }.bind(this),
             error: function(xhr, status, err) {
               console.error(this.props.url, status, err.toString());
