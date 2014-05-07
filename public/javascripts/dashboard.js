@@ -212,18 +212,12 @@ var Devices = React.createClass({
         ++i;
        }
 
-
-/*        deviceStr = this.state.devices.map(function(item) {
-          console.log("ad");
-          return "s"//(<li className="device">{item}</li>);
-        });*/
-
-        return (
-            <section>
-              <div className="device">
-                {deviceStr}
-              </div>
-            </section>
+       return (
+	        <section>
+	          <div className="device">
+	            {deviceStr}
+	          </div>
+	        </section>
           );
       }
   });
