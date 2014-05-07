@@ -162,12 +162,11 @@ var BuildStatistics = React.createClass({
 var RecentCommits = React.createClass({
   render: function() {
     var commitNodes = this.props.commits.map(function(item) {
-      return <li className="commitMsg"><span className="commitTime">[{moment(item.date).fromNow()}]</span> <span className="commitUser">[{item.user}]</span> {item.msg}</li>;
+      return <li className="commitMsg">{item.msg}<br/><span className="commitTime">[{moment(item.date).fromNow()}</span>, <span className="commitUser">{item.user}]</span> </li>;
     });
     
     return (
       <div className="commitMsgs">
-        <div className="commitMsgsHeading">Commits:</div>
         <ul>
           {commitNodes}
         </ul>
