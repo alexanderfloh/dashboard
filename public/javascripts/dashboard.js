@@ -178,7 +178,7 @@ var RecentCommits = React.createClass({
 
 var Devices = React.createClass({
     getInitialState: function() {
-      return {};
+      return { devices: [] };
     },
 
     loadStatus: function() {
@@ -187,7 +187,7 @@ var Devices = React.createClass({
         dataType: 'json',
         success: function(data) {
             this.setState({ 
-              devices: data.devices
+              devices: data
             })
         }.bind(this),
         error: function(xhr, status, err) {
@@ -202,23 +202,17 @@ var Devices = React.createClass({
     },
     
     render: function() {
-      console.log(this.state.devices);
-      var deviceStr = [];
-      var i = 0;
-      for (var dev in this.state.devices) {
-        deviceStr[i] = (
-            <div className="device">{dev.split(";")[0] + ": " + this.state.devices[dev]}</div>
-            );
-        ++i;
-       }
+      var deviceNodes = this.state.devices.map(function(device) {
+        return <div className="device" key={device.id}> {device.name} - {device.location ? device.location : 'unknown location'} </div>
+      });
 
        return (
-	        <section>
-	          <div className="device">
-	            {deviceStr}
-	          </div>
-	        </section>
-          );
+         <section>
+           <div className="device">
+             {deviceNodes}
+           </div>
+         </section>
+       );
       }
   });
 
