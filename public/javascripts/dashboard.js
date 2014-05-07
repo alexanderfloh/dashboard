@@ -37,9 +37,9 @@ var LoadStatusMixin = {
             success: function(data) {
               this.setState({ 
                 culprits: data.culprits,
-                lastCompletedBuild: this.state.lastCompletedBuild,
-                lastSuccessfulBuild: this.state.lastSuccessfulBuild,
-                lastStableBuild: this.state.lastStableBuild,
+                lastCompletedBuild: data1.lastCompletedBuild,
+                lastSuccessfulBuild: data1.lastSuccessfulBuild,
+                lastStableBuild: data1.lastStableBuild,
                 changesetItems: data.changeSet.items,
                 buildNumber: data1.lastCompletedBuild.number
               })
