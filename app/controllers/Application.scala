@@ -54,7 +54,6 @@ object Application extends Controller {
 
   def getDevices() = Action {
     implicit val jsonWrites = MobileDevice.jsonWrites
-    //val devicesAndLocations = MobileDevice.all.map(device => (device, Location.all.find(_.id == device.locationId)))
     Ok(Json.toJson(MobileDevice.all))
   }
 

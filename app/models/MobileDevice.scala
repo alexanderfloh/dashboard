@@ -53,6 +53,6 @@ object MobileDevice {
       "id" -> d.id,
       "name" -> d.name,
       "deviceId" -> d.deviceId,
-      "location" -> (Location.all.find(_.id == d.locationId)).map(_.name))
+      "location" -> Location.byId(d.locationId).map(_.name))
   })
 }
