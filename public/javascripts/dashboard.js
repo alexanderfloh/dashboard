@@ -153,7 +153,7 @@ var BuildStatistics = React.createClass({
   render: function() {
     return (
       <div className="buildstats">
-        <div className="buildnumber">(build # {this.props.buildnumber})</div>
+        <div className="buildnumber">[build # {this.props.buildnumber}]</div>
       </div>
     );
   }
@@ -162,7 +162,7 @@ var BuildStatistics = React.createClass({
 var RecentCommits = React.createClass({
   render: function() {
     var commitNodes = this.props.commits.map(function(item) {
-      return <li className="commitMsg">{item.msg}<br/><span className="commitTime">[{moment(item.date).fromNow()}</span>, <span className="commitUser">{item.user}]</span> </li>;
+      return <li className="commitMsg">{item.msg}<br/><span className="commitTimeAndUser">[{moment(item.date).fromNow()}, {item.user}]</span> </li>;
     });
     
     return (
