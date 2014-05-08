@@ -1,4 +1,10 @@
-This is your new Play application
+Dashboard application
 =====================================
 
-This file will be packaged with your application, when using `play dist`.
+Displays information useful for developers on a team dashboard.
+ - Status of CI and nightly build (stable, unstable, failed)
+ - CI commit log: message, author, time
+ - Nightly build number
+ - Mobile device location
+ 
+ Queries the information from Jenkins and DevicePusher.
