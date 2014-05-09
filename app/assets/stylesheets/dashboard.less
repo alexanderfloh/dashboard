@@ -32,8 +32,10 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 }
 
 
-@commitColor1: #3923D6;
-@commitColor2: #616161;
+@blue: #3923D6;
+@grey: #616161;
+@commitMsgColor: @blue;
+@commitTimeAndUserColor: @grey;
 
 @green: #458B00;
 @yellow: #f1c40f;
@@ -130,19 +132,19 @@ article {
     margin-top: 30px;
     font-family: @commitMsgFont, sans-serif;
     font-size: 1.2em;
-    color: @commitColor1;
+    color: @commitMsgColor;
     font-weight:700;
     text-align: left;
     
     .commitMsg {
       margin-top: 0;
-      border-bottom: 1px dotted @commitColor2;
+      border-bottom: 1px dotted @commitTimeAndUserColor;
       padding-bottom: 2px;
       margin-bottom: 6px;
     }
     
     .commitTimeAndUser {
-      color: @commitColor2;
+      color: @commitTimeAndUserColor;
     }
   }
   
@@ -174,11 +176,16 @@ article {
   }
   
   .deviceName {
-  	padding-right: 10px
+    padding-right: 10px;
+    text-align: right;
+  }
+  
+  .deviceLocation {
+    color: @grey;
   }
 }
   article.deviceArticle {
-	  padding: 2%;
-	  font-size: 1.2em;
-	  color: @orange;
+    padding: 2%;
+    font-size: 1.2em;
+    color: @orange;
   }

@@ -200,8 +200,25 @@ var Devices = React.createClass({
     },
     
     render: function() {
+      var editDeviceLocation = function(deviceLocation) {
+        var result = '';
+        if (deviceLocation) {
+          result = deviceLocation;
+          if (result.indexOf("LNZ-") > -1) {
+            result = result.substring("LNZ-".length, result.length);
+          }
+          result = result.toLowerCase();
+        }
+          
+        return result;
+      }
+      
       var deviceNodes = this.state.devices.map(function(device) {
-    	  return <tr className="deviceLine" key={device.id}> <td className="deviceName">  {device.name} </td> <td>{device.location ? device.location : ''} </td> </tr>
+        var deviceLocation = editDeviceLocation(device.location);
+        return <tr className="deviceLine" key={device.id}>
+          <td className="deviceName">{device.name}</td>
+          <td className="deviceLocation">{deviceLocation} </td>
+        </tr>
       });
 
        return (
