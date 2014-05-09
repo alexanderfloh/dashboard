@@ -202,13 +202,15 @@ var Devices = React.createClass({
     
     render: function() {
       var deviceNodes = this.state.devices.map(function(device) {
-        return <div className="device" key={device.id}> {device.name} - {device.location ? device.location : 'unknown location'} </div>
+    	  return <tr className="deviceLine" key={device.id}> <td className="deviceName">  {device.name} </td> <td>{device.location ? device.location : 'N/A'} </td> </tr>
       });
 
        return (
          <section>
            <div className="device">
-             {deviceNodes}
+           <table>
+           {deviceNodes}
+           </table>
            </div>
          </section>
        );
