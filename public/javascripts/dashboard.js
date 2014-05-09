@@ -5,16 +5,16 @@ var Dashboard = React.createClass({
     return (
         <div>
           <article>
+
           <BuildStatusCI
             buildName="CI Build Status"
             url="http://lnz-bobthebuilder/hudson/job/SilkTest%20CI" 
             pollInterval={5000} />
-          </article>
-          <article>
           <BuildStatusNightly
-            buildName="Nightly Build Status"
-            url="http://lnz-bobthebuilder/hudson/job/SilkTest" 
-            pollInterval={5000} />
+          buildName="Nightly Build Status"
+          url="http://lnz-bobthebuilder/hudson/job/SilkTest" 
+          pollInterval={5000} />
+
           </article>
           <article>
           <Devices pollInterval={2000}/>
@@ -202,7 +202,7 @@ var Devices = React.createClass({
     
     render: function() {
       var deviceNodes = this.state.devices.map(function(device) {
-    	  return <tr className="deviceLine" key={device.id}> <td className="deviceName">  {device.name} </td> <td>{device.location ? device.location : 'N/A'} </td> </tr>
+    	  return <tr className="deviceLine" key={device.id}> <td className="deviceName">  {device.name} </td> <td>{device.location ? device.location : ''} </td> </tr>
       });
 
        return (
