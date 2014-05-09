@@ -5,18 +5,17 @@ var Dashboard = React.createClass({
     return (
         <div>
           <article>
-
-          <BuildStatusCI
-            buildName="CI Build Status"
-            url="http://lnz-bobthebuilder/hudson/job/SilkTest%20CI" 
-            pollInterval={5000} />
-          <BuildStatusNightly
-          buildName="Nightly Build Status"
-          url="http://lnz-bobthebuilder/hudson/job/SilkTest" 
-          pollInterval={5000} />
+            <BuildStatusCI
+              buildName="CI Build Status"
+              url="http://lnz-bobthebuilder/hudson/job/SilkTest%20CI" 
+              pollInterval={5000} />
+            <BuildStatusNightly
+              buildName="Latest nightly build"
+              url="http://lnz-bobthebuilder/hudson/job/SilkTest" 
+              pollInterval={5000} />
           </article>
           <article className="deviceArticle">
-          <Devices pollInterval={2000}/>
+            <Devices pollInterval={2000}/>
           </article>
         </div>
         );
@@ -75,7 +74,12 @@ mixins: [LoadStatusMixin],
     return (
       <section>
         <BuildLabel buildName={this.props.buildName} />
-        <BuildStatusTrafficLight isStable={isStable} isSuccessful={isSuccessful} isFailed={isFailed} />
+        <BuildStatusTrafficLight 
+          isStable={isStable} 
+          isSuccessful={isSuccessful} 
+          isFailed={isFailed} 
+          buildType="ci"
+        />
         <Culprits isFailed={isFailed} culprits={this.state.culprits} />
         <RecentCommits commits={this.state.changesetItems} />
       </section>
@@ -98,9 +102,18 @@ var BuildStatusNightly = React.createClass({
     return (
       <section>
         <BuildLabel buildName={this.props.buildName} />
-        <BuildStatusTrafficLight isStable={isStable} isSuccessful={isSuccessful} isFailed={isFailed} />
+        <BuildStatistics 
+          isStable={isStable} 
+          isSuccessful={isSuccessful} 
+          isFailed={isFailed}
+          buildnumber={this.state.buildNumber} />
+        <BuildStatusTrafficLight 
+          isStable={isStable} 
+          isSuccessful={isSuccessful} 
+          isFailed={isFailed} 
+          buildType="nightly"
+        />
         <Culprits isFailed={isFailed} culprits={this.state.culprits} />
-        <BuildStatistics buildnumber={this.state.buildNumber} />
       </section>
     );
   }
@@ -113,12 +126,14 @@ var BuildStatusTrafficLight = React.createClass({
       'build-status' : true,
       'stable': this.props.isStable,
       'successful': this.props.isSuccessful,
-      'failed': this.props.isFailed
+      'failed': this.props.isFailed,
+      'ci': this.props.buildType === 'ci',
+      'nightly': this.props.buildType === 'nightly'
     });
     
     return (
       <div className={classes} id="status">
-        {this.props.isStable ? 'stable.' : (this.props.isSuccessful ? 'unstable.' : 'failed.')}
+        {this.props.isStable ? 'stable' : (this.props.isSuccessful ? 'unstable' : 'failed')}
       </div>
     );
   }
@@ -150,9 +165,16 @@ var Culprits = React.createClass({
 
 var BuildStatistics = React.createClass({
   render: function() {
+    var cx = React.addons.classSet;
+    var classes = cx({
+      'buildstats' : true,
+      'stable': this.props.isStable,
+      'successful': this.props.isSuccessful,
+      'failed': this.props.isFailed,
+    });
     return (
-      <div className="buildstats">
-        <div className="buildnumber">[build # {this.props.buildnumber}]</div>
+      <div className={classes}>
+        <div className="buildnumber">{this.props.buildnumber}</div>
       </div>
     );
   }
@@ -161,15 +183,20 @@ var BuildStatistics = React.createClass({
 var RecentCommits = React.createClass({
   render: function() {
     var commitNodes = this.props.commits.map(function(item) {
-      return <li className="commitMsg">{item.msg}<br/><span className="commitTimeAndUser">[{moment(item.date).fromNow()}, {item.user}]</span> </li>;
+      return (
+        <li key="commitId" className="commitMsg">
+          {item.msg}
+          <div className="commitTimeAndUser">
+            {item.user}, {moment(item.date).fromNow()}
+          </div> 
+        </li>
+      );
     });
     
     return (
-      <div className="commitMsgs">
-        <ul>
-          {commitNodes}
-        </ul>
-      </div>
+      <ul className="commitMsgs">
+        {commitNodes}
+      </ul>
     );
   }
 })
@@ -208,6 +235,9 @@ var Devices = React.createClass({
             result = result.substring("LNZ-".length, result.length);
           }
           result = result.toLowerCase();
+          if(result !== '') {
+            result += ' -';
+          }
         }
           
         return result;
@@ -215,22 +245,22 @@ var Devices = React.createClass({
       
       var deviceNodes = this.state.devices.map(function(device) {
         var deviceLocation = editDeviceLocation(device.location);
-        return <tr className="deviceLine" key={device.id}>
-          <td className="deviceName">{device.name}</td>
-          <td className="deviceLocation">{deviceLocation} </td>
-        </tr>
+        return (
+          <tr className="deviceLine" key={device.id}>
+            <td className="deviceLocation">{deviceLocation}</td>
+            <td className="deviceName">{device.name}</td>
+          </tr>
+        );
       });
 
-       return (
-         <section>
-           <div className="device">
-           <table>
-           {deviceNodes}
-           </table>
-           </div>
-         </section>
-       );
-      }
+      return (
+        <section>
+          <table className="device">
+          {deviceNodes}
+          </table>
+        </section>
+      );
+    }
   });
 
 React.renderComponent(

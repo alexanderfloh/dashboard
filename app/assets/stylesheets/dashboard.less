@@ -10,9 +10,9 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 
 @commitMsgFont: 'Quicksand';
 
-.font {
+.font-sans {
   font-family: 'Quicksand', sans-serif;
-  //font-weight: 400;
+  font-weight: 400;
 }
 .font-light {
   font-family: 'Open Sans Light', sans-serif;
@@ -21,6 +21,11 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 .font-bold {
   font-family: 'Open Sans Extrabold', sans-serif;
   font-weight: 800;
+}
+
+.font-cursive {
+  font-family: 'Fugaz One', cursive;
+  font-weight: 400;
 }
 
 .transform (@string) {
@@ -32,11 +37,8 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 }
 
 
-@blue: #3923D6;
-@grey: #616161;
-@commitMsgColor: @blue;
-@commitTimeAndUserColor: @grey;
 
+@blue: #3498DB;
 @green: #458B00;
 @yellow: #f1c40f;
 @red: #c0392b;
@@ -47,6 +49,9 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 @labels: lighten(black, 60%);
 @contributes: lighten(red, 60%);
        
+@grey: #616161;
+@commitMsgColor: @blue;
+@commitTimeAndUserColor: lighten(@labels, 10%);
 
 .flex-container {
   display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
@@ -86,7 +91,7 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 
 body {
   background-color: @background;
-  font-family: 'Quicksand', sans-serif;
+  .font-sans;
 }
 
 .stable {
@@ -105,6 +110,7 @@ article {
   padding-top: 64px;
   vertical-align:top;
   width: 50%;
+  text-align: center;
   
   .label {
     font-family: 'Fugaz One', cursive;
@@ -114,8 +120,16 @@ article {
   }
   .build-status {
     font-family: 'Quicksand', sans-serif;
-    font-size: 5em;
-    text-align: left;
+    text-align: center;
+    
+    &.ci {
+      font-size: 5em;
+    }
+    
+    &.nightly {
+      font-size: 1.5em;
+      display: inline-block;
+    }
   }
   
   .contributes {
@@ -129,66 +143,59 @@ article {
   
   
   .commitMsgs {
-    margin-top: 30px;
-    font-family: @commitMsgFont, sans-serif;
-    font-size: 1.2em;
+    font-size: small;
     color: @commitMsgColor;
-    font-weight:700;
+    .font-light;
     text-align: left;
+    line-height: 1.5;
     
     .commitMsg {
-      margin-top: 0;
-      border-bottom: 1px dotted @commitTimeAndUserColor;
-      padding-bottom: 2px;
-      margin-bottom: 6px;
+    
     }
     
     .commitTimeAndUser {
+      .font-cursive;
+      font-size: 90%;
+      text-align: right;
       color: @commitTimeAndUserColor;
+      
+      padding-top: 1em;
+      :first-of-type:before {
+        content: '-';
+      }
     }
     margin-bottom: 20%;
   }
   
-
-  
   .buildstats {
-    margin-top: 30px;
-    font-family: 'Quicksand', sans-serif;
-    font-size: 0.9em;
-    color: @orange;
-    font-weight:700;
-    text-align: left;
+    .font-sans;
+    font-size: 5em;
+    text-align: center;
+    display: inline-block;
+    line-height: 1.5
   }
   
-  .buildnumber {
-      font-size: 1.5em;
-      color: @orange;
-  }
   .device {
-      padding-top: 0px;
-      padding-right: 0px;
-      font-size: 1.2em;
-      color: @orange;
-      position: fixed;
-      bottom: 12px;
   }
   .deviceLine {
-      padding-top: 0px;
-      font-size: 1.3em;
-      color: @orange;
+    line-height: 1.5;
   }
   
   .deviceName {
-    padding-right: 10px;
-    text-align: right;
+    padding-left: 10px;
+    text-align: left;
+    font-size: 1.5em;
+    color: @grey;
   }
   
   .deviceLocation {
-    color: @grey;
+    color: @orange;
+    //padding-right: 1em;
+    .font-cursive;
+    text-align: right;
+    font-size: 1em;    
   }
 }
   article.deviceArticle {
     padding: 2%;
-    font-size: 1.2em;
-    color: @orange;
   }
