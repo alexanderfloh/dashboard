@@ -14,9 +14,8 @@ var Dashboard = React.createClass({
           buildName="Nightly Build Status"
           url="http://lnz-bobthebuilder/hudson/job/SilkTest" 
           pollInterval={5000} />
-
           </article>
-          <article>
+          <article className="deviceArticle">
           <Devices pollInterval={2000}/>
           </article>
         </div>
