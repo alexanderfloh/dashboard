@@ -74,8 +74,8 @@ mixins: [LoadStatusMixin],
     
     return (
       <section>
-        <BuildStatusTrafficLight isStable={isStable} isSuccessful={isSuccessful} isFailed={isFailed} />
         <BuildLabel buildName={this.props.buildName} />
+        <BuildStatusTrafficLight isStable={isStable} isSuccessful={isSuccessful} isFailed={isFailed} />
         <Culprits isFailed={isFailed} culprits={this.state.culprits} />
         <RecentCommits commits={this.state.changesetItems} />
       </section>
@@ -97,8 +97,8 @@ var BuildStatusNightly = React.createClass({
     
     return (
       <section>
-        <BuildStatusTrafficLight isStable={isStable} isSuccessful={isSuccessful} isFailed={isFailed} />
         <BuildLabel buildName={this.props.buildName} />
+        <BuildStatusTrafficLight isStable={isStable} isSuccessful={isSuccessful} isFailed={isFailed} />
         <Culprits isFailed={isFailed} culprits={this.state.culprits} />
         <BuildStatistics buildnumber={this.state.buildNumber} />
       </section>
