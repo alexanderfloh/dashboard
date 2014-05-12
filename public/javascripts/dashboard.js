@@ -184,7 +184,7 @@ var RecentCommits = React.createClass({
   render: function() {
     var commitNodes = this.props.commits.map(function(item) {
       return (
-        <li key="commitId" className="commitMsg">
+        <li key={item.commitId} className="commitMsg">
           {item.msg}
           <div className="commitTimeAndUser">
             {item.user}, {moment(item.date).fromNow()}
