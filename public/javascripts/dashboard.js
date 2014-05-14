@@ -231,8 +231,9 @@ var Devices = React.createClass({
         var result = '';
         if (deviceLocation) {
           result = deviceLocation;
-          if (result.indexOf("LNZ-") > -1) {
-            result = result.substring("LNZ-".length, result.length);
+          var dashIndex = result.indexOf("-");
+          if (dashIndex > -1) {
+            result = result.substring(dashIndex + 1, result.length);
           }
           result = result.toLowerCase();
           if(result !== '') {
