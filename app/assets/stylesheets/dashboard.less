@@ -149,22 +149,22 @@ article {
     text-align: left;
     line-height: 1.5;
     
+    
     .commitMsg {
-    
-    }
-    
-    .commitTimeAndUser {
-      .font-cursive;
-      font-size: 90%;
-      text-align: right;
-      color: @commitTimeAndUserColor;
-      
-      padding-top: 1em;
-      :first-of-type:before {
-        content: '-';
+      .commitTimeAndUser {
+        .font-cursive;
+        font-size: 90%;
+        text-align: right;
+        color: @commitTimeAndUserColor;
+        padding-bottom: 1em;
+        
+        :first-of-type:before {
+          content: '-';
+        }
       }
     }
-    margin-bottom: 20%;
+    
+    margin-bottom: 10%;
   }
   
   .buildstats {
@@ -190,7 +190,6 @@ article {
   
   .deviceLocation {
     color: @orange;
-    //padding-right: 1em;
     .font-cursive;
     text-align: right;
     font-size: 1em;    
