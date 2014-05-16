@@ -37,6 +37,7 @@ var LoadStatusMixin = {
                 lastCompletedBuild: data1.lastCompletedBuild.number,
                 lastSuccessfulBuild: data1.lastSuccessfulBuild.number,
                 lastStableBuild: data1.lastStableBuild.number,
+                lastBuild: data1.lastBuild.number,
                 buildNumber: data1.lastCompletedBuild.number,
                 culprits: data.culprits,
                 changesetItems: data.changeSet.items
@@ -80,10 +81,100 @@ mixins: [LoadStatusMixin],
           isFailed={isFailed} 
           buildType="ci"
         />
+        <BuildProgress url={this.props.url} pollInterval={this.props.pollInterval} lastBuild={this.state.lastBuild} />
         <Culprits isFailed={isFailed} culprits={this.state.culprits} />
         <RecentCommits commits={this.state.changesetItems} />
       </section>
     );
+  }
+});
+
+var BuildProgress = React.createClass({
+  getInitialState: function() {
+    return {};
+  },
+  
+  chartData: function () {
+    var timeSpent = Date.now() - this.state.timestamp;
+    var timeLeft = (this.state.timestamp + this.state.estimatedDuration) - Date.now(); 
+    return  [
+        { 
+          "label": "Time Spent",
+          "value" : timeSpent 
+        } , 
+        { 
+          "label": "Time Left",
+          "value" : timeLeft
+        }
+      ];
+  },
+  
+  componentWillUpdate: function(nextProps, nextState) {
+    if(this.state.chart && this.state.timestamp) {
+      var chartData = this.chartData();
+      d3.select(".buildProgress svg").datum(chartData).call(this.state.chart);
+    }
+  },
+  
+  componentDidMount: function() {
+    var self = this;
+    //Donut chart example
+      nv.addGraph(function() {
+        var formatTime = d3.time.format("%X");
+        var formatMinutes = function(d) { return moment(d).from(moment(0), true); };
+        
+        var chart = nv.models.pieChart()
+            .x(function(d) { return d.label })
+            .y(function(d) { return d.value })
+            .showLabels(true)     //Display pie labels
+            .labelThreshold(.05)  //Configure the minimum slice size for labels to show up
+            .labelType("value") //Configure what type of data to show in the label. Can be "key", "value" or "percent"
+            .donut(true)          //Turn on Donut mode. Makes pie chart look tasty!
+            .donutRatio(0.35)     //Configure how big you want the donut hole size to be.
+            .showLegend(false)
+            .tooltips(false)
+            .valueFormat(formatMinutes)
+            .labelFormat(formatMinutes)
+            ;
+
+          d3.select(".buildProgress svg")
+              .datum(self.chartData())
+              .transition().duration(350)
+              .call(chart);
+          
+        self.setState({
+          timestamp : self.state.timestamp,
+          estimatedDuration: self.state.estimatedDuration,
+          chart: chart
+        });
+        return chart;
+      });
+    },
+  
+  loadProgress: function() {
+    $.ajax({
+      url: '/fetchJson/'+ encodeURIComponent(this.props.url + "/" + this.props.lastBuild + "/api/json" ),
+      dataType: 'json',
+      success: function(data) {
+        this.setState({ 
+          duration: data.duration,
+          estimatedDuration: data.estimatedDuration,
+          timestamp: data.timestamp
+        });
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error(this.props.url, status, err.toString());
+      }.bind(this)
+    });
+  },
+  
+  componentWillMount: function() {
+    this.loadProgress();
+    setInterval(this.loadProgress, this.props.pollInterval);
+  },
+    
+  render: function() {
+    return (<span className="buildProgress"><svg/></span>);
   }
 });
 
