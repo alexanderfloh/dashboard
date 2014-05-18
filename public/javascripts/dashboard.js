@@ -175,6 +175,7 @@ var BuildProgressGraph = React.createClass({
       .tooltips(false)
       .valueFormat(formatMinutes)
       .labelFormat(formatMinutes)
+      .color(['#FF800D', '#3498DB'])
       ;
 
       d3.select(".buildProgress svg")
