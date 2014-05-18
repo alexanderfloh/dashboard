@@ -7,11 +7,11 @@ var Dashboard = React.createClass({
           <article>
             <BuildStatusCI
               buildName="CI Build Status"
-              url="http://lnz-bobthebuilder/hudson/job/SilkTest%20CI" 
+              url="http://lnz-bobthebuilder/hudson/job/SilkTest%20CI"
               pollInterval={5000} />
             <BuildStatusNightly
               buildName="Latest nightly build"
-              url="http://lnz-bobthebuilder/hudson/job/SilkTest" 
+              url="http://lnz-bobthebuilder/hudson/job/SilkTest"
               pollInterval={5000} />
           </article>
           <article className="deviceArticle">
@@ -20,7 +20,7 @@ var Dashboard = React.createClass({
         </div>
         );
   }
-  
+
 });
 
 var LoadStatusMixin = {
@@ -33,7 +33,7 @@ var LoadStatusMixin = {
             url: '/fetchJson/'+ encodeURIComponent(this.props.url + "/" + data1.lastCompletedBuild.number + "/api/json?tree=culprits[fullName],changeSet[items[*]]" ),
             dataType: 'json',
             success: function(data) {
-              this.setState({ 
+              this.setState({
                 lastCompletedBuild: data1.lastCompletedBuild.number,
                 lastSuccessfulBuild: data1.lastSuccessfulBuild.number,
                 lastStableBuild: data1.lastStableBuild.number,
@@ -53,7 +53,7 @@ var LoadStatusMixin = {
       }.bind(this)
     });
   },
-  
+
   componentWillMount: function() {
     this.loadStatus();
     setInterval(this.loadStatus, this.props.pollInterval);
@@ -62,23 +62,23 @@ var LoadStatusMixin = {
 
 var BuildStatusCI = React.createClass({
 mixins: [LoadStatusMixin],
-  
+
   getInitialState: function() {
     return {culprits: [], changesetItems: []};
   },
-  
+
   render: function() {
     var isStable = this.state.lastStableBuild === this.state.lastCompletedBuild;
     var isSuccessful = !isStable && this.state.lastSuccessfulBuild === this.state.lastCompletedBuild;
     var isFailed = !isStable && !isSuccessful;
-    
+
     return (
       <section>
         <BuildLabel buildName={this.props.buildName} />
-        <BuildStatusTrafficLight 
-          isStable={isStable} 
-          isSuccessful={isSuccessful} 
-          isFailed={isFailed} 
+        <BuildStatusTrafficLight
+          isStable={isStable}
+          isSuccessful={isSuccessful}
+          isFailed={isFailed}
           buildType="ci"
         />
         <BuildProgress url={this.props.url} pollInterval={this.props.pollInterval} lastBuild={this.state.lastBuild} />
@@ -93,73 +93,32 @@ var BuildProgress = React.createClass({
   getInitialState: function() {
     return {};
   },
-  
+
   chartData: function () {
     var timeSpent = Date.now() - this.state.timestamp;
-    var timeLeft = (this.state.timestamp + this.state.estimatedDuration) - Date.now(); 
+    var timeLeft = (this.state.timestamp + this.state.estimatedDuration) - Date.now();
     return  [
-        { 
+        {
           "label": "Time Spent",
-          "value" : timeSpent 
-        } , 
-        { 
+          "value" : timeSpent
+        } ,
+        {
           "label": "Time Left",
           "value" : timeLeft
         }
       ];
   },
-  
-  componentWillUpdate: function(nextProps, nextState) {
-    if(this.state.chart && this.state.timestamp) {
-      var chartData = this.chartData();
-      d3.select(".buildProgress svg").datum(chartData).call(this.state.chart);
-    }
-  },
-  
-  componentDidMount: function() {
-    var self = this;
-    //Donut chart example
-      nv.addGraph(function() {
-        var formatTime = d3.time.format("%X");
-        var formatMinutes = function(d) { return moment(d).from(moment(0), true); };
-        
-        var chart = nv.models.pieChart()
-            .x(function(d) { return d.label })
-            .y(function(d) { return d.value })
-            .showLabels(true)     //Display pie labels
-            .labelThreshold(.05)  //Configure the minimum slice size for labels to show up
-            .labelType("value") //Configure what type of data to show in the label. Can be "key", "value" or "percent"
-            .donut(true)          //Turn on Donut mode. Makes pie chart look tasty!
-            .donutRatio(0.35)     //Configure how big you want the donut hole size to be.
-            .showLegend(false)
-            .tooltips(false)
-            .valueFormat(formatMinutes)
-            .labelFormat(formatMinutes)
-            ;
 
-          d3.select(".buildProgress svg")
-              .datum(self.chartData())
-              .transition().duration(350)
-              .call(chart);
-          
-        self.setState({
-          timestamp : self.state.timestamp,
-          estimatedDuration: self.state.estimatedDuration,
-          chart: chart
-        });
-        return chart;
-      });
-    },
-  
-  loadProgress: function() {
+  loadProgressForBuild: function(build) {
     $.ajax({
-      url: '/fetchJson/'+ encodeURIComponent(this.props.url + "/" + this.props.lastBuild + "/api/json" ),
+      url: '/fetchJson/'+ encodeURIComponent(this.props.url + "/" + build + "/api/json" ),
       dataType: 'json',
       success: function(data) {
-        this.setState({ 
+        this.setState({
           duration: data.duration,
           estimatedDuration: data.estimatedDuration,
-          timestamp: data.timestamp
+          timestamp: data.timestamp,
+          building: data.building
         });
       }.bind(this),
       error: function(xhr, status, err) {
@@ -167,12 +126,73 @@ var BuildProgress = React.createClass({
       }.bind(this)
     });
   },
-  
+
+  componentWillReceiveProps: function(nextProps) {
+    if(!this.props.lastBuild && nextProps.lastBuild) {
+      this.loadProgressForBuild(nextProps.lastBuild);
+    }
+  },
+
+  loadProgress: function() {
+    if(this.props.lastBuild) {
+      this.loadProgressForBuild(this.props.lastBuild);
+    }
+  },
+
   componentWillMount: function() {
     this.loadProgress();
     setInterval(this.loadProgress, this.props.pollInterval);
   },
-    
+
+  render: function() {
+    if(this.state.building) {
+      return (<BuildProgressGraph chartData={this.chartData()} />);
+    }
+    else {
+      return (<span className="buildProgress" />);
+    }
+  }
+});
+
+var BuildProgressGraph = React.createClass({
+
+  componentDidMount: function() {
+    var self = this;
+    //Donut chart example
+    nv.addGraph(function() {
+      var formatTime = d3.time.format("%X");
+      var formatMinutes = function(d) { return moment(d).from(moment(0), true); };
+
+      var chart = nv.models.pieChart()
+      .x(function(d) { return d.label })
+      .y(function(d) { return d.value })
+      .showLabels(true)     //Display pie labels
+      .labelThreshold(.05)  //Configure the minimum slice size for labels to show up
+      .labelType("value") //Configure what type of data to show in the label. Can be "key", "value" or "percent"
+      .donut(true)          //Turn on Donut mode. Makes pie chart look tasty!
+      .donutRatio(0.35)     //Configure how big you want the donut hole size to be.
+      .showLegend(false)
+      .tooltips(false)
+      .valueFormat(formatMinutes)
+      .labelFormat(formatMinutes)
+      ;
+
+      d3.select(".buildProgress svg")
+      .datum(self.props.chartData)
+      .transition().duration(350)
+      .call(chart);
+
+      self.setState({
+        chart: chart
+      });
+      return chart;
+    });
+  },
+
+  componentWillReceiveProps: function(nextProps) {
+    d3.select(".buildProgress svg").datum(nextProps.chartData).call(this.state.chart);
+  },
+
   render: function() {
     return (<span className="buildProgress"><svg/></span>);
   }
@@ -180,28 +200,28 @@ var BuildProgress = React.createClass({
 
 var BuildStatusNightly = React.createClass({
   mixins: [LoadStatusMixin],
-  
+
   getInitialState: function() {
     return {culprits: []};
   },
-  
+
   render: function() {
     var isStable = this.state.lastStableBuild === this.state.lastCompletedBuild;
     var isSuccessful = !isStable && this.state.lastSuccessfulBuild === this.state.lastCompletedBuild;
     var isFailed = !isStable && !isSuccessful;
-    
+
     return (
       <section>
         <BuildLabel buildName={this.props.buildName} />
-        <BuildStatistics 
-          isStable={isStable} 
-          isSuccessful={isSuccessful} 
+        <BuildStatistics
+          isStable={isStable}
+          isSuccessful={isSuccessful}
           isFailed={isFailed}
           buildnumber={this.state.buildNumber} />
-        <BuildStatusTrafficLight 
-          isStable={isStable} 
-          isSuccessful={isSuccessful} 
-          isFailed={isFailed} 
+        <BuildStatusTrafficLight
+          isStable={isStable}
+          isSuccessful={isSuccessful}
+          isFailed={isFailed}
           buildType="nightly"
         />
         <Culprits isFailed={isFailed} culprits={this.state.culprits} />
@@ -221,7 +241,7 @@ var BuildStatusTrafficLight = React.createClass({
       'ci': this.props.buildType === 'ci',
       'nightly': this.props.buildType === 'nightly'
     });
-    
+
     return (
       <div className={classes} id="status">
         {this.props.isStable ? 'stable' : (this.props.isSuccessful ? 'unstable' : 'failed')}
@@ -245,7 +265,7 @@ var Culprits = React.createClass({
     var culpritNodes = this.props.culprits.map(function(item) {
       return <div>{item.fullName}</div>;
     });
-    
+
     return(
       <div className="contributes" >
         {this.props.isFailed ? culpritNodes : ''}
@@ -279,11 +299,11 @@ var RecentCommits = React.createClass({
           {item.msg}
           <div className="commitTimeAndUser">
             {item.user}, {moment(item.date).fromNow()}
-          </div> 
+          </div>
         </li>
       );
     });
-    
+
     return (
       <ul className="commitMsgs">
         {commitNodes}
@@ -302,7 +322,7 @@ var Devices = React.createClass({
         url: '/getDevices/',
         dataType: 'json',
         success: function(data) {
-            this.setState({ 
+            this.setState({
               devices: data
             })
         }.bind(this),
@@ -316,7 +336,7 @@ var Devices = React.createClass({
       this.loadStatus();
       setInterval(this.loadStatus, this.props.pollInterval);
     },
-    
+
     render: function() {
       var editDeviceLocation = function(deviceLocation) {
         var result = '';
@@ -331,10 +351,10 @@ var Devices = React.createClass({
             result += ' -';
           }
         }
-          
+
         return result;
       }
-      
+
       var deviceNodes = this.state.devices.map(function(device) {
         var deviceLocation = editDeviceLocation(device.location);
         return (
