@@ -155,7 +155,10 @@ var BuildProgress = React.createClass({
 });
 
 var BuildProgressGraph = React.createClass({
-
+  getInitialState: function() {
+    return {};
+  },
+  
   componentDidMount: function() {
     var self = this;
     //Donut chart example
@@ -191,7 +194,11 @@ var BuildProgressGraph = React.createClass({
   },
 
   componentWillReceiveProps: function(nextProps) {
-    d3.select(".buildProgress svg").datum(nextProps.chartData).call(this.state.chart);
+    if(this.state.chart) {
+      d3.select(".buildProgress svg").datum(nextProps.chartData).call(this.state.chart);
+    } else {
+      this.componentDidMount();
+    }
   },
 
   render: function() {
