@@ -45,11 +45,11 @@ object Application extends Controller {
       case Some(device) => {
         val location = Location.findOrCreate(system)
         MobileDevice.setLocation(device, location.id)
-        Ok(deviceId)
+        Ok(s"registered $deviceId")
       }
       case None => {
-        Logger.info(s"unkown device '$deviceId'")
-        NotFound(deviceId)
+        Logger.info(s"unknown device '$deviceId'")
+        Ok(s"unknown device '$deviceId'")
       }
     }
   }
