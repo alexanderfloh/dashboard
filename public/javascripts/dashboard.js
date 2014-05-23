@@ -15,7 +15,7 @@ var Dashboard = React.createClass({
               pollInterval={5000} />
           </article>
           <article className="deviceArticle">
-            <Devices pollInterval={2000}/>
+            <Devices pollInterval={5000}/>
           </article>
         </div>
         );
@@ -26,27 +26,10 @@ var Dashboard = React.createClass({
 var LoadStatusMixin = {
   loadStatus: function() {
     $.ajax({
-      url: '/fetchJson/'+ encodeURIComponent(this.props.url + "/api/json"),
+      url: '/fetchAll/'+ encodeURIComponent(this.props.url),
       dataType: 'json',
       success: function(data1) {
-        $.ajax({
-            url: '/fetchJson/'+ encodeURIComponent(this.props.url + "/" + data1.lastCompletedBuild.number + "/api/json?tree=culprits[fullName],changeSet[items[*]]" ),
-            dataType: 'json',
-            success: function(data) {
-              this.setState({
-                lastCompletedBuild: data1.lastCompletedBuild.number,
-                lastSuccessfulBuild: data1.lastSuccessfulBuild.number,
-                lastStableBuild: data1.lastStableBuild.number,
-                lastBuild: data1.lastBuild.number,
-                buildNumber: data1.lastCompletedBuild.number,
-                culprits: data.culprits,
-                changesetItems: data.changeSet.items
-              });
-            }.bind(this),
-            error: function(xhr, status, err) {
-              console.error(this.props.url, status, err.toString());
-            }.bind(this)
-          });
+        this.setState(data1);
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(this.props.url, status, err.toString());
@@ -57,6 +40,19 @@ var LoadStatusMixin = {
   componentWillMount: function() {
     this.loadStatus();
     setInterval(this.loadStatus, this.props.pollInterval);
+  },
+  
+  calculateBuildResult: function() {
+    var isStable = this.state.lastStableBuild === this.state.lastCompletedBuild.buildNumber;
+    var isSuccessful = !isStable && this.state.lastSuccessfulBuild === this.state.lastCompletedBuild.buildNumber;
+    var isFailed = !isStable && !isSuccessful;
+    var resultString = isStable ? 'stable' : (isSuccessful ? 'unstable' : 'failed');
+    return {
+      stable: isStable,
+      successful: isSuccessful,
+      failed: isFailed,
+      resultFormatted: resultString
+    };
   }
 };
 
@@ -64,39 +60,32 @@ var BuildStatusCI = React.createClass({
 mixins: [LoadStatusMixin],
 
   getInitialState: function() {
-    return {culprits: [], changesetItems: []};
+    return {lastCompletedBuild: { culprits: [], changesetItems: [] }};
   },
-
+  
   render: function() {
-    var isStable = this.state.lastStableBuild === this.state.lastCompletedBuild;
-    var isSuccessful = !isStable && this.state.lastSuccessfulBuild === this.state.lastCompletedBuild;
-    var isFailed = !isStable && !isSuccessful;
+    var buildResult = this.calculateBuildResult();
 
     return (
       <section>
         <BuildLabel buildName={this.props.buildName} />
         <BuildStatusTrafficLight
-          isStable={isStable}
-          isSuccessful={isSuccessful}
-          isFailed={isFailed}
+          buildResult={buildResult}
           buildType="ci"
         />
-        <BuildProgress url={this.props.url} pollInterval={this.props.pollInterval} lastBuild={this.state.lastBuild} />
-        <Culprits isFailed={isFailed} culprits={this.state.culprits} />
-        <RecentCommits commits={this.state.changesetItems} />
+        <BuildProgress lastBuild={this.state.lastBuild ? this.state.lastBuild : {}} />
+        <Culprits isFailed={buildResult.failed} culprits={this.state.lastCompletedBuild.culprits} />
+        <RecentCommits commits={this.state.lastCompletedBuild.changesetItems} />
       </section>
     );
   }
 });
 
 var BuildProgress = React.createClass({
-  getInitialState: function() {
-    return {};
-  },
 
   chartData: function () {
-    var timeSpent = Date.now() - this.state.timestamp;
-    var timeLeft = (this.state.timestamp + this.state.estimatedDuration) - Date.now();
+    var timeSpent = Date.now() - this.props.lastBuild.timestamp;
+    var timeLeft = (this.props.lastBuild.timestamp + this.props.lastBuild.estimatedDuration) - Date.now();
     return  [
         {
           "label": "Time Spent",
@@ -109,43 +98,8 @@ var BuildProgress = React.createClass({
       ];
   },
 
-  loadProgressForBuild: function(build) {
-    $.ajax({
-      url: '/fetchJson/'+ encodeURIComponent(this.props.url + "/" + build + "/api/json" ),
-      dataType: 'json',
-      success: function(data) {
-        this.setState({
-          duration: data.duration,
-          estimatedDuration: data.estimatedDuration,
-          timestamp: data.timestamp,
-          building: data.building
-        });
-      }.bind(this),
-      error: function(xhr, status, err) {
-        console.error(this.props.url, status, err.toString());
-      }.bind(this)
-    });
-  },
-
-  componentWillReceiveProps: function(nextProps) {
-    if(!this.props.lastBuild && nextProps.lastBuild) {
-      this.loadProgressForBuild(nextProps.lastBuild);
-    }
-  },
-
-  loadProgress: function() {
-    if(this.props.lastBuild) {
-      this.loadProgressForBuild(this.props.lastBuild);
-    }
-  },
-
-  componentWillMount: function() {
-    this.loadProgress();
-    setInterval(this.loadProgress, this.props.pollInterval);
-  },
-
   render: function() {
-    if(this.state.building) {
+    if(this.props.lastBuild.building) {
       return (<BuildProgressGraph chartData={this.chartData()} />);
     }
     else {
@@ -210,29 +164,23 @@ var BuildStatusNightly = React.createClass({
   mixins: [LoadStatusMixin],
 
   getInitialState: function() {
-    return {culprits: []};
+    return {lastCompletedBuild: { culprits: [], changesetItems: [] }};
   },
 
   render: function() {
-    var isStable = this.state.lastStableBuild === this.state.lastCompletedBuild;
-    var isSuccessful = !isStable && this.state.lastSuccessfulBuild === this.state.lastCompletedBuild;
-    var isFailed = !isStable && !isSuccessful;
+    var buildResult = this.calculateBuildResult();
 
     return (
       <section>
         <BuildLabel buildName={this.props.buildName} />
         <BuildStatistics
-          isStable={isStable}
-          isSuccessful={isSuccessful}
-          isFailed={isFailed}
-          buildnumber={this.state.buildNumber} />
+          buildResult={buildResult}
+          buildnumber={this.state.lastCompletedBuild.buildNumber} />
         <BuildStatusTrafficLight
-          isStable={isStable}
-          isSuccessful={isSuccessful}
-          isFailed={isFailed}
+          buildResult={buildResult}
           buildType="nightly"
         />
-        <Culprits isFailed={isFailed} culprits={this.state.culprits} />
+        <Culprits isFailed={buildResult.failed} culprits={this.state.lastCompletedBuild.culprits} />
       </section>
     );
   }
@@ -243,16 +191,16 @@ var BuildStatusTrafficLight = React.createClass({
     var cx = React.addons.classSet;
     var classes = cx({
       'build-status' : true,
-      'stable': this.props.isStable,
-      'successful': this.props.isSuccessful,
-      'failed': this.props.isFailed,
+      'stable': this.props.buildResult.stable,
+      'successful': this.props.buildResult.successful,
+      'failed': this.props.buildResult.failed,
       'ci': this.props.buildType === 'ci',
       'nightly': this.props.buildType === 'nightly'
     });
 
     return (
       <div className={classes} id="status">
-        {this.props.isStable ? 'stable' : (this.props.isSuccessful ? 'unstable' : 'failed')}
+        {this.props.buildResult.resultFormatted}
       </div>
     );
   }
@@ -287,9 +235,9 @@ var BuildStatistics = React.createClass({
     var cx = React.addons.classSet;
     var classes = cx({
       'buildstats' : true,
-      'stable': this.props.isStable,
-      'successful': this.props.isSuccessful,
-      'failed': this.props.isFailed,
+      'stable': this.props.buildResult.stable,
+      'successful': this.props.buildResult.successful,
+      'failed': this.props.buildResult.failed,
     });
     return (
       <div className={classes}>

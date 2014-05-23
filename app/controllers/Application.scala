@@ -1,10 +1,8 @@
 package controllers
 
 import java.net.URI
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-
 import models.Location
 import models.MobileDevice
 import play.api.Logger
@@ -17,6 +15,9 @@ import play.api.libs.ws.WS
 import play.api.mvc.Action
 import play.api.mvc.Controller
 import util.MockResponseGenerator
+import play.api.libs.json.JsArray
+import play.api.libs.json.JsValue
+import play.api.libs.json.JsObject
 
 object Application extends Controller {
 
@@ -30,6 +31,50 @@ object Application extends Controller {
     } else {
       val uri = URI.create(url)
       WS.url(uri.toString).get.map(response => Ok(response.json))
+    }
+  }
+
+  def fetchAll(baseUrl: String) = Action.async {
+    def fetchLastCompleted(baseUrl: String, buildNumber: Int): Future[JsObject] = {
+      val url = s"$baseUrl/$buildNumber/api/json?tree=culprits[fullName],changeSet[items[*]]"
+      WS.url(url).get.map { responseDetails =>
+        val json = Json.parse(responseDetails.body)
+        Json.obj(
+          "buildNumber" -> buildNumber,
+          "culprits" -> (json \ "culprits"),
+          "changesetItems" -> (json \ "changeSet" \ "items"))
+      }
+    }
+
+    def fetchLastBuild(baseUrl: String, buildNumber: Int): Future[JsObject] = {
+      val url = s"$baseUrl/$buildNumber/api/json"
+      WS.url(url).get.map { response =>
+        val json = Json.parse(response.body)
+        Json.obj(
+          "buildNumber" -> buildNumber,
+          "estimatedDuration" -> (json \ "estimatedDuration"),
+          "timestamp" -> (json \ "timestamp"),
+          "building" -> (json \ "building"))
+      }
+    }
+
+    WS.url(baseUrl + "/api/json").get.flatMap { response =>
+      val json = Json.parse(response.body)
+      val lastCompletedBuild = (json \ "lastCompletedBuild" \ "number").as[Int]
+      val lastBuild = (json \ "lastBuild" \ "number").as[Int]
+      val lastSuccessfulBuild = (json \ "lastSuccessfulBuild" \ "number")
+      val lastStableBuild = (json \ "lastStableBuild" \ "number")
+
+      for {
+        lastCompletedDetails <- fetchLastCompleted(baseUrl, lastCompletedBuild)
+        lastBuildDetails <- fetchLastBuild(baseUrl, lastBuild)
+      } yield {
+        Ok(Json.obj(
+          "lastCompletedBuild" -> lastCompletedDetails,
+          "lastSuccessfulBuild" -> lastSuccessfulBuild,
+          "lastStableBuild" -> lastStableBuild,
+          "lastBuild" -> lastBuildDetails))
+      }
     }
   }
 
