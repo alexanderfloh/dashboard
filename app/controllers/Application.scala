@@ -58,24 +58,30 @@ object Application extends Controller {
       }
     }
 
-    WS.url(baseUrl + "/api/json").get.flatMap { response =>
-      val json = Json.parse(response.body)
-      val lastCompletedBuild = (json \ "lastCompletedBuild" \ "number").as[Int]
-      val lastBuild = (json \ "lastBuild" \ "number").as[Int]
-      val lastSuccessfulBuild = (json \ "lastSuccessfulBuild" \ "number")
-      val lastStableBuild = (json \ "lastStableBuild" \ "number")
+    if (Play.current.configuration.getBoolean("dashboard.mockResponse").getOrElse(false)) {
+      Future(Ok(MockResponseGenerator(baseUrl)))
+    } else {
 
-      for {
-        lastCompletedDetails <- fetchLastCompleted(baseUrl, lastCompletedBuild)
-        lastBuildDetails <- fetchLastBuild(baseUrl, lastBuild)
-      } yield {
-        Ok(Json.obj(
-          "lastCompletedBuild" -> lastCompletedDetails,
-          "lastSuccessfulBuild" -> lastSuccessfulBuild,
-          "lastStableBuild" -> lastStableBuild,
-          "lastBuild" -> lastBuildDetails))
+      WS.url(baseUrl + "/api/json").get.flatMap { response =>
+        val json = Json.parse(response.body)
+        val lastCompletedBuild = (json \ "lastCompletedBuild" \ "number").as[Int]
+        val lastBuild = (json \ "lastBuild" \ "number").as[Int]
+        val lastSuccessfulBuild = (json \ "lastSuccessfulBuild" \ "number")
+        val lastStableBuild = (json \ "lastStableBuild" \ "number")
+
+        for {
+          lastCompletedDetails <- fetchLastCompleted(baseUrl, lastCompletedBuild)
+          lastBuildDetails <- fetchLastBuild(baseUrl, lastBuild)
+        } yield {
+          Ok(Json.obj(
+            "lastCompletedBuild" -> lastCompletedDetails,
+            "lastSuccessfulBuild" -> lastSuccessfulBuild,
+            "lastStableBuild" -> lastStableBuild,
+            "lastBuild" -> lastBuildDetails))
+        }
       }
     }
+    
   }
 
   def setDevice() = Action { implicit request =>
