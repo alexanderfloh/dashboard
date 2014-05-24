@@ -22,16 +22,7 @@ import play.api.libs.json.JsObject
 object Application extends Controller {
 
   def index = Action {
-    Ok(views.html.index("Your new application is ready."))
-  }
-
-  def fetchJson(url: String) = Action.async {
-    if (Play.current.configuration.getBoolean("dashboard.mockResponse").getOrElse(false)) {
-      Future(Ok(MockResponseGenerator(url)))
-    } else {
-      val uri = URI.create(url)
-      WS.url(uri.toString).get.map(response => Ok(response.json))
-    }
+    Ok(views.html.index())
   }
 
   def fetchAll(baseUrl: String) = Action.async {

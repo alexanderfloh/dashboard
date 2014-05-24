@@ -5,8 +5,6 @@
 # Home page
 GET   /                 controllers.Application.index
 
-GET   /fetchJson/:url   controllers.Application.fetchJson(url: String)
-
 GET   /fetchAll/:baseUrl    controllers.Application.fetchAll(baseUrl: String)
 
 GET   /getDevices/   controllers.Application.getDevices()
