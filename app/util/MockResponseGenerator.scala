@@ -36,13 +36,18 @@ object MockResponseGenerator {
         ],
         "revision" : 76695,
         "user" : "Michael Gehmayr"
-      }
+      },
+      {"affectedPaths":["OpenAgent/SrcJava/plugins/com.borland.fastxd.agent/src/com/borland/fastxd/agent/core/ApplicationService.java","OpenAgent/SrcJava/plugins/com.microfocus.silktest.mobile/src/com/microfocus/silktest/mobile/AbstractCommunicationTunnel.java","OpenAgent/SrcJava/plugins/com.microfocus.silktest.techdomain.android.agent/src/com/microfocus/silktest/techdomain/android/agent/device/DeviceConnection.java","OpenAgent/SrcJava/plugins/com.microfocus.silktest.techdomain.ios.agent/src/com/microfocus/silktest/techdomain/ios/agent/device/CommunicationTunnel.java"],"author":{},"commitId":"76840","timestamp":1400775208853,"date":"2014-05-22T16:13:28.853725Z",
+        "msg":"+Android: fix shutdown deadlock by prohibiting sending synchronous UIAutomator messages to the device as soon it is disconnected. This is the case if pending calls exist on disconnect or when the agent is stopped during a test run (see DeviceConnection.java for Android).\no set some threads to deamon threads and add log output. \n(paired with MichaelG)","paths":[{},{},{},{}],"revision":76840,"user":"Gerald Ehmayr"}
     ]"""
+
+      val culprits = List("Michael Gehmayr", "Alexander Floh")
+        .map(name => s"""{"fullName": "$name"}""").mkString("[", ",", "]")
 
       s"""{
           "lastCompletedBuild": {
             "buildNumber":24838,
-            "culprits":[],
+            "culprits": $culprits,
             "changesetItems": $changeSetItems
           },
           "lastSuccessfulBuild": 24838,

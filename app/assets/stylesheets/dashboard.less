@@ -47,46 +47,14 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 
 @background: white;
 @labels: lighten(black, 60%);
-@contributes: lighten(red, 60%);
-       
+
 @grey: #616161;
 @commitMsgColor: @blue;
-@commitTimeAndUserColor: lighten(@labels, 10%);
-
-.flex-container {
-  display: -webkit-box;      /* OLD - iOS 6-, Safari 3.1-6 */
-  display: -moz-box;         /* OLD - Firefox 19- (buggy but mostly works) */
-  display: -ms-flexbox;      /* TWEENER - IE 10 */
-  display: -webkit-flex;     /* NEW - Chrome */
-  display: flex;             /* NEW, Spec - Opera 12.1, Firefox 20+ */
-
-  // columns should not all be full height
-    -webkit-align-content: flex-start;
-    -ms-flex-line-pack: start;
-    align-content: flex-start;
-    -webkit-box-align: start;
-    -moz-box-align: start;
-    -webkit-align-items: flex-start;
-    -ms-flex-align: start;
-    align-items: flex-start;
-}
-.flex-element {
-  -webkit-box-flex: 1;      /* OLD - iOS 6-, Safari 3.1-6 */
-  -moz-box-flex: 1;         /* OLD - Firefox 19- */
-  width: 20%;               /* For old syntax, otherwise collapses. */
-  -webkit-flex: 1;          /* Chrome */
-  -ms-flex: 1;              /* IE 10 */
-  flex: 1;                  /* NEW, Spec - Opera 12.1, Firefox 20+ */
-}
-
-
-
-
 
 * {
   -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
   -moz-box-sizing: border-box;    /* Firefox, other Gecko */
-  box-sizing: border-box; 
+  box-sizing: border-box;
 }
 
 body {
@@ -94,117 +62,218 @@ body {
   .font-sans;
 }
 
-.stable {
-  color: @green;
-}
-.successful {
-  color: @yellow;
-}
-.failed {
-  color: @red;
+header {
+  padding-top: 2em;
+  padding-bottom: 2em;
+
+  h2 {
+    .font-cursive;
+    font-size: 1em;
+    color: @labels;
+    text-align: center;
+  }
 }
 
 article {
   display: inline-block;
-  padding: 20px 7%;
-  padding-top: 64px;
   vertical-align:top;
-  width: 50%;
   text-align: center;
-  
-  .label {
-    font-family: 'Fugaz One', cursive;
-    font-size: 1em;
-    color: @labels;
-    text-align: left;
+  width: 100%;
+}
+
+.left {
+  width: 50%;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.right {
+  width: 50%;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.stable {
+  background-color: @green;
+  color: white;
+}
+.successful {
+  background-color: @yellow;
+  color: white;
+}
+.failed {
+  background-color: @red;
+  color: white;
+}
+
+.status-details {
+  display: inline-block;
+}
+
+.build-status-container {
+  min-height: 300px;
+
+  section {
+    display: inline-block;
+    width: 35%;
+    height: 100%;
+    vertical-align: top;
+    header {
+      min-height: 100px;
+    }
   }
+  .build-status-ci {
+    width: 65%;
+  }
+
+  #moon {
+    width: 70px;
+    height: 70px;
+    margin: 15px;
+    fill: @grey;
+  }
+
+  #repeat {
+    fill: @grey;
+  }
+
+  .vertical-separator {
+    display: inline-block;
+    border-right: 1px solid #555;
+    height: 60%;
+    margin: 10px 10px -20px 10px;
+
+  }
+
   .build-status {
     font-family: 'Quicksand', sans-serif;
     text-align: center;
-    
+    padding: 10px;
+
     &.ci {
       font-size: 5em;
-      display: inline-block;
     }
-    
+
     &.nightly {
       font-size: 1.5em;
-      display: inline-block;
+      text-align: right;
+      padding: 10px 0 0 0;
+      background-color: white;
+
+      &.stable {
+        color: @green;
+      }
+      &.successful {
+        color: @yellow;
+      }
+      &.failed {
+        color: @red;
+      }
     }
   }
-  
+
   .buildProgress {
     display: inline-block;
-    max-width: 25%;
-    width: 25%;
-    max-height: 150px;
-    margin-top: -5em;
+    width: 40%;
+    max-height: 200px;
+    vertical-align: top;
+    svg {
+      max-height: 200px;
+      display: inline-block;
+
+      text {
+        fill: @labels;
+      }
+    }
   }
-  
-  .contributes {
-    margin-top: 30px;
-    font-family: 'Quicksand', sans-serif;
-    font-size: 1em;
-    color: @red;
-    font-weight:700;
-    text-align: right;
+
+  .culprits {
+    .font-sans;
+    color: white;
+    text-align: left;
+    background-color: @red;
+    padding: 1em;
+
+    h2 {
+      .font-cursive;
+    }
+
+    li {
+      line-height: 1.4;
+      &:after {
+        content: '';
+        border-right: 3px solid @red;
+        padding-left: 5px;
+      }
+    }
   }
-  
-  
+
+  .buildstats {
+    .font-sans;
+    font-size: 5em;
+    text-align: center;
+    padding: 10px;
+  }
+}
+
+.commit-message-container {
+  #commit {
+    fill: @grey;
+  }
   .commitMsgs {
     font-size: 1.1em;
     color: @commitMsgColor;
     .font-light;
     text-align: left;
     line-height: 1.5;
-    
-    
+    margin-bottom: 10%;
+    padding-left: 1em;
+
     .commitMsg {
+      border-left: 2px solid @commitMsgColor;
+      padding-left: 0.5em;
+      margin-bottom: 0.5em;
+
       .commitTimeAndUser {
         .font-cursive;
         font-size: 90%;
         text-align: right;
-        color: @commitTimeAndUserColor;
-        padding-bottom: 1em;
-        
+        color: @labels;
+
         :first-of-type:before {
           content: '-';
         }
       }
+
     }
-    
-    margin-bottom: 10%;
   }
-  
-  .buildstats {
-    .font-sans;
-    font-size: 5em;
-    text-align: center;
-    display: inline-block;
-    line-height: 1.5
-  }
-  
+}
+
+.device-container {
   .device {
+    width: 100%;
   }
   .deviceLine {
     line-height: 1.5;
   }
-  
+
   .deviceName {
     padding-left: 10px;
     text-align: left;
     font-size: 1.5em;
     color: @grey;
+    width: 50%;
   }
-  
+
   .deviceLocation {
     color: @orange;
     .font-cursive;
     text-align: right;
-    font-size: 1em;    
+    font-size: 1em;
+    width: 50%;
+  }
+
+  #smartphone {
+    fill: @grey;
   }
 }
-
-  article.deviceArticle {
-    padding: 2%;
-  }
