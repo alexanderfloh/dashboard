@@ -57,7 +57,7 @@ var Dashboard = React.createClass({
         <div className="left">
         <article className="build-status-container">
           <BuildStatusCI
-            buildName="CI Build Status"
+            buildName="CI Build"
             url="http://lnz-bobthebuilder/hudson/job/SilkTest%20CI"
             pollInterval={5000}
             buildResult={this.calculateBuildResult()}
@@ -67,7 +67,7 @@ var Dashboard = React.createClass({
 
 
           <BuildStatusNightly
-            buildName="Latest nightly build"
+            buildName="Nightly Build"
             url="http://lnz-bobthebuilder/hudson/job/SilkTest"
             pollInterval={5000} />
         </article>
@@ -105,21 +105,19 @@ var BuildStatusCI = React.createClass({
             {this.props.buildName}
           </h2>
         </header>
-        <div>
-          <BuildProgress
-            lastBuild={this.props.lastBuild} />
+        <div className="status-details">
+          <BuildStatusTrafficLight
+            buildResult={this.props.buildResult}
+            buildType="ci"
+          />
 
-          <div className="status-details">
-            <BuildStatusTrafficLight
-              buildResult={this.props.buildResult}
-              buildType="ci"
-            />
-
-            <Culprits
-              isFailed={this.props.buildResult.failed}
-              culprits={this.props.lastCompletedBuild.culprits} />
-          </div>
+          <Culprits
+            isFailed={this.props.buildResult.failed}
+            culprits={this.props.lastCompletedBuild.culprits} />
         </div>
+        <footer>
+          <BuildProgress lastBuild={this.props.lastBuild} />
+        </footer>
       </section>
     );
   }
@@ -134,7 +132,7 @@ var BuildStatusNightly = React.createClass({
     return (
       <section>
         <header>
-          <svg id="moon" x="0px" y="0px" width="100px" height="100px" viewBox="0 0 100 100">
+          <svg id="moon" x="0px" y="0px" width="100px" height="100px" viewBox="-10 -10 120 120">
             <g>
             	<path d="M76.978,69.324c-25.586,0-46.313-20.74-46.313-46.314c0-8.422,2.417-16.211,6.348-23.01   C15.686,6.152,0,25.586,0,48.889C0,77.111,22.876,100,51.099,100C74.402,100,93.848,84.302,100,62.988   C93.188,66.906,85.4,69.324,76.978,69.324z"/>
             </g>
@@ -160,82 +158,27 @@ var BuildStatusNightly = React.createClass({
 });
 
 var BuildProgress = React.createClass({
-
-  chartData: function () {
-    var timeSpent = Date.now() - this.props.lastBuild.timestamp;
-    var timeLeft = (this.props.lastBuild.timestamp + this.props.lastBuild.estimatedDuration) - Date.now();
-    return  [
-        {
-          "label": "Time Spent",
-          "value" : timeSpent
-        } ,
-        {
-          "label": "Time Left",
-          "value" : timeLeft
-        }
-      ];
-  },
-
   render: function() {
     if(this.props.lastBuild.building) {
-      return (<BuildProgressGraph chartData={this.chartData()} />);
+      var timeSpent = Date.now() - this.props.lastBuild.timestamp;
+      var timeLeft = (this.props.lastBuild.timestamp + this.props.lastBuild.estimatedDuration) - Date.now();
+      var progress = parseInt((timeSpent / this.props.lastBuild.estimatedDuration) * 100, 10);
+      var formatTime = function(d) { return moment(d).from(moment(0), true); };
+      var widthStyle = {
+        width: progress + '%'
+      }
+      return (
+        <div className="buildProgress">
+          <div className="progress-bar-background">
+            <span className="bar" style={widthStyle}> </span>
+          </div>
+          <span className="label">{formatTime(timeLeft) + ' remaining'}</span>
+        </div>
+      );
     }
     else {
       return (<div className="buildProgress" />);
     }
-  }
-});
-
-var BuildProgressGraph = React.createClass({
-  getInitialState: function() {
-    return {};
-  },
-
-  componentDidMount: function() {
-    var self = this;
-    //Donut chart example
-    nv.addGraph(function() {
-      var formatTime = d3.time.format("%X");
-      var formatMinutes = function(d) { return moment(d).from(moment(0), true); };
-
-      var chart = nv.models.pieChart()
-      .x(function(d) { return d.label })
-      .y(function(d) { return d.value })
-      .showLabels(true)     //Display pie labels
-      .labelThreshold(.05)  //Configure the minimum slice size for labels to show up
-      .labelType("value") //Configure what type of data to show in the label. Can be "key", "value" or "percent"
-      .donut(true)          //Turn on Donut mode. Makes pie chart look tasty!
-      .donutRatio(0.35)     //Configure how big you want the donut hole size to be.
-      .showLegend(false)
-      .tooltips(false)
-      .valueFormat(formatMinutes)
-      .labelFormat(formatMinutes)
-      .color(['#FF800D', '#DDD'])
-      .donutLabelsOutside(true)
-      ;
-
-      d3.select(".buildProgress svg")
-      .datum(self.props.chartData)
-      .transition().duration(350)
-      .call(chart);
-
-      self.setState({
-        chart: chart
-      });
-      return chart;
-    });
-  },
-
-  componentWillReceiveProps: function(nextProps) {
-    if(this.state.chart) {
-      d3.select(".buildProgress svg").datum(nextProps.chartData).call(this.state.chart);
-    } else {
-      this.componentDidMount();
-    }
-  },
-
-  render: function() {
-    return (<div className="buildProgress"><svg/></div>);
   }
 });
 
@@ -305,7 +248,7 @@ var RecentCommits = React.createClass({
         <li key={item.commitId} className="commitMsg">
           {item.msg}
           <div className="commitTimeAndUser">
-            {item.user}, {moment(item.date).fromNow()}
+            <span className="user">{item.user}</span>, {moment(item.date).fromNow()}
           </div>
         </li>
       );
@@ -366,9 +309,6 @@ var Devices = React.createClass({
             result = result.substring(dashIndex + 1, result.length);
           }
           result = result.toLowerCase();
-          if(result !== '') {
-            result += ' -';
-          }
         }
 
         return result;
@@ -378,7 +318,7 @@ var Devices = React.createClass({
         var deviceLocation = editDeviceLocation(device.location);
         return (
           <tr className="deviceLine" key={device.id}>
-            <td className="deviceLocation">{deviceLocation}</td>
+            <td className="deviceLocation"><div>{deviceLocation}</div></td>
             <td className="deviceName">{device.name}</td>
           </tr>
         );

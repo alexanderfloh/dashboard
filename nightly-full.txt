@@ -117,4 +117,4 @@ detect when a browser is started or stopped, and update the radio buttons
 appropriately\no restore selection when the list of configurations
 changes\nDE7701\nReviewed by
 ErginS","paths":[{},{},{},{},{},{},{},{},{}],"revision":76805,"user":"Andy
-Schott"}]},"lastSuccessfulBuild":7041,"lastStableBuild":7041,"lastBuild":{"buildNumber":7041,"estimatedDuration":5576378,"timestamp":1400778010791,"building":false}} 
+Schott"}]},"lastSuccessfulBuild":7041,"lastStableBuild":7040,"lastBuild":{"buildNumber":7041,"estimatedDuration":5576378,"timestamp":1400778010791,"building":false}} 

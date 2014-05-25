@@ -50,8 +50,8 @@ object MockResponseGenerator {
             "culprits": $culprits,
             "changesetItems": $changeSetItems
           },
-          "lastSuccessfulBuild": 24838,
-          "lastStableBuild": 24838,
+          "lastSuccessfulBuild": 24837,
+          "lastStableBuild": 24837,
           "lastBuild": {
             "buildNumber": 24839,
             "estimatedDuration": 1365751,

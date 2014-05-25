@@ -25,10 +25,25 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 @green: #458B00;
 @yellow: #f1c40f;
 @red: #c0392b;
-@orange: #FF800D;
+@orange: #d35400;
+@midnight-blue: #2c3e50;
+
+@primary: @midnight-blue;
+// @primary: white;
+@secondary: @orange;
+
+
+
 
 @background: white;
-@labels: lighten(black, 60%);
+@labels: @secondary; // lighten(black, 60%);
+@icons: @primary;
+
+.circled {
+  border-radius: 50%;
+  background-clip: border-box;
+  background-color: @primary;
+}
 
 @grey: #616161;
 
@@ -49,10 +64,14 @@ header {
 
   h2 {
     .font-cursive;
-    font-size: 1em;
+    font-size: 2em;
     color: @labels;
     text-align: center;
   }
+}
+
+footer {
+  padding: 1em 0 0 0;
 }
 
 article {
@@ -63,13 +82,13 @@ article {
 }
 
 .left {
-  width: 50%;
+  width: 66%;
   display: inline-block;
   vertical-align: top;
 }
 
 .right {
-  width: 50%;
+  width: 33%;
   display: inline-block;
   vertical-align: top;
 }
@@ -91,12 +110,22 @@ article {
   display: inline-block;
 }
 
+section {
+  //background-color: #333;
+  //border: 1px solid black;
+}
+
+svg {
+  //.circled;
+  margin-bottom: 0.5em;
+}
+
 .build-status-container {
   min-height: 300px;
 
   section {
     display: inline-block;
-    width: 35%;
+    width: 50%;
     height: 100%;
     vertical-align: top;
     header {
@@ -104,18 +133,15 @@ article {
     }
   }
   .build-status-ci {
-    width: 65%;
+    width: 50%;
   }
 
   #moon {
-    width: 70px;
-    height: 70px;
-    margin: 15px;
-    fill: @grey;
+    fill: @icons;
   }
 
   #repeat {
-    fill: @grey;
+    fill: @icons;
   }
 
   .vertical-separator {
@@ -139,38 +165,41 @@ article {
       font-size: 1.5em;
       text-align: right;
       padding: 10px 0 0 0;
-      background-color: white;
-
-      &.stable {
-        color: @green;
-      }
-      &.successful {
-        color: @yellow;
-      }
-      &.failed {
-        color: @red;
-      }
+      background-color: transparent;
+      color: @primary;
+      .font-serif;
     }
   }
 
   .buildProgress {
-    display: inline-block;
-    width: 40%;
-    max-height: 200px;
-    vertical-align: top;
-    svg {
-      max-height: 200px;
-      display: inline-block;
+    margin: 0 1em;
+    text-align: right;
 
-      text {
-        .font-serif;
-        fill: @labels;
+    .progress-bar-background {
+      background-color: @primary;
+      text-align: left;
+      height: 0.2em;
+      margin: 0.5em 0;
+
+      .bar {
+        background-color: @secondary;
+        display: inline-block;
+        height: 1.2em;
+        margin: -1em 0 0 0;
       }
+    }
+    .label {
+      color: @primary;
+      font-size: 1.5em;
+      margin-top: 0.5em;
+      display: inline-block;
+      .font-serif;
     }
   }
 
   .culprits {
-    .font-sans;
+    .font-serif;
+    font-size: 1.1em;
     color: white;
     text-align: left;
     background-color: @red;
@@ -194,20 +223,22 @@ article {
 }
 
 .commit-message-container {
+  padding-top: 5em;
+
   #commit {
-    fill: @grey;
+    fill: @icons;
   }
   .commitMsgs {
-    font-size: 1.1;
-    color: @blue;
+    font-size: 1.1em;
+    color: @primary;
     .font-serif;
     text-align: left;
-    line-height: 1.3;
+    line-height: 1.4;
     margin-bottom: 10%;
     padding-left: 1em;
 
     .commitMsg {
-      border-left: 3px solid @blue;
+      border-left: 3px solid @secondary;
       padding-left: 0.5em;
       margin-bottom: 0.5em;
 
@@ -215,10 +246,16 @@ article {
         .font-cursive;
         font-size: 90%;
         text-align: right;
-        color: @labels;
+        color: @primary;
+
+        .user {
+          color: @secondary;
+          font-size: 1.5em;
+        }
 
         :first-of-type:before {
           content: '-';
+          color: @primary;
         }
       }
 
@@ -235,22 +272,29 @@ article {
   }
 
   .deviceName {
-    padding-left: 10px;
+    padding-left: 1em;
     text-align: left;
-    font-size: 1.5em;
-    color: @grey;
+    font-size: 2em;
+    color: @primary;
     width: 50%;
+    .font-serif;
   }
 
   .deviceLocation {
     color: @orange;
     .font-cursive;
     text-align: right;
-    font-size: 1em;
+    font-size: 1.5em;
     width: 50%;
+
+    div:not(:empty):after {
+      padding-left: 1em;
+      content: '-';
+      color: @primary;
+    }
   }
 
   #smartphone {
-    fill: @grey;
+    fill: @icons;
   }
 }
