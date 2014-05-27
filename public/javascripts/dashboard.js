@@ -337,7 +337,7 @@ var Devices = React.createClass({
               </g>
             </svg>
             <h2>
-              Device Renting
+              Device Rental
             </h2>
           </header>
           <table className="device">
