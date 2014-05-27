@@ -51,7 +51,6 @@ var Dashboard = React.createClass({
   },
 
   render: function() {
-    // <div className="vertical-separator" />
     return (
       <div>
         <div className="left">
@@ -84,6 +83,9 @@ var Dashboard = React.createClass({
           <Devices pollInterval={5000}/>
         </article>
         </div>
+        <footer className="global-footer">
+          <a href="/assets/DevicePusher/DevicePusher.UI.application" download="DevicePusher.UI.application">Download Device Pusher</a>
+        </footer>
       </div>
     );
   }
