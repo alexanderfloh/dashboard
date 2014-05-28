@@ -86,6 +86,7 @@ var Dashboard = React.createClass({
         </div>
       </div>
     );
+    
   }
 
 });
@@ -326,7 +327,26 @@ var Devices = React.createClass({
           </tr>
         );
       });
+      
+      var delay = 2000; // millisecond delay between cycles
+      function cycleThru() {
+        var len = $("table.device tr").length;
+        if (len > 0) {
+          var firstElem$ = $("table.device tr:eq(0)");
+          firstElem$
+            .animate({"opacity" : "1"} ,400)
+            .animate({"opacity" : "1"}, delay)
+            .animate({"opacity" : "0"}, 400, function() {
+              var parent$ = firstElem$.parent();
+              firstElem$.remove();
+              firstElem$.appendTo(parent$);
+              firstElem$.animate({"opacity" : "1"});
+            });
+        }
+      };
 
+      cycleThru();
+      
       return (
         <section>
           <header>
