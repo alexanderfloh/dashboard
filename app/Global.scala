@@ -3,6 +3,7 @@ import scala.io.Source
 import models.MobileDevice
 import play.Play
 import models.Location
+import play.Logger
 
 object Global extends GlobalSettings {
   override def onStart(app: play.api.Application) = {
@@ -10,10 +11,12 @@ object Global extends GlobalSettings {
     lines.foreach(line => {
       line.split(";") match {
         case Array(deviceName, deviceId) => {
-          if (MobileDevice.byDeviceId(deviceId) == None) {
-            MobileDevice.add(deviceName, deviceId, 0)
-          }
+          MobileDevice.byDeviceId(deviceId) match {
+            case Some(d) => MobileDevice.updateName(d, deviceName)
+            case None => MobileDevice.add(deviceName, deviceId, 0) 
+          } 
         }
+        case a => Logger.warn(s"ignoring line: $a")
       }
     })
 

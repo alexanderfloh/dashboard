@@ -51,7 +51,6 @@ var Dashboard = React.createClass({
   },
 
   render: function() {
-    // <div className="vertical-separator" />
     return (
       <div>
         <div className="left">
@@ -84,6 +83,9 @@ var Dashboard = React.createClass({
           <Devices pollInterval={5000}/>
         </article>
         </div>
+        <footer className="global-footer">
+          <a href="/assets/DevicePusher/DevicePusher.UI.application" download="DevicePusher.UI.application">Download Device Pusher</a>
+        </footer>
       </div>
     );
     
@@ -164,16 +166,22 @@ var BuildProgress = React.createClass({
       var timeSpent = Date.now() - this.props.lastBuild.timestamp;
       var timeLeft = (this.props.lastBuild.timestamp + this.props.lastBuild.estimatedDuration) - Date.now();
       var progress = parseInt((timeSpent / this.props.lastBuild.estimatedDuration) * 100, 10);
-      var formatTime = function(d) { return moment(d).from(moment(0), true); };
+      var formatTime = function(d) {
+        if(timeLeft > 0) {
+          return moment(d).from(moment(0), true) + ' remaining';
+        } else {
+          return 'any moment now...';
+        }
+      };
       var widthStyle = {
-        width: progress + '%'
+        width: Math.min(progress, 95) + '%'
       }
       return (
         <div className="buildProgress">
           <div className="progress-bar-background">
             <span className="bar" style={widthStyle}> </span>
           </div>
-          <span className="label">{formatTime(timeLeft) + ' remaining'}</span>
+          <span className="label">{formatTime(timeLeft)}</span>
         </div>
       );
     }
