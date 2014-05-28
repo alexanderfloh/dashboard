@@ -3,6 +3,7 @@ import scala.io.Source
 import models.MobileDevice
 import play.Play
 import models.Location
+import play.Logger
 
 object Global extends GlobalSettings {
   override def onStart(app: play.api.Application) = {
@@ -15,6 +16,7 @@ object Global extends GlobalSettings {
             case None => MobileDevice.add(deviceName, deviceId, 0) 
           } 
         }
+        case a => Logger.warn(s"ignoring line: $a")
       }
     })
 
