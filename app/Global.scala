@@ -10,9 +10,10 @@ object Global extends GlobalSettings {
     lines.foreach(line => {
       line.split(";") match {
         case Array(deviceName, deviceId) => {
-          if (MobileDevice.byDeviceId(deviceId) == None) {
-            MobileDevice.add(deviceName, deviceId, 0)
-          }
+          MobileDevice.byDeviceId(deviceId) match {
+            case Some(d) => MobileDevice.updateName(d, deviceName)
+            case None => MobileDevice.add(deviceName, deviceId, 0) 
+          } 
         }
       }
     })

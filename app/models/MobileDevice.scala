@@ -33,6 +33,12 @@ object MobileDevice {
       }
   }
 
+  def updateName(device: MobileDevice, newName: String) = DB.withConnection { implicit c =>
+    SQL("update device SET name = {newName} WHERE id = {id}")
+      .on('id -> device.id, 'newName -> newName)
+      .executeUpdate;
+  }
+
   def setLocation(device: MobileDevice, locationId: Long) = DB.withConnection { implicit c =>
     SQL("update device SET locationId = {location} WHERE id = {id}")
       .on('id -> device.id, 'location -> locationId)
