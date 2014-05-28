@@ -58,7 +58,7 @@ var Dashboard = React.createClass({
           <BuildStatusCI
             buildName="CI Build"
             url="http://lnz-bobthebuilder/hudson/job/SilkTest%20CI"
-            pollInterval={5000}
+            pollInterval={60 * 1000}
             buildResult={this.calculateBuildResult()}
             lastBuild={this.state.lastBuild}
             lastCompletedBuild={this.state.lastCompletedBuild} />
@@ -68,7 +68,7 @@ var Dashboard = React.createClass({
           <BuildStatusNightly
             buildName="Nightly Build"
             url="http://lnz-bobthebuilder/hudson/job/SilkTest"
-            pollInterval={5000} />
+            pollInterval={2 * 60 * 1000} />
         </article>
 
 
