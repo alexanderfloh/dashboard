@@ -18,6 +18,12 @@ import util.MockResponseGenerator
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsValue
 import play.api.libs.json.JsObject
+import play.api.libs.concurrent.Akka
+import play.api.Play.current
+import akka.pattern.ask
+import actors.GetResponseCi
+import akka.util.Timeout
+import scala.concurrent.duration._
 
 object Application extends Controller {
 
@@ -26,53 +32,15 @@ object Application extends Controller {
   }
 
   def fetchAll(baseUrl: String) = Action.async {
-    def fetchLastCompleted(baseUrl: String, buildNumber: Int): Future[JsObject] = {
-      val url = s"$baseUrl/$buildNumber/api/json?tree=culprits[fullName],changeSet[items[*]]"
-      WS.url(url).get.map { responseDetails =>
-        val json = Json.parse(responseDetails.body)
-        Json.obj(
-          "buildNumber" -> buildNumber,
-          "culprits" -> (json \ "culprits"),
-          "changesetItems" -> (json \ "changeSet" \ "items"))
-      }
-    }
-
-    def fetchLastBuild(baseUrl: String, buildNumber: Int): Future[JsObject] = {
-      val url = s"$baseUrl/$buildNumber/api/json"
-      WS.url(url).get.map { response =>
-        val json = Json.parse(response.body)
-        Json.obj(
-          "buildNumber" -> buildNumber,
-          "estimatedDuration" -> (json \ "estimatedDuration"),
-          "timestamp" -> (json \ "timestamp"),
-          "building" -> (json \ "building"))
-      }
-    }
-
     if (Play.current.configuration.getBoolean("dashboard.mockResponse").getOrElse(false)) {
       Future(Ok(MockResponseGenerator(baseUrl)))
     } else {
-
-      WS.url(baseUrl + "/api/json").get.flatMap { response =>
-        val json = Json.parse(response.body)
-        val lastCompletedBuild = (json \ "lastCompletedBuild" \ "number").as[Int]
-        val lastBuild = (json \ "lastBuild" \ "number").as[Int]
-        val lastSuccessfulBuild = (json \ "lastSuccessfulBuild" \ "number")
-        val lastStableBuild = (json \ "lastStableBuild" \ "number")
-
-        for {
-          lastCompletedDetails <- fetchLastCompleted(baseUrl, lastCompletedBuild)
-          lastBuildDetails <- fetchLastBuild(baseUrl, lastBuild)
-        } yield {
-          Ok(Json.obj(
-            "lastCompletedBuild" -> lastCompletedDetails,
-            "lastSuccessfulBuild" -> lastSuccessfulBuild,
-            "lastStableBuild" -> lastStableBuild,
-            "lastBuild" -> lastBuildDetails))
-        }
+      implicit val timeout = Timeout(5.seconds)
+      val router = Akka.system.actorSelection("/user/router")
+      router.ask(GetResponseCi).mapTo[String].map { response =>
+        Ok(response)
       }
     }
-    
   }
 
   def setDevice() = Action { implicit request =>
