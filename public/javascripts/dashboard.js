@@ -114,7 +114,7 @@ var Dashboard = React.createClass({
           changesetItems[i].msg = curr + "\u2026";
         }
       }
-        
+      
       return changesetItems;
     }
     
