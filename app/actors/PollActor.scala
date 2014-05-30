@@ -17,7 +17,7 @@ class PollActor extends Actor {
   val urlCi = Play.current.configuration.getString("dashboard.urlCi")
     .getOrElse(throw new RuntimeException("dashboard.urlCi not configured"))
   val urlNightly = Play.current.configuration.getString("dashboard.urlNightly")
-    .getOrElse(throw new RuntimeException("dashboard.urlNIghtly not configured"))
+    .getOrElse(throw new RuntimeException("dashboard.urlNightly not configured"))
 
   val router = context.actorSelection("/user/router")
 

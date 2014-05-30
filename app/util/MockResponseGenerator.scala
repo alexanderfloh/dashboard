@@ -6,9 +6,13 @@ import scala.io.Source
 import java.util.Date
 import scala.io.Codec
 
+trait BuildType
+case object CI extends BuildType
+case object Nightly extends BuildType
+
 object MockResponseGenerator {
-  def apply(url: String): String = url match {
-    case "http://lnz-bobthebuilder/hudson/job/SilkTest%20CI" => {
+  def apply(buildType: BuildType): String = buildType match {
+    case CI => {
       val changeSetItems =
         """[
       {
@@ -60,7 +64,7 @@ object MockResponseGenerator {
           }
         }"""
     }
-    case "http://lnz-bobthebuilder/hudson/job/SilkTest" =>
+    case Nightly =>
       Source.fromFile("nightly-full.txt").getLines.mkString
   }
 }

@@ -25,6 +25,8 @@ import actors.GetResponseCi
 import akka.util.Timeout
 import scala.concurrent.duration._
 import actors.GetResponseNightly
+import util.CI
+import util.Nightly
 
 object Application extends Controller {
 
@@ -33,9 +35,8 @@ object Application extends Controller {
   }
 
   def fetchAllCi = Action.async {
-    val baseUrl = ""
     if (Play.current.configuration.getBoolean("dashboard.mockResponse").getOrElse(false)) {
-      Future(Ok(MockResponseGenerator(baseUrl)))
+      Future(Ok(MockResponseGenerator(CI)))
     } else {
       implicit val timeout = Timeout(5.seconds)
       val router = Akka.system.actorSelection("/user/router")
@@ -46,9 +47,8 @@ object Application extends Controller {
   }
 
   def fetchAllNightly = Action.async {
-    val baseUrl = ""
     if (Play.current.configuration.getBoolean("dashboard.mockResponse").getOrElse(false)) {
-      Future(Ok(MockResponseGenerator(baseUrl)))
+      Future(Ok(MockResponseGenerator(Nightly)))
     } else {
       implicit val timeout = Timeout(5.seconds)
       val router = Akka.system.actorSelection("/user/router")
