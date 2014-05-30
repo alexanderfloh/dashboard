@@ -10,7 +10,7 @@ var LoadStatusMixin = {
 
   loadStatus: function() {
     $.ajax({
-      url: '/fetchAll/'+ encodeURIComponent(this.props.url),
+      url: '/fetchAll'+ encodeURIComponent(this.props.url),
       dataType: 'json',
       success: function(data1) {
         this.setState(data1);
@@ -45,7 +45,7 @@ var Dashboard = React.createClass({
 
   getDefaultProps: function() {
     return {
-      url: "http://lnz-bobthebuilder/hudson/job/SilkTest%20CI",
+      url: "CI",
       pollInterval: 5000
     };
   },
@@ -57,7 +57,7 @@ var Dashboard = React.createClass({
         <article className="build-status-container">
           <BuildStatusCI
             buildName="CI Build"
-            url="http://lnz-bobthebuilder/hudson/job/SilkTest%20CI"
+            url="CI"
             pollInterval={60 * 1000}
             buildResult={this.calculateBuildResult()}
             lastBuild={this.state.lastBuild}
@@ -67,7 +67,7 @@ var Dashboard = React.createClass({
 
           <BuildStatusNightly
             buildName="Nightly Build"
-            url="http://lnz-bobthebuilder/hudson/job/SilkTest"
+            url="Nightly"
             pollInterval={2 * 60 * 1000} />
         </article>
 
