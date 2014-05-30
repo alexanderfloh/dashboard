@@ -75,7 +75,7 @@ var Dashboard = React.createClass({
 
         <article className="commit-message-container">
           <RecentCommits
-            commits={this.state.lastCompletedBuild.changesetItems} />
+            commits={trimChangesetItems(this.state.lastCompletedBuild.changesetItems, 130)} />
         </article>
         </div>
         <div className="right">
@@ -88,6 +88,35 @@ var Dashboard = React.createClass({
         </footer>
       </div>
     );
+    
+    /**
+     * Trims commit messages greater than 'limit' chars. Truncates at first newline or last space
+     * before 'limit'. If no spaces, truncates at 'limit'. If commit message length is less than
+     * 'limit' it is left as it is.
+     */
+    function trimChangesetItems(changesetItems, limit) {
+      for (var i = 0; i < changesetItems.length; i++) {
+        var curr = changesetItems[i].msg;
+        if (curr.length > limit) {
+          var indexOfNewline = curr.indexOf("\n");
+          if (indexOfNewline > 0 && indexOfNewline < limit) {
+            curr = curr.substring(0, indexOfNewline);
+          } else {
+            var indexOfLastSpace = limit;
+            var space = ' ';
+            for (var j = 0; j < limit && j < curr.length; j++) {
+              if (curr[j] === space) {
+                indexOfLastSpace = j;
+              }
+            }
+            curr = curr.substring(0, indexOfLastSpace);
+          }
+          changesetItems[i].msg = curr + " . . .";
+        }
+      }
+        
+      return changesetItems;
+    }
     
   }
 
