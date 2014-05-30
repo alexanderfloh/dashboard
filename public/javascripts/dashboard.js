@@ -111,7 +111,7 @@ var Dashboard = React.createClass({
             }
             curr = curr.substring(0, indexOfLastSpace);
           }
-          changesetItems[i].msg = curr + " . . .";
+          changesetItems[i].msg = curr + "\u2026";
         }
       }
         
