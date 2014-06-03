@@ -367,9 +367,11 @@ var Devices = React.createClass({
       });
       
       var delay = 2000; // millisecond delay between cycles
-      function cycleThru() {
-        var len = $("table.device tr").length;
-        if (len > 0) {
+      var len = $("table.device tr").length;
+      if (len > 0) {
+        var lastElem$ = $("table.device tr:last");
+        var offset = lastElem$.offset();
+        if (offset.top > $(window).height()) {
           var firstElem$ = $("table.device tr:eq(0)");
           firstElem$
             .animate({"opacity" : "1"}, delay)
@@ -380,9 +382,7 @@ var Devices = React.createClass({
               firstElem$.animate({"opacity" : "1"});
             });
         }
-      };
-
-      cycleThru();
+      }
       
       return (
         <section>
