@@ -81,7 +81,9 @@ object Application extends Controller {
 
   def getDevices() = Action {
     implicit val jsonWrites = MobileDevice.jsonWrites
-    Ok(Json.toJson(MobileDevice.all))
+    val allDevices = MobileDevice.all
+    val allDevicesSortedByName = allDevices.sortWith((md1, md2) => (md1.name compareToIgnoreCase md2.name) < 0);
+    Ok(Json.toJson(allDevicesSortedByName))
   }
 
 }

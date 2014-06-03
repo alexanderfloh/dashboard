@@ -354,13 +354,14 @@ var Devices = React.createClass({
 
         return result;
       }
-
+      
       var deviceNodes = this.state.devices.map(function(device) {
         var deviceLocation = editDeviceLocation(device.location);
         return (
           <tr className="deviceLine" key={device.id}>
+          <td className="deviceName">{device.name}</td>
             <td className="deviceLocation"><div>{deviceLocation}</div></td>
-            <td className="deviceName">{device.name}</td>
+            
           </tr>
         );
       });
@@ -371,7 +372,6 @@ var Devices = React.createClass({
         if (len > 0) {
           var firstElem$ = $("table.device tr:eq(0)");
           firstElem$
-            .animate({"opacity" : "1"} ,400)
             .animate({"opacity" : "1"}, delay)
             .animate({"opacity" : "0"}, 400, function() {
               var parent$ = firstElem$.parent();
