@@ -401,6 +401,7 @@ var Devices = React.createClass({
             <h2>
               Device Rental
             </h2>
+            <span>({devices.length} connected)</span>
           </header>
           <table className="device">
             {deviceNodes}
