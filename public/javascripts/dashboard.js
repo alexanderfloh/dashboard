@@ -362,7 +362,7 @@ var Devices = React.createClass({
     },
     
     wrapAround: function(originalDevices, deviceIndex) {
-      var result = originalDevices;
+      var result = originalDevices.slice(0);
       var len = $("tr.deviceLine").length;
       if (len > 0) {
         var lastElem$ = $("tr.deviceLine:last");
