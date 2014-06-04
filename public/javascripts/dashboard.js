@@ -317,7 +317,8 @@ var RecentCommits = React.createClass({
 
 var Devices = React.createClass({
     getInitialState: function() {
-      return { devices: [] };
+      return { devices: [],
+        deviceIndex: -1 };
     },
 
     loadStatus: function() {
@@ -325,9 +326,10 @@ var Devices = React.createClass({
         url: '/getDevices/',
         dataType: 'json',
         success: function(data) {
-            this.setState({
-              devices: data
-            })
+          var newDeviceIndex = (this.state.deviceIndex + 1) % (data && data.length > 0 ? data.length : 1);
+          this.setState({
+            devices: data,
+            deviceIndex: newDeviceIndex});
         }.bind(this),
         error: function(xhr, status, err) {
           console.error(status, err.toString());
@@ -339,50 +341,53 @@ var Devices = React.createClass({
       this.loadStatus();
       setInterval(this.loadStatus, this.props.pollInterval);
     },
+    
+    editDeviceLocation: function(deviceLocation) {
+      var result = '';
+      if (deviceLocation) {
+        result = deviceLocation;
+        var dashIndex = result.indexOf("-");
+        if (dashIndex > -1) {
+          result = result.substring(dashIndex + 1, result.length);
+        }
+        result = result.toLowerCase();
+      }
+
+      return result;
+    },
+    
+    isOffscreen: function(elem$) {
+      var offset = elem$.offset();
+      return offset.top > $(window).height();
+    },
+    
+    wrapAround: function(originalDevices, deviceIndex) {
+      var result = originalDevices;
+      var len = $("tr.deviceLine").length;
+      if (len > 0) {
+        var lastElem$ = $("tr.deviceLine:last");
+        if (this.isOffscreen(lastElem$)) {
+          var first = result.splice(0, deviceIndex);
+          for (var i = 0; i < first.length; i++) {
+            result.push(first[i]);
+          }
+        }
+      }
+      return result;
+    },
 
     render: function() {
-      var editDeviceLocation = function(deviceLocation) {
-        var result = '';
-        if (deviceLocation) {
-          result = deviceLocation;
-          var dashIndex = result.indexOf("-");
-          if (dashIndex > -1) {
-            result = result.substring(dashIndex + 1, result.length);
-          }
-          result = result.toLowerCase();
-        }
-
-        return result;
-      }
-      
-      var deviceNodes = this.state.devices.map(function(device) {
-        var deviceLocation = editDeviceLocation(device.location);
+      var that = this;
+      var devices = this.wrapAround(this.state.devices, this.state.deviceIndex);
+      var deviceNodes = devices.map(function(device) {
+        var deviceLocation = that.editDeviceLocation(device.location);
         return (
-          <tr className="deviceLine" key={device.id}>
-          <td className="deviceName">{device.name}</td>
-            <td className="deviceLocation"><div>{deviceLocation}</div></td>
-            
-          </tr>
-        );
+            <tr className="deviceLine" key={device.id}>
+            <td className="deviceName">{device.name}</td>
+              <td className="deviceLocation"><div>{deviceLocation}</div></td>
+            </tr>
+          );
       });
-      
-      var delay = 2000; // millisecond delay between cycles
-      var len = $("table.device tr").length;
-      if (len > 0) {
-        var lastElem$ = $("table.device tr:last");
-        var offset = lastElem$.offset();
-        if (offset.top > $(window).height()) {
-          var firstElem$ = $("table.device tr:eq(0)");
-          firstElem$
-            .animate({"opacity" : "1"}, delay)
-            .animate({"opacity" : "0"}, 400, function() {
-              var parent$ = firstElem$.parent();
-              firstElem$.remove();
-              firstElem$.appendTo(parent$);
-              firstElem$.animate({"opacity" : "1"});
-            });
-        }
-      }
       
       return (
         <section>
