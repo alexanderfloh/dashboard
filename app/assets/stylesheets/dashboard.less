@@ -278,8 +278,20 @@ svg {
   .device {
     width: 100%;
   }
+  
+  .deviceLine:first-child td {
+    padding-top: 0px;
+    /*opacity: 0;*/
+    transition: padding-top 1s ease-in-out/*, opacity 2s 2s ease-in*/;
+  }
+  
+  .deviceLine td {
+    opacity: 1;
+    padding-top: 18px;
+  }
+  
   .deviceLine {
-    line-height: 1.5;
+    line-height: 1;
   }
 
   .deviceName {
