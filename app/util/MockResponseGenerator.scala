@@ -21,7 +21,7 @@ object MockResponseGenerator {
           "SilkTestClassic/src/startup/winclass.inc"
         ],
         "author" : {
-          "absoluteUrl" : "http://lnz-bobthebuilder/hudson/user/MichaelG",
+          "absoluteUrl" : "http://lnz-bobthebuilder/jenkins/user/MichaelG",
           "fullName" : "Michael Gehmayr"
         },
         "commitId" : "76695",
