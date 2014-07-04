@@ -304,7 +304,7 @@ var RecentCommits = React.createClass({
         </g>
         </svg>
           <h2>
-            Recent Commits
+            CI Build Commits
           </h2>
         </header>
         <ul className="commitMsgs">
