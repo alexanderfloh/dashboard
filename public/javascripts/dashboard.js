@@ -27,11 +27,13 @@ var LoadStatusMixin = {
   },
 
   calculateBuildResult: function() {
-    var isStable = this.state.lastStableBuild === this.state.lastCompletedBuild.buildNumber;
-    var isSuccessful = !isStable && this.state.lastSuccessfulBuild === this.state.lastCompletedBuild.buildNumber;
-    var isFailed = !isStable && !isSuccessful;
-    var resultString = isStable ? 'stable' : (isSuccessful ? 'unstable' : 'failed');
+    var isCancelled = this.state.lastCompletedBuild.result === undefined;
+    var isStable = !isCancelled && this.state.lastStableBuild === this.state.lastCompletedBuild.buildNumber;
+    var isSuccessful = !isCancelled && !isStable && this.state.lastSuccessfulBuild === this.state.lastCompletedBuild.buildNumber;
+    var isFailed = !isCancelled && !isStable && !isSuccessful;
+    var resultString = isCancelled ? 'cancelled' : (isStable ? 'stable' : (isSuccessful ? 'unstable' : 'failed'));
     return {
+      cancelled: isCancelled,
       stable: isStable,
       successful: isSuccessful,
       failed: isFailed,
@@ -166,7 +168,7 @@ var BuildStatusNightly = React.createClass({
         <header>
           <svg id="moon" x="0px" y="0px" width="100px" height="100px" viewBox="-10 -10 120 120">
             <g>
-            	<path d="M76.978,69.324c-25.586,0-46.313-20.74-46.313-46.314c0-8.422,2.417-16.211,6.348-23.01   C15.686,6.152,0,25.586,0,48.889C0,77.111,22.876,100,51.099,100C74.402,100,93.848,84.302,100,62.988   C93.188,66.906,85.4,69.324,76.978,69.324z"/>
+              <path d="M76.978,69.324c-25.586,0-46.313-20.74-46.313-46.314c0-8.422,2.417-16.211,6.348-23.01   C15.686,6.152,0,25.586,0,48.889C0,77.111,22.876,100,51.099,100C74.402,100,93.848,84.302,100,62.988   C93.188,66.906,85.4,69.324,76.978,69.324z"/>
             </g>
           </svg>
           <h2>
@@ -226,6 +228,7 @@ var BuildStatusTrafficLight = React.createClass({
     var classes = cx({
       'build-status' : true,
       'stable': this.props.buildResult.stable,
+      'cancelled': this.props.buildResult.cancelled,
       'successful': this.props.buildResult.successful,
       'failed': this.props.buildResult.failed,
       'ci': this.props.buildType === 'ci',
@@ -394,8 +397,8 @@ var Devices = React.createClass({
           <header>
             <svg id="smartphone" x="0px" y="0px" width="100px" height="100px" viewBox="0 0 100 100" enable-background="new 0 0 100 100">
               <g>
-              	<path d="M64.812,14.25H35.188c-4.418,0-8,3.582-8,8v55.5c0,4.418,3.582,8,8,8h29.625c4.418,0,8-3.582,8-8v-55.5   C72.812,17.831,69.23,14.25,64.812,14.25z M64.812,77.75H35.188v-55.5h29.625V77.75z"/>
-              	<circle cx="49.579" cy="70.85" r="4"/>
+                <path d="M64.812,14.25H35.188c-4.418,0-8,3.582-8,8v55.5c0,4.418,3.582,8,8,8h29.625c4.418,0,8-3.582,8-8v-55.5   C72.812,17.831,69.23,14.25,64.812,14.25z M64.812,77.75H35.188v-55.5h29.625V77.75z"/>
+                <circle cx="49.579" cy="70.85" r="4"/>
               </g>
             </svg>
             <h2>

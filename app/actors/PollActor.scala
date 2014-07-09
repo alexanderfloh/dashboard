@@ -78,10 +78,11 @@ class PollActor extends Actor {
   }
 
   def fetchLastCompleted(baseUrl: String, buildNumber: Int): Future[JsObject] = {
-    val url = s"$baseUrl/$buildNumber/api/json?tree=culprits[fullName],changeSet[items[*]]"
+    val url = s"$baseUrl/$buildNumber/api/json?tree=result,culprits[fullName],changeSet[items[*]]"
     WS.url(url).get.map { responseDetails =>
       val json = Json.parse(responseDetails.body)
       Json.obj(
+        "result" -> (json \ "result"),
         "buildNumber" -> buildNumber,
         "culprits" -> (json \ "culprits"),
         "changesetItems" -> (json \ "changeSet" \ "items"))
