@@ -27,7 +27,9 @@ var LoadStatusMixin = {
   },
 
   calculateBuildResult: function() {
-    var isCancelled = this.state.lastCompletedBuild.result === undefined;
+    var isCancelled = this.state.lastCompletedBuild.result === undefined || 
+                      this.state.lastCompletedBuild.result === "ABORTED";
+    console.log("this.state.lastCompletedBuild.result " + this.state.lastCompletedBuild.result)
     var isStable = !isCancelled && this.state.lastStableBuild === this.state.lastCompletedBuild.buildNumber;
     var isSuccessful = !isCancelled && !isStable && this.state.lastSuccessfulBuild === this.state.lastCompletedBuild.buildNumber;
     var isFailed = !isCancelled && !isStable && !isSuccessful;
