@@ -8,3 +8,11 @@ Displays information useful for developers on a team dashboard.
  - Mobile device location
  
  Queries the information from Jenkins and DevicePusher.
+ 
+ How to delete a device from the device database:
+ 
+ 1) On the command line: play h2-browser
+ 2) In the browser, connect to the device database (see prod.conf db.default.url)
+ 3) DELETE FROM DEVICE where DEVICEID = 'appropriate_id';
+ 
+ 
