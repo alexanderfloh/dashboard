@@ -27,7 +27,7 @@ var LoadStatusMixin = {
   },
 
   calculateBuildResult: function() {
-    var isCancelled = this.state.lastCompletedBuild.result === undefined || 
+    var isCancelled = this.state.lastCompletedBuild.result === undefined ||
                       this.state.lastCompletedBuild.result === "ABORTED";
     console.log("this.state.lastCompletedBuild.result " + this.state.lastCompletedBuild.result)
     var isStable = !isCancelled && this.state.lastStableBuild === this.state.lastCompletedBuild.buildNumber;
@@ -59,6 +59,11 @@ var Dashboard = React.createClass({
       <div>
         <div className="left">
         <article className="build-status-container">
+          <BuildStatusNightly
+            buildName="Nightly Build"
+            url="Nightly"
+            pollInterval={2 * 60 * 1000} />
+
           <BuildStatusCI
             buildName="CI Build"
             url="CI"
@@ -67,12 +72,6 @@ var Dashboard = React.createClass({
             lastBuild={this.state.lastBuild}
             lastCompletedBuild={this.state.lastCompletedBuild} />
 
-
-
-          <BuildStatusNightly
-            buildName="Nightly Build"
-            url="Nightly"
-            pollInterval={2 * 60 * 1000} />
         </article>
 
 
@@ -92,7 +91,7 @@ var Dashboard = React.createClass({
         </footer>
       </div>
     );
-    
+
     /**
      * Trims commit messages greater than 'limit' chars. Truncates at first newline or last space
      * before 'limit'. If no spaces, truncates at 'limit'. If commit message length is less than
@@ -118,16 +117,21 @@ var Dashboard = React.createClass({
           changesetItems[i].msg = curr + "\u2026";
         }
       }
-      
+
       return changesetItems;
     }
-    
+
   }
 
 });
 
 var BuildStatusCI = React.createClass({
   render: function() {
+    var testResults = {
+      //successful: true,
+      stable: true,
+      resultFormatted: 'stable',
+    };
     return (
       <section className="build-status-ci">
         <header>
@@ -146,6 +150,10 @@ var BuildStatusCI = React.createClass({
             buildResult={this.props.buildResult}
             buildType="ci"
           />
+
+
+          <TestStatusTrafficLight buildResult={testResults} />
+
 
           <Culprits
             isFailed={this.props.buildResult.failed}
@@ -245,6 +253,28 @@ var BuildStatusTrafficLight = React.createClass({
   }
 });
 
+var TestStatusTrafficLight = React.createClass({
+  render: function() {
+    var cx = React.addons.classSet;
+    var classes = cx({
+      'build-status' : true,
+      'stable': this.props.buildResult.stable,
+      'cancelled': this.props.buildResult.cancelled,
+      'successful': this.props.buildResult.successful,
+      'failed': this.props.buildResult.failed,
+      'ci': true,
+      'nightly': this.props.buildType === 'nightly'
+    });
+
+    return (
+      <div className={classes} id="test-status">
+        {this.props.buildResult.resultFormatted}
+      </div>
+    );
+  }
+});
+
+
 var Culprits = React.createClass({
   render: function() {
     var culpritNodes = this.props.culprits.map(function(item) {
@@ -271,7 +301,8 @@ var BuildStatistics = React.createClass({
   render: function() {
     var cx = React.addons.classSet;
     var classes = cx({
-      'buildstats' : true,
+      'build-status' : true,
+      'ci': true,
       'stable': this.props.buildResult.stable,
       'successful': this.props.buildResult.successful,
       'failed': this.props.buildResult.failed,
@@ -286,13 +317,16 @@ var BuildStatistics = React.createClass({
 
 var RecentCommits = React.createClass({
   render: function() {
-    var commitNodes = this.props.commits.map(function(item) {
+    var uniqueCommitters = this.props.commits.map(function(item) {
+      return item.user;
+    }).filter(function(elem, pos, self) {
+      return self.indexOf(elem) == pos;
+    });
+
+    var commitNodes = uniqueCommitters.map(function(item) {
       return (
-        <li key={item.commitId} className="commitMsg">
-          {item.msg}
-          <div className="commitTimeAndUser">
-            <span className="user">{item.user}</span>, {moment(item.date).fromNow()}
-          </div>
+        <li key={item} className="commitMsg">
+          <span className="user">{item}</span>
         </li>
       );
     });
@@ -346,7 +380,7 @@ var Devices = React.createClass({
       this.loadStatus();
       setInterval(this.loadStatus, this.props.pollInterval);
     },
-    
+
     editDeviceLocation: function(deviceLocation) {
       var result = '';
       if (deviceLocation) {
@@ -360,12 +394,12 @@ var Devices = React.createClass({
 
       return result;
     },
-    
+
     isOffscreen: function(elem$) {
       var offset = elem$.offset();
       return offset.top > $(window).height();
     },
-    
+
     wrapAround: function(originalDevices, deviceIndex) {
       var result = originalDevices.slice(0);
       var len = $("tr.deviceLine").length;
@@ -393,7 +427,7 @@ var Devices = React.createClass({
             </tr>
           );
       });
-      
+
       return (
         <section>
           <header>
