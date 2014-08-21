@@ -4,9 +4,31 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
   var LoadStatusMixin = {
     getInitialState: function() {
       return {
-        lastCompletedBuild: { culprits: [], changesetItems: [] },
-        lastBuild: {}
+        building: {
+          number: 1236,
+          committers: ['reinholdD', 'maxP'],
+          started: 123891248274,
+          estimatedDuration: 60000
+        },
+        builds: [
+          {
+            number: 1234,
+            status: 'unstable',
+            committers: ['stefanS', 'alexanderF'],
+            tests: 'passed'
+          },
+          {
+            number: 1235,
+            status: 'stable',
+            committers: ['reinholdD', 'alexanderF', 'maxP'],
+            tests: 'pending'
+          }
+        ]
       };
+      // return {
+      //   lastCompletedBuild: { culprits: [], changesetItems: [] },
+      //   lastBuild: {}
+      // };
     },
 
     loadStatus: function() {
@@ -23,8 +45,8 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
     },
 
     componentWillMount: function() {
-      this.loadStatus();
-      setInterval(this.loadStatus, this.props.pollInterval);
+      //this.loadStatus();
+      //setInterval(this.loadStatus, this.props.pollInterval);
     },
 
     calculateBuildResult: function() {
@@ -55,38 +77,68 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
     },
 
     render: function() {
+      var buildNodes = this.state.builds.map(function(build) {
+        var committerNodes = build.committers.map(function(committer) {
+          return (<li key={committer}>{committer}</li>);
+        });
+
+        var cx = React.addons.classSet;
+        var classesStatus = cx({
+          'status': true,
+          'stable': build.status === 'stable',
+          'cancelled': build.status === 'cancelled',
+          'unstable': build.status === 'unstable',
+          'failed': build.status === 'failed'
+        });
+
+        var classesTestResults = cx({
+          'tests': true,
+          'stable': build.tests === 'passed',
+          'unstable': build.tests === 'failed',
+          'pending' : build.tests === 'pending'
+        });
+
+        return (
+          <section key={build.number}>
+          <div className={classesStatus}>
+            {build.number}
+          </div>
+          <ul className="committers">
+            {committerNodes}
+          </ul>
+          <div className={classesTestResults}>
+            {build.tests}
+          </div>
+          </section>
+        );
+      });
+
+      var pendingCommitterNodes = this.state.building ? (
+        this.state.building.committers.map(function(committer) {
+          return (<li key={committer}>{committer}</li>);
+        })
+      ) : null;
+
+      var pendingBuildNode = this.state.building ? (
+        <section key={this.state.building.number}>
+        <div className="status pending">
+          {this.state.building.number}
+        </div>
+        <ul className="committers">
+          {pendingCommitterNodes}
+        </ul>
+        <div className="tests pending">
+          pending
+        </div>
+        </section>
+      ) : null;
+
       return (
         <div>
-          <div className="left">
-          <article className="build-status-container">
-            <BuildStatusCI
-              buildName="CI Build"
-              url="CI"
-              pollInterval={60 * 1000}
-              buildResult={this.calculateBuildResult()}
-              lastBuild={this.state.lastBuild}
-              lastCompletedBuild={this.state.lastCompletedBuild} />
-
-
-
-            <BuildStatusNightly
-              buildName="Nightly Build"
-              url="Nightly"
-              pollInterval={2 * 60 * 1000} />
+          <article>
+          {buildNodes}
+          {pendingBuildNode}
           </article>
-
-
-
-          <article className="commit-message-container">
-            <RecentCommits
-              commits={trimChangesetItems(this.state.lastCompletedBuild.changesetItems, 130)} />
-          </article>
-          </div>
-          <div className="right">
-          <article className="device-container">
-            <Devices pollInterval={5000}/>
-          </article>
-          </div>
           <footer className="global-footer">
             <a href="/assets/DevicePusher/DevicePusher.UI.application" download="DevicePusher.UI.application">Download Device Pusher</a>
           </footer>
@@ -144,8 +196,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
           <div className="status-details">
             <BuildStatusTrafficLight
               buildResult={this.props.buildResult}
-              buildType="ci"
-            />
+              buildType="ci" />
 
             <Culprits
               isFailed={this.props.buildResult.failed}

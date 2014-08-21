@@ -7,7 +7,7 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
 @import url(http://fonts.googleapis.com/css?family=Roboto+Slab);
 
 body {
-  overflow: hidden;
+  //overflow: hidden;
 }
 
 .font-sans {
@@ -26,12 +26,13 @@ body {
 }
 
 @grey: #CCCCCC;
-@blue: #3498DB;
+//@blue: #3498DB;
 @green: #458B00;
 @yellow: #f1c40f;
 @red: #c0392b;
 @orange: #d35400;
 @midnight-blue: #2c3e50;
+@blue: #2980b9;
 
 @primary: @midnight-blue;
 // @primary: white;
@@ -63,22 +64,6 @@ body {
   .font-sans;
 }
 
-header {
-  padding-top: 2em;
-  padding-bottom: 2em;
-
-  h2 {
-    .font-cursive;
-    font-size: 2em;
-    color: @labels;
-    text-align: center;
-  }
-}
-
-footer {
-  padding: 1em 0 0 0;
-}
-
 .global-footer {
   margin-top: 5em;
   padding: 2em;
@@ -91,29 +76,41 @@ footer {
 }
 
 article {
-  display: inline-block;
-  vertical-align:top;
-  text-align: center;
+  display: block;
   width: 100%;
-}
+  //background-color: darken(white, 20%);
 
-.left {
-  width: 66%;
-  display: inline-block;
-  vertical-align: top;
-}
+  section {
+    display: inline-block;
+    margin: 1em;
+    background-color: @background;
 
-.right {
-  width: 33%;
-  display: inline-block;
-  vertical-align: top;
+    .status {
+      display: block;
+      width: 100%;
+      text-align: center;
+      font-size: 4em;
+      padding: 0.2em 1em 0.2em 1em;
+    }
+
+    .committers {
+      min-height: 5em;
+      padding: 0.2em 1em 0.2em 1em;
+    }
+
+    .tests {
+      text-align: center;
+      font-size: 4em;
+      padding: 0.2em 1em 0.2em 1em;
+    }
+  }
 }
 
 .stable {
   background-color: @green;
   color: white;
 }
-.successful {
+.unstable {
   background-color: @yellow;
   color: white;
 }
@@ -125,203 +122,7 @@ article {
   background-color: @grey;
   color: white;
 }
-
-.status-details {
-  display: inline-block;
-}
-
-section {
-  //background-color: #333;
-  //border: 1px solid black;
-}
-
-svg {
-  //.circled;
-  margin-bottom: 0.5em;
-}
-
-.build-status-container {
-  min-height: 300px;
-
-  section {
-    display: inline-block;
-    width: 50%;
-    height: 100%;
-    vertical-align: top;
-    header {
-      min-height: 100px;
-    }
-  }
-  .build-status-ci {
-    width: 50%;
-  }
-
-  #moon {
-    fill: @icons;
-  }
-
-  #repeat {
-    fill: @icons;
-  }
-
-  .vertical-separator {
-    display: inline-block;
-    border-right: 1px solid #555;
-    height: 60%;
-    margin: 10px 10px -20px 10px;
-
-  }
-
-  .build-status {
-    .font-sans;
-    text-align: center;
-    padding: 10px;
-
-    &.ci {
-      font-size: 5em;
-    }
-
-    &.nightly {
-      font-size: 1.5em;
-      text-align: right;
-      padding: 10px 0 0 0;
-      background-color: transparent;
-      color: @primary;
-      .font-serif;
-    }
-  }
-
-  .buildProgress {
-    margin: 0 1em;
-    text-align: right;
-
-    .progress-bar-background {
-      background-color: @primary;
-      text-align: left;
-      height: 0.2em;
-      margin: 0.5em 0;
-
-      .bar {
-        background-color: @secondary;
-        display: inline-block;
-        height: 1.2em;
-        margin: -1em 0 0 0;
-      }
-    }
-    .label {
-      color: @primary;
-      font-size: 1.5em;
-      margin-top: 0.5em;
-      display: inline-block;
-      .font-serif;
-    }
-  }
-
-  .culprits {
-    .font-serif;
-    font-size: 1.1em;
-    color: white;
-    text-align: left;
-    background-color: @red;
-    padding: 1em;
-
-    h2 {
-      .font-cursive;
-    }
-
-    li {
-      line-height: 1.4;
-    }
-  }
-
-  .buildstats {
-    .font-sans;
-    font-size: 5em;
-    text-align: center;
-    padding: 10px;
-  }
-}
-
-.commit-message-container {
-  padding-top: 5em;
-
-  #commit {
-    fill: @icons;
-  }
-  .commitMsgs {
-    font-size: 1.6em;
-    color: @primary;
-    .font-serif;
-    text-align: left;
-    line-height: 1.4;
-    margin-bottom: 10%;
-    padding-left: 1em;
-
-    .commitMsg {
-      border-left: 3px solid @secondary;
-      padding-left: 0.5em;
-      margin-bottom: 0.5em;
-
-      .commitTimeAndUser {
-        .font-cursive;
-        font-size: 90%;
-        text-align: right;
-        color: @primary;
-
-        .user {
-          color: @secondary;
-          font-size: 1.5em;
-        }
-
-        :first-of-type:before {
-          content: '-';
-          color: @primary;
-        }
-      }
-
-    }
-  }
-}
-
-.device-container {
-  .device {
-    width: 100%;
-  }
-  
-  .deviceLine:first-child td {
-    padding-top: 0px;
-    /*opacity: 0;*/
-    transition: padding-top 1s ease-in-out/*, opacity 2s 2s ease-in*/;
-    -webkit-transition: padding-top 1s ease-in-out/*, opacity 2s 2s ease-in*/;
-  }
-  
-  .deviceLine td {
-    opacity: 1;
-    padding-top: 18px;
-  }
-  
-  .deviceLine {
-    line-height: 1;
-  }
-
-  .deviceName {
-    padding-right: 1em;
-    text-align: right;
-    font-size: 2em;
-    color: @primary;
-    width: 65%;
-    .font-serif;
-  }
-
-  .deviceLocation {
-    color: @orange;
-    .font-cursive;
-    text-align: left;
-    font-size: 1.5em;
-    width: 35%;
-  }
-
-  #smartphone {
-    fill: @icons;
-  }
+.pending {
+  background-color: @grey;
+  color: white;
 }
