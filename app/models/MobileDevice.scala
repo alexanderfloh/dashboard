@@ -21,7 +21,7 @@ object MobileDevice {
   def byDeviceId(deviceId: String): Option[MobileDevice] = DB.withConnection { implicit c =>
     SQL("select * from device where deviceId = {deviceId}")
       .on('deviceId -> deviceId)
-      .singleOpt(mobileDevice)
+      .as(mobileDevice.singleOpt)
   }
 
   def add(name: String, deviceId: String, locationId: Long) = DB.withConnection { implicit c =>

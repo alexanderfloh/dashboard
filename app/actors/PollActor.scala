@@ -8,6 +8,7 @@ import play.api.libs.json.JsObject
 import play.api.libs.json.Json
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.libs.ws.WS
+import play.api.Play.current
 import akka.routing.Broadcast
 
 case object PollCi
