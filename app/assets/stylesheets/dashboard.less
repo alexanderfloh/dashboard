@@ -33,6 +33,7 @@ body {
 @orange: #d35400;
 @midnight-blue: #2c3e50;
 @blue: #2980b9;
+@asbestos: #e0e0e0;
 
 @primary: @midnight-blue;
 // @primary: white;
@@ -41,7 +42,7 @@ body {
 
 
 
-@background: white;
+@background: #757575;
 @labels: @secondary; // lighten(black, 60%);
 @icons: @primary;
 
@@ -78,51 +79,79 @@ body {
 article {
   display: block;
   width: 100%;
+
   //background-color: darken(white, 20%);
 
   section {
     display: inline-block;
     margin: 1em;
-    background-color: @background;
+    //background-color: @background;
+    background-color: @asbestos;
 
     .status {
       display: block;
       width: 100%;
-      text-align: center;
       font-size: 4em;
-      padding: 0.2em 1em 0.2em 1em;
+      padding: 0.2em 1em 0.2em 0em;
+      color: @background;
+    }
+
+    .status:before {
+      content: "";
+      margin: 15px 0.1em 10px 0px;
+      padding-right: 0.2em;
     }
 
     .committers {
       min-height: 5em;
       padding: 0.2em 1em 0.2em 1em;
+
+      .avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background-size: contain;
+        display: inline-block;
+        margin: 5px;
+      }
     }
 
     .tests {
-      text-align: center;
+      color: @background;
       font-size: 4em;
-      padding: 0.2em 1em 0.2em 1em;
+      padding: 0.2em 0.2em 0.2em 0em;
+    }
+
+    .tests:before {
+      content: "";
+      margin: 15px 0.1em 10px 0px;
+      padding-right: 0.2em;
     }
   }
 }
 
-.stable {
-  background-color: @green;
-  color: white;
+.stable{
+
+  //background-color: @green;
+  //color: @background;
 }
-.unstable {
-  background-color: @yellow;
-  color: white;
+.stable:before {
+  background: @green;
 }
-.failed {
-  background-color: @red;
-  color: white;
+
+.unstable:before {
+  //background-color: @yellow;
+  background: @yellow;
 }
-.cancelled {
-  background-color: @grey;
-  color: white;
+.failed:before {
+  //background-color: @red;
+  background: @red;
 }
-.pending {
-  background-color: @grey;
-  color: white;
+.cancelled:before {
+  //background-color: @grey;
+  background: @grey;
+}
+.pending:before {
+  //background-color: @grey;
+  background: @blue;
 }

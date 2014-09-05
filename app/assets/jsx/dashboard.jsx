@@ -6,21 +6,27 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       return {
         building: {
           number: 1236,
-          committers: ['reinholdD', 'maxP'],
+          committers: ['reinholdd', 'maxP'],
           started: 123891248274,
           estimatedDuration: 60000
         },
         builds: [
           {
+            number: 1233,
+            status: 'failed',
+            committers: ['stefanS', 'alexanderfl'],
+            tests: 'failed'
+          },
+          {
             number: 1234,
             status: 'unstable',
-            committers: ['stefanS', 'alexanderF'],
+            committers: ['stefanS', 'alexanderfl'],
             tests: 'passed'
           },
           {
             number: 1235,
             status: 'stable',
-            committers: ['reinholdD', 'alexanderF', 'maxP'],
+            committers: ['reinholdd', 'alexanderfl', 'maxP'],
             tests: 'pending'
           }
         ]
@@ -79,7 +85,11 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
     render: function() {
       var buildNodes = this.state.builds.map(function(build) {
         var committerNodes = build.committers.map(function(committer) {
-          return (<li key={committer}>{committer}</li>);
+          var avatarUrlStyle = {
+            background: 'url(/assets/images/avatars/' + committer + '.jpg)',
+            backgroundSize: 'contain'
+          };
+          return (<div className="avatar" style={avatarUrlStyle} key={committer} ></div>);
         });
 
         var cx = React.addons.classSet;
@@ -100,12 +110,12 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
 
         return (
           <section key={build.number}>
+          <div className="committers">
+            {committerNodes}
+          </div>
           <div className={classesStatus}>
             {build.number}
           </div>
-          <ul className="committers">
-            {committerNodes}
-          </ul>
           <div className={classesTestResults}>
             {build.tests}
           </div>
@@ -121,12 +131,12 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
 
       var pendingBuildNode = this.state.building ? (
         <section key={this.state.building.number}>
-        <div className="status pending">
-          {this.state.building.number}
-        </div>
         <ul className="committers">
           {pendingCommitterNodes}
         </ul>
+        <div className="status pending">
+          {this.state.building.number}
+        </div>
         <div className="tests pending">
           pending
         </div>
