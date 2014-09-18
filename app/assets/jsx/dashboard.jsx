@@ -12,6 +12,12 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         },
         builds: [
           {
+            number: 1232,
+            status: 'stable',
+            committers: ['stefanS', 'alexanderfl', 'reinholdD', 'maxP'],
+            tests: 'passed'
+          },
+          {
             number: 1233,
             status: 'failed',
             committers: ['stefanS', 'alexanderfl'],
@@ -19,13 +25,13 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
           },
           {
             number: 1234,
-            status: 'unstable',
+            status: 'stable',
             committers: ['stefanS', 'alexanderfl'],
             tests: 'passed'
           },
           {
             number: 1235,
-            status: 'stable',
+            status: 'unstable',
             committers: ['reinholdd', 'alexanderfl', 'maxP'],
             tests: 'pending'
           }
@@ -87,7 +93,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         var committerNodes = build.committers.map(function(committer) {
           var avatarUrlStyle = {
             background: 'url(/assets/images/avatars/' + committer + '.jpg)',
-            backgroundSize: 'contain'
+            backgroundSize: 'cover'
           };
           return (<div className="avatar" style={avatarUrlStyle} key={committer} ></div>);
         });
@@ -110,11 +116,12 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
 
         return (
           <section key={build.number}>
+          {build.number}
           <div className="committers">
             {committerNodes}
           </div>
           <div className={classesStatus}>
-            {build.number}
+            {build.status}
           </div>
           <div className={classesTestResults}>
             {build.tests}
@@ -125,17 +132,22 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
 
       var pendingCommitterNodes = this.state.building ? (
         this.state.building.committers.map(function(committer) {
-          return (<li key={committer}>{committer}</li>);
+          var avatarUrlStyle = {
+            background: 'url(/assets/images/avatars/' + committer + '.jpg)',
+            backgroundSize: 'cover'
+          };
+          return (<div className="avatar" style={avatarUrlStyle} key={committer} ></div>);
         })
       ) : null;
 
       var pendingBuildNode = this.state.building ? (
         <section key={this.state.building.number}>
-        <ul className="committers">
+        {this.state.building.number}
+        <div className="committers">
           {pendingCommitterNodes}
-        </ul>
+        </div>
         <div className="status pending">
-          {this.state.building.number}
+          pending
         </div>
         <div className="tests pending">
           pending
@@ -143,15 +155,17 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         </section>
       ) : null;
 
+      //<footer className="global-footer">
+      //  <a href="/assets/DevicePusher/DevicePusher.UI.application" download="DevicePusher.UI.application">Download Device Pusher</a>
+      //</footer>
+
       return (
         <div>
           <article>
           {buildNodes}
           {pendingBuildNode}
           </article>
-          <footer className="global-footer">
-            <a href="/assets/DevicePusher/DevicePusher.UI.application" download="DevicePusher.UI.application">Download Device Pusher</a>
-          </footer>
+
         </div>
       );
 

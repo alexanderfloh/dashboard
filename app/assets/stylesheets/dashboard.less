@@ -63,6 +63,20 @@ body {
 body {
   background-color: @background;
   .font-sans;
+  margin-left: -1000px;
+}
+
+body:before {
+  content: '';
+  //margin: 15px 0.1em 10px 0px;
+  //padding-right: 0.2em;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 150px;
+  bottom: 0px;
+  z-index: 9999;
+  background-image: -webkit-linear-gradient(left, @background 25%, transparent);
 }
 
 .global-footer {
@@ -79,21 +93,25 @@ body {
 article {
   display: block;
   width: 100%;
-
+  text-align: right;
   //background-color: darken(white, 20%);
 
   section {
+    text-align: left;
     display: inline-block;
     margin: 1em;
-    //background-color: @background;
-    background-color: @asbestos;
+    background-color: white;
+    //background-color: @asbestos;
+    color: #424242;
+    font-size: 2em;
 
     .status {
-      display: block;
-      width: 100%;
-      font-size: 4em;
-      padding: 0.2em 1em 0.2em 0em;
-      color: @background;
+      //display: block;
+      //width: 100%;
+      font-size: 2em;
+      padding: 0.2em 0.2em 0.2em 0em;
+      //color: @background;
+      margin: 5px 0px 5px 0px;
     }
 
     .status:before {
@@ -101,9 +119,8 @@ article {
       margin: 15px 0.1em 10px 0px;
       padding-right: 0.2em;
     }
-
     .committers {
-      min-height: 5em;
+      //min-height: 5em;
       padding: 0.2em 1em 0.2em 1em;
 
       .avatar {
@@ -113,13 +130,33 @@ article {
         background-size: contain;
         display: inline-block;
         margin: 5px;
+        -webkit-transition:all .4s;
+        -moz-transition:all .4s;
+        -ms-transition:all .4s;
+        -o-transition:all .4s;
+        transition:all .4s;
+      }
+      .avatar:not(:hover) {
+        -webkit-filter:grayscale(100%);
+        -moz-filter:grayscale(100%);
+        -ms-filter:grayscale(100%);
+        -o-filter:grayscale(100%);
+        filter:grayscale(100%);
+      }
+      .avatar & :hover {
+        -webkit-filter:grayscale(0%);
+        -moz-filter:grayscale(0%);
+        -ms-filter:grayscale(0%);
+        -o-filter:grayscale(0%);
+        filter:grayscale(0%);
       }
     }
 
     .tests {
-      color: @background;
-      font-size: 4em;
+      //color: @background;
+      font-size: 2em;
       padding: 0.2em 0.2em 0.2em 0em;
+      margin: 5px 0px 5px 0px;
     }
 
     .tests:before {
@@ -127,21 +164,41 @@ article {
       margin: 15px 0.1em 10px 0px;
       padding-right: 0.2em;
     }
+    .tests:after {
+      content: 'Tests';
+      display: block;
+      font-size: 0.3em;
+      text-align: right;
+      font-weight: bold;
+    }
+    .status:after {
+      content: 'Build';
+      display: block;
+      font-size: 0.3em;
+      text-align: right;
+      font-weight: bold;
+    }
   }
 }
 
 .stable{
-
+//  background: #aed581;
   //background-color: @green;
   //color: @background;
 }
-.stable:before {
+.stable:before, {
   background: @green;
+}
+.unstable {
+//  background: #ffee58;
 }
 
 .unstable:before {
   //background-color: @yellow;
-  background: @yellow;
+  background: #fbc02d;
+}
+.failed {
+//  background: #f36c60;
 }
 .failed:before {
   //background-color: @red;
@@ -151,7 +208,10 @@ article {
   //background-color: @grey;
   background: @grey;
 }
+.pending {
+//  background: #91a7ff;
+}
 .pending:before {
   //background-color: @grey;
-  background: @blue;
+  background: #455ede;
 }
