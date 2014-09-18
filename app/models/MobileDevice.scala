@@ -11,7 +11,8 @@ case class MobileDevice(
   id: Long,
   name: String,
   deviceId: String,
-  locationId: Long)
+  locationId: Long,
+  osType: String)
 
 object MobileDevice {
   def all: List[MobileDevice] = DB.withConnection { implicit c =>
@@ -24,18 +25,18 @@ object MobileDevice {
       .as(mobileDevice.singleOpt)
   }
 
-  def add(name: String, deviceId: String, locationId: Long) = DB.withConnection { implicit c =>
-    SQL("insert into device (name, deviceId, locationId) values ({name}, {deviceId}, {locationId})")
-      .on('name -> name, 'deviceId -> deviceId, 'locationId -> locationId)
+  def add(name: String, deviceId: String, locationId: Long, osType: String) = DB.withConnection { implicit c =>
+    SQL("insert into device (name, deviceId, locationId, osType) values ({name}, {deviceId}, {locationId}, {osType})")
+      .on('name -> name, 'deviceId -> deviceId, 'locationId -> locationId, 'osType -> osType)
       .executeInsert() match {
-        case Some(id) => MobileDevice(id, name, deviceId, locationId)
+        case Some(id) => MobileDevice(id, name, deviceId, locationId, osType)
         case None => throw new RuntimeException("insert failed")
       }
   }
 
-  def updateName(device: MobileDevice, newName: String) = DB.withConnection { implicit c =>
+  def updateName(device: MobileDevice, newName: String, osType: String) = DB.withConnection { implicit c =>
     SQL("update device SET name = {newName} WHERE id = {id}")
-      .on('id -> device.id, 'newName -> newName)
+      .on('id -> device.id, 'newName -> newName, 'osType -> osType)
       .executeUpdate;
   }
 
@@ -49,8 +50,9 @@ object MobileDevice {
     get[Long]("id") ~
       get[String]("name") ~
       get[String]("deviceId") ~
-      get[Long]("locationId") map {
-        case id ~ name ~ deviceId ~ locationId => MobileDevice(id, name, deviceId, locationId)
+      get[Long]("locationId") ~
+      get[String]("osType") map {
+        case id ~ name ~ deviceId ~ locationId ~ osType => MobileDevice(id, name, deviceId, locationId, osType)
       }
   }
 
@@ -59,6 +61,7 @@ object MobileDevice {
       "id" -> d.id,
       "name" -> d.name,
       "deviceId" -> d.deviceId,
-      "location" -> Location.byId(d.locationId).map(_.name))
+      "location" -> Location.byId(d.locationId).map(_.name),
+      "osType" -> d.osType)
   })
 }

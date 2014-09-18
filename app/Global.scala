@@ -19,10 +19,10 @@ object Global extends GlobalSettings {
     val lines = Source.fromFile("conf/devices").getLines
     lines.foreach(line => {
       line.split(";") match {
-        case Array(deviceName, deviceId) => {
+        case Array(deviceName, deviceId, osType) => {
           MobileDevice.byDeviceId(deviceId) match {
-            case Some(d) => MobileDevice.updateName(d, deviceName)
-            case None => MobileDevice.add(deviceName, deviceId, 0) 
+            case Some(d) => MobileDevice.updateName(d, deviceName, osType)
+            case None => MobileDevice.add(deviceName, deviceId, 0, osType) 
           } 
         }
         case a => Logger.warn(s"ignoring line: $a")

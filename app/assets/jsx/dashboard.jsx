@@ -386,9 +386,10 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         var devices = this.wrapAround(this.state.devices, this.state.deviceIndex);
         var deviceNodes = devices.map(function(device) {
           var deviceLocation = that.editDeviceLocation(device.location);
+          var classString = " deviceName " + device.osType;
           return (
               <tr className="deviceLine" key={device.id}>
-              <td className="deviceName">{device.name}</td>
+              <td className={classString}>{device.name}</td>
                 <td className="deviceLocation"><div>{deviceLocation}</div></td>
               </tr>
             );

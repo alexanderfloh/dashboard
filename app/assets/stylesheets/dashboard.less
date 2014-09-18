@@ -311,6 +311,14 @@ svg {
     color: @primary;
     width: 65%;
     .font-serif;
+    background-repeat: no-repeat;
+    background-position: right;
+    &.android {
+      background-image: url('../images/android-logo.png');
+    }
+    &.ios {
+      background-image: url('../images/apple-logo.jpg');
+    }
   }
 
   .deviceLocation {
