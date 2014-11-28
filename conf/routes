@@ -7,6 +7,7 @@ GET   /                 controllers.Application.index
 
 GET   /fetchAllCI    controllers.Application.fetchAllCi
 GET   /fetchAllNightly    controllers.Application.fetchAllNightly
+GET   /builds        controllers.Application.builds()
 
 GET   /getDevices/   controllers.Application.getDevices()
 

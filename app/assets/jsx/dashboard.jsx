@@ -3,14 +3,16 @@
 define(['react', 'jquery', 'moment'], function(React, $, Moment) {
   var LoadStatusMixin = {
     getInitialState: function() {
+      
       return {
         building: {
           number: 1236,
-          committers: ['reinholdd', 'maxP'],
-          started: 123891248274,
+          authors: [{id: 'reinholdd'}, {id: 'maxP'}],
+          started: Date.now() - (5 * 60 * 60 * 1000),
           estimatedDuration: 60000
         },
         builds: [
+        /*
           {
             number: 1232,
             status: 'stable',
@@ -35,8 +37,13 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
             committers: ['reinholdd', 'alexanderfl', 'maxP'],
             tests: 'pending'
           }
+          */
         ]
       };
+      
+      
+      
+      
       // return {
       //   lastCompletedBuild: { culprits: [], changesetItems: [] },
       //   lastBuild: {}
@@ -45,7 +52,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
 
     loadStatus: function() {
       $.ajax({
-        url: '/fetchAll'+ encodeURIComponent(this.props.url),
+        url: '/builds',
         dataType: 'json',
         success: function(data1) {
           this.setState(data1);
@@ -57,7 +64,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
     },
 
     componentWillMount: function() {
-      //this.loadStatus();
+      this.loadStatus();
       //setInterval(this.loadStatus, this.props.pollInterval);
     },
 
@@ -90,12 +97,12 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
 
     render: function() {
       var buildNodes = this.state.builds.map(function(build) {
-        var committerNodes = build.committers.map(function(committer) {
+        var committerNodes = build.authors.map(function(committer) {
           var avatarUrlStyle = {
-            background: 'url(/assets/images/avatars/' + committer + '.jpg)',
+            background: 'url(/assets/images/avatars/' + committer.id + '.jpg)',
             backgroundSize: 'cover'
           };
-          return (<div className="avatar" style={avatarUrlStyle} key={committer} ></div>);
+          return (<div className="avatar" style={avatarUrlStyle} key={committer.id} ></div>);
         });
 
         var cx = React.addons.classSet;
@@ -131,12 +138,12 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       });
 
       var pendingCommitterNodes = this.state.building ? (
-        this.state.building.committers.map(function(committer) {
+        this.state.building.authors.map(function(committer) {
           var avatarUrlStyle = {
-            background: 'url(/assets/images/avatars/' + committer + '.jpg)',
+            background: 'url(/assets/images/avatars/' + committer.id + '.jpg)',
             backgroundSize: 'cover'
           };
-          return (<div className="avatar" style={avatarUrlStyle} key={committer} ></div>);
+          return (<div className="avatar" style={avatarUrlStyle} key={committer.id} ></div>);
         })
       ) : null;
 
