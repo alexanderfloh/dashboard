@@ -31,14 +31,15 @@ object JenkinsFetcher {
     }
   }
 
-  def mapBuildStatus(status: String) = status match {
+  def mapBuildStatus(status: Option[String]): String = 
+    status.map(s => s match {
     case "SUCCESS" => "stable"
     case "FAILURE" => "failed"
     case "ABORTED" => "cancelled"
     case "UNSTABLE" => "unstable"
-    case null => "pending"
-    case _ => status
-  }
+    case _ => s
+    }).getOrElse("pending")
+  
 
   def fetchBuild(baseUrl: String, buildNumber: Int): Future[JsObject] = {
     val url = s"$baseUrl/$buildNumber/api/json?tree=timestamp,estimatedDuration,result,culprits[fullName],changeSet[items[author[id]]]"
@@ -46,9 +47,9 @@ object JenkinsFetcher {
       val json = Json.parse(responseDetails.body)
       val authors = (json \ "changeSet" \ "items").asOpt[List[JsValue]].getOrElse(List())
       val ids = authors.map(_ \ "author").distinct
-
+      println((json\"result").asOpt[String])
       Json.obj(
-        "status" -> mapBuildStatus((json \ "result").as[String]),
+        "status" -> mapBuildStatus((json \ "result").asOpt[String]),
         "number" -> buildNumber,
         "culprits" -> (json \ "culprits"),
         "authors" -> ids)
@@ -79,7 +80,7 @@ object JenkinsFetcher {
       val json = Json.parse(responseDetails.body)
       val triggeringBuild = (json \\ "upstreamBuild").headOption.map(_.as[Int])
       triggeringBuild.map(build =>
-        (build, Json.obj("status" -> mapBuildStatus((json \ "result").as[String]))))
+        (build, Json.obj("status" -> mapBuildStatus((json \ "result").asOpt[String]))))
     }
   }
 
