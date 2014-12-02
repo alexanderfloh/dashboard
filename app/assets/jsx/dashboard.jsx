@@ -3,51 +3,9 @@
 define(['react', 'jquery', 'moment'], function(React, $, Moment) {
   var LoadStatusMixin = {
     getInitialState: function() {
-      
       return {
-        building: {
-          number: 1236,
-          authors: [{id: 'reinholdd'}, {id: 'maxP'}],
-          started: Date.now() - (5 * 60 * 60 * 1000),
-          estimatedDuration: 60000
-        },
-        builds: [
-        /*
-          {
-            number: 1232,
-            status: 'stable',
-            committers: ['stefanS', 'alexanderfl', 'reinholdD', 'maxP'],
-            tests: 'passed'
-          },
-          {
-            number: 1233,
-            status: 'failed',
-            committers: ['stefanS', 'alexanderfl'],
-            tests: 'failed'
-          },
-          {
-            number: 1234,
-            status: 'stable',
-            committers: ['stefanS', 'alexanderfl'],
-            tests: 'passed'
-          },
-          {
-            number: 1235,
-            status: 'unstable',
-            committers: ['reinholdd', 'alexanderfl', 'maxP'],
-            tests: 'pending'
-          }
-          */
-        ]
+        builds: []
       };
-      
-      
-      
-      
-      // return {
-      //   lastCompletedBuild: { culprits: [], changesetItems: [] },
-      //   lastBuild: {}
-      // };
     },
 
     loadStatus: function() {
@@ -111,14 +69,15 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
           'stable': build.status === 'stable',
           'cancelled': build.status === 'cancelled',
           'unstable': build.status === 'unstable',
-          'failed': build.status === 'failed'
+          'failed': build.status === 'failed',
+          'pending': build.status === 'pending'
         });
 
         var classesTestResults = cx({
           'tests': true,
-          'stable': build.tests === 'passed',
-          'unstable': build.tests === 'failed',
-          'pending' : build.tests === 'pending'
+          'stable': build.tests.status === 'stable',
+          'unstable': build.tests.status === 'unstable',
+          'pending' : build.tests.status === 'pending'
         });
 
         return (
@@ -131,36 +90,11 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
             {build.status}
           </div>
           <div className={classesTestResults}>
-            {build.tests}
+            {build.tests.status}
           </div>
           </section>
         );
       });
-
-      var pendingCommitterNodes = this.state.building ? (
-        this.state.building.authors.map(function(committer) {
-          var avatarUrlStyle = {
-            background: 'url(/assets/images/avatars/' + committer.id + '.jpg)',
-            backgroundSize: 'cover'
-          };
-          return (<div className="avatar" style={avatarUrlStyle} key={committer.id} ></div>);
-        })
-      ) : null;
-
-      var pendingBuildNode = this.state.building ? (
-        <section key={this.state.building.number}>
-        {this.state.building.number}
-        <div className="committers">
-          {pendingCommitterNodes}
-        </div>
-        <div className="status pending">
-          pending
-        </div>
-        <div className="tests pending">
-          pending
-        </div>
-        </section>
-      ) : null;
 
       //<footer className="global-footer">
       //  <a href="/assets/DevicePusher/DevicePusher.UI.application" download="DevicePusher.UI.application">Download Device Pusher</a>
@@ -170,9 +104,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         <div>
           <article>
           {buildNodes}
-          {pendingBuildNode}
           </article>
-
         </div>
       );
 

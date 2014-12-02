@@ -12,41 +12,41 @@ object JenkinsFetcher {
   def fetchCi(baseUrl: String): Future[String] = {
     WS.url(baseUrl + "/api/json").get.flatMap { response =>
       val json = Json.parse(response.body)
-      val lastCompletedBuild = (json \ "lastCompletedBuild" \ "number").as[Int]
-      val lastBuild = (json \ "lastBuild" \ "number").as[Int]
-      val lastSuccessfulBuild = (json \ "lastSuccessfulBuild" \ "number")
-      val lastStableBuild = (json \ "lastStableBuild" \ "number")
+      val buildsJson = (json \ "builds").as[List[JsValue]]
+      val builds = buildsJson.map(build => (build \ "number").as[Int]).reverse.takeRight(10)
 
+      val details = Future.sequence(builds.map(build => {
+        fetchBuild(baseUrl, build)
+      }))
       for {
-        lastCompletedDetails <- fetchLastCompleted(baseUrl, lastCompletedBuild)
-        lastBuildDetails <- fetchLastBuild(baseUrl, lastBuild)
+        tests <- fetchTests("http://lnz-bobthebuilder/jenkins/job/NTF%20Core%20Regressions")
+        lastCompletedDetails <- details
       } yield {
-        Json.prettyPrint(
-          Json.obj(
-            "builds" -> Json.arr(
-              lastCompletedDetails),
-            "building" -> Json.obj(
-              "number" -> 1234,
-              "authors" -> Json.arr(Json.obj("id" -> "reinholdD")),
-              "started" -> new Date().getTime,
-              "estimatedDuration" -> 60000)))
+        val detailsWithTests = lastCompletedDetails.map(jsVal => {
+          val buildNumber = (jsVal \ "number").as[Int]
+          jsVal + (("tests", tests.getOrElse(buildNumber, Json.toJson(""))))
+        })
+        Json.prettyPrint(Json.obj("builds" -> detailsWithTests))
       }
     }
   }
-  
+
   def mapBuildStatus(status: String) = status match {
     case "SUCCESS" => "stable"
     case "FAILURE" => "failed"
+    case "ABORTED" => "cancelled"
+    case "UNSTABLE" => "unstable"
+    case null => "pending"
     case _ => status
   }
 
-  def fetchLastCompleted(baseUrl: String, buildNumber: Int): Future[JsObject] = {
-    val url = s"$baseUrl/$buildNumber/api/json?tree=result,culprits[fullName],changeSet[items[author[id]]]"
+  def fetchBuild(baseUrl: String, buildNumber: Int): Future[JsObject] = {
+    val url = s"$baseUrl/$buildNumber/api/json?tree=timestamp,estimatedDuration,result,culprits[fullName],changeSet[items[author[id]]]"
     WS.url(url).get.map { responseDetails =>
       val json = Json.parse(responseDetails.body)
       val authors = (json \ "changeSet" \ "items").asOpt[List[JsValue]].getOrElse(List())
-      val ids = authors.map(_ \ "author")
-      
+      val ids = authors.map(_ \ "author").distinct
+
       Json.obj(
         "status" -> mapBuildStatus((json \ "result").as[String]),
         "number" -> buildNumber,
@@ -55,15 +55,32 @@ object JenkinsFetcher {
     }
   }
 
-  def fetchLastBuild(baseUrl: String, buildNumber: Int): Future[JsObject] = {
-    val url = s"$baseUrl/$buildNumber/api/json"
-    WS.url(url).get.map { response =>
+  def fetchTests(baseUrl: String): Future[Map[Int, JsValue]] = {
+    WS.url(baseUrl + "/api/json?tree=builds[number,url]").get.flatMap { response =>
       val json = Json.parse(response.body)
-      Json.obj(
-        "buildNumber" -> buildNumber,
-        "estimatedDuration" -> (json \ "estimatedDuration"),
-        "timestamp" -> (json \ "timestamp"),
-        "building" -> (json \ "building"))
+      val buildsJson = (json \ "builds").as[List[JsValue]]
+      val builds = buildsJson.map(build => (build \ "number").as[Int])
+      val detailsF = Future.sequence(builds.map(build => {
+        fetchTestDetails(baseUrl, build)
+      }))
+
+      detailsF.map(details => {
+        details.filter(_ != None)
+          .map(d => d.get) // unwrap optionals
+          .groupBy(_._1) // group by build
+          .map{case (k, v) => (k, v.head._2)}
+      })
     }
   }
+
+  def fetchTestDetails(baseUrl: String, buildNumber: Int): Future[Option[(Int, JsObject)]] = {
+    val url = s"$baseUrl/$buildNumber/api/json?tree=timestamp,estimatedDuration,result,actions[causes[upstreamBuild]]"
+    WS.url(url).get.map { responseDetails =>
+      val json = Json.parse(responseDetails.body)
+      val triggeringBuild = (json \\ "upstreamBuild").headOption.map(_.as[Int])
+      triggeringBuild.map(build =>
+        (build, Json.obj("status" -> mapBuildStatus((json \ "result").as[String]))))
+    }
+  }
+
 }
