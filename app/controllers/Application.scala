@@ -28,17 +28,29 @@ import actors.GetResponseNightly
 import util.CI
 import util.Nightly
 import util.JenkinsFetcher
+import util.NevergreensParser
+import util.Nevergreens
+import models.NevergreenResult
 
 object Application extends Controller {
 
   def index = Action {
     Ok(views.html.index())
   }
-  
+
   def builds = Action.async {
-    val urlCi = Play.current.configuration.getString("dashboard.urlCi")
-    .getOrElse(throw new RuntimeException("dashboard.urlCi not configured"))
-    JenkinsFetcher.fetchCi(urlCi).map(Ok(_))
+    if (Play.current.configuration.getBoolean("dashboard.mockResponse").getOrElse(false)) {
+      Future(Ok(MockResponseGenerator(CI)).as("text; charset=utf-8"))
+    } else {
+      val urlCi = Play.current.configuration.getString("dashboard.urlCi")
+        .getOrElse(throw new RuntimeException("dashboard.urlCi not configured"))
+      JenkinsFetcher.fetchCi(urlCi).map(Ok(_))
+    }
+  }
+  
+  def nevergreens = Action {
+    implicit val writes = NevergreenResult.writes
+    Ok(Json.toJson(NevergreensParser.parse(MockResponseGenerator(Nevergreens))))
   }
 
   def fetchAllCi = Action.async {

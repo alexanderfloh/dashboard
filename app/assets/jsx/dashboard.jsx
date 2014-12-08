@@ -4,7 +4,8 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
   var LoadStatusMixin = {
     getInitialState: function() {
       return {
-        builds: []
+        builds: [],
+        nevergreens: []
       };
     },
 
@@ -95,6 +96,12 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
           </section>
         );
       });
+      
+      var nevergreenNodes = this.state.nevergreens.map(function(nevergreen) {
+      	return (
+      		<li key={nevergreen.id} className="nevergreen">{nevergreen.definitionName}</li>
+      	);
+      });
 
       //<footer className="global-footer">
       //  <a href="/assets/DevicePusher/DevicePusher.UI.application" download="DevicePusher.UI.application">Download Device Pusher</a>
@@ -102,8 +109,13 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
 
       return (
         <div>
-          <article>
+          <article className="build-list">
           {buildNodes}
+          </article>
+          <article id="nevergreens" className="nevergreens">
+          	<ul>
+          		{nevergreenNodes}
+          	</ul>
           </article>
         </div>
       );

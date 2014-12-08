@@ -9,6 +9,8 @@ GET   /fetchAllCI    controllers.Application.fetchAllCi
 GET   /fetchAllNightly    controllers.Application.fetchAllNightly
 GET   /builds        controllers.Application.builds()
 
+GET   /nevergreens	controllers.Application.nevergreens()
+
 GET   /getDevices/   controllers.Application.getDevices()
 
 POST  /setDevice/    controllers.Application.setDevice()
