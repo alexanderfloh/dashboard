@@ -7,13 +7,14 @@ import play.api.libs.json._
 import scala.concurrent.ExecutionContext.Implicits.global
 import java.util.Date
 import play.Logger
+import models.NevergreenResult
 
 object JenkinsFetcher {
   def fetchCi(baseUrl: String): Future[String] = {
     WS.url(baseUrl + "/api/json").get.flatMap { response =>
       val json = Json.parse(response.body)
       val buildsJson = (json \ "builds").as[List[JsValue]]
-      val builds = buildsJson.map(build => (build \ "number").as[Int]).reverse.takeRight(10)
+      val builds = buildsJson.map(build => (build \ "number").as[Int]).reverse.takeRight(7)
 
       val details = Future.sequence(builds.map(build => {
         fetchBuild(baseUrl, build)
@@ -21,12 +22,15 @@ object JenkinsFetcher {
       for {
         tests <- fetchTests("http://lnz-bobthebuilder/jenkins/job/NTF%20Core%20Regressions")
         lastCompletedDetails <- details
+        nevergreensXML <- ScFetcher.fetchNevergreens
       } yield {
+        val nevergreens = NevergreensParser.parse(nevergreensXML)
         val detailsWithTests = lastCompletedDetails.map(jsVal => {
           val buildNumber = (jsVal \ "number").as[Int]
           jsVal + (("tests", tests.getOrElse(buildNumber, Json.toJson(""))))
         })
-        Json.prettyPrint(Json.obj("builds" -> detailsWithTests))
+        implicit val nevergreensWrites = NevergreenResult.writes
+        Json.prettyPrint(Json.obj("builds" -> detailsWithTests, "nevergreens" -> nevergreens))
       }
     }
   }

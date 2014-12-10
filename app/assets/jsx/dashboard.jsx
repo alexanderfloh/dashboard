@@ -99,7 +99,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       
       var nevergreenNodes = this.state.nevergreens.map(function(nevergreen) {
       	return (
-      		<li key={nevergreen.id} className="nevergreen">{nevergreen.definitionName}</li>
+      		<li key={nevergreen.id} className="nevergreen"><a href={nevergreen.link}>{nevergreen.nrOfFailures} &times; {nevergreen.definitionName}</a></li>
       	);
       });
 
