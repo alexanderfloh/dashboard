@@ -1,4 +1,5 @@
-@echo off
+REM @echo off
 cmd /c kill.cmd
 
-play -Dhttp.port=80 -Dfile.separator=\/ -Dconfig.resource=prod.conf start
+set java_opts=-Dconfig.file=conf/prod.conf -Dhttp.port=80 -Dfile.separator=\/ 
+activator run
