@@ -17,7 +17,7 @@ import akka.routing.RoundRobinRouter
 object Global extends GlobalSettings {
   override def onStart(app: play.api.Application) = {
     val lines = Source.fromFile("conf/devices").getLines
-    lines.foreach(line => {
+    lines.filter(!_.startsWith("#")).foreach(line => {
       line.split(";") match {
         case Array(deviceName, deviceId, osType) => {
           MobileDevice.byDeviceId(deviceId) match {
