@@ -61,7 +61,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
             background: 'url(/assets/images/avatars/' + committer.id + '.jpg)',
             backgroundSize: 'cover'
           };
-          return (<div className="avatar" style={avatarUrlStyle} key={committer.id} ></div>);
+          return (<div className="avatar" style={avatarUrlStyle} key={committer.id} title={committer.id} ></div>);
         });
 
         var cx = React.addons.classSet;
@@ -77,6 +77,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         var classesTestResults = cx({
           'tests': true,
           'stable': build.tests.status === 'stable',
+          'cancelled': build.tests.status === 'cancelled',
           'unstable': build.tests.status === 'unstable',
           'pending' : build.tests.status === 'pending'
         });
