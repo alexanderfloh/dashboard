@@ -18,6 +18,5 @@ object NevergreensParser {
           link.text)
       }
     })
-
   }
 }

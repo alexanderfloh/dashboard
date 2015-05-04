@@ -8,42 +8,68 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import java.util.Date
 import play.Logger
 import models.NevergreenResult
+import scala.util.parsing.json.JSONArray
 
 object JenkinsFetcher {
-  def fetchCi(baseUrl: String): Future[String] = {
+
+  // fetch ci build with tests (core, workbench, kdt)
+  def fetchCI(baseUrl: String, mapName: String, numberOfItems: Integer): Future[String] = {
     WS.url(baseUrl + "/api/json").get.flatMap { response =>
       val json = Json.parse(response.body)
       val buildsJson = (json \ "builds").as[List[JsValue]]
-      val builds = buildsJson.map(build => (build \ "number").as[Int]).reverse.takeRight(7)
+      val builds = buildsJson.map(build => (build \ "number").as[Int]).reverse.takeRight(numberOfItems)
 
       val details = Future.sequence(builds.map(build => {
         fetchBuild(baseUrl, build)
       }))
       for {
-        tests <- fetchTests("http://lnz-bobthebuilder/jenkins/job/NTF%20Core%20Regressions")
+        core <- fetchTests("http://lnz-bobthebuilder/jenkins/job/NTF%20Core%20Regressions")
+        workbench <- fetchTests("http://lnz-bobthebuilder/jenkins/job/NTF%20Workbench%20Regressions");
+        kdt <- fetchTests("http://lnz-bobthebuilder/jenkins/job/xTF%20KDT%20Regressions");
         lastCompletedDetails <- details
-        nevergreensXML <- ScFetcher.fetchNevergreens
       } yield {
-        val nevergreens = NevergreensParser.parse(nevergreensXML)
         val detailsWithTests = lastCompletedDetails.map(jsVal => {
           val buildNumber = (jsVal \ "number").as[Int]
-          jsVal + (("tests", tests.getOrElse(buildNumber, Json.toJson(""))))
-        })
-        implicit val nevergreensWrites = NevergreenResult.writes
-        Json.prettyPrint(Json.obj("builds" -> detailsWithTests, "nevergreens" -> nevergreens))
+          jsVal +
+            (("core", core.getOrElse(buildNumber, Json.toJson("")))) +
+            (("workbench", workbench.getOrElse(buildNumber, Json.toJson("")))) +
+            (("kdt", kdt.getOrElse(buildNumber, Json.toJson(""))))
+        });
+        Json.prettyPrint(Json.obj(mapName -> detailsWithTests))
       }
     }
   }
 
-  def mapBuildStatus(status: Option[String]): String = 
+  // fetch nightly build with nevergreen list
+  def fetchNightly(baseUrl: String, mapName: String, numberOfItems: Integer): Future[String] = {
+    WS.url(baseUrl + "/api/json").get.flatMap { response =>
+      val json = Json.parse(response.body)
+      val buildsJson = (json \ "builds").as[List[JsValue]]
+      val builds = buildsJson.map(build => (build \ "number").as[Int]).reverse.takeRight(numberOfItems)
+
+      val details = Future.sequence(builds.map(build => {
+        fetchBuild(baseUrl, build)
+      }))
+      for {
+        lastCompletedDetails <- details
+        nevergreensXML <- ScFetcher.fetchNevergreens
+      } yield {
+        val nevergreens = NevergreensParser.parse(nevergreensXML)
+        implicit val nevergreensWrites = NevergreenResult.writes
+        Json.prettyPrint(Json.obj(mapName -> lastCompletedDetails, "nevergreens" -> nevergreens))
+      }
+    }
+  }
+
+  // helper
+  def mapBuildStatus(status: Option[String]): String =
     status.map(s => s match {
-    case "SUCCESS" => "stable"
-    case "FAILURE" => "failed"
-    case "ABORTED" => "cancelled"
-    case "UNSTABLE" => "unstable"
-    case _ => s
+      case "SUCCESS"  => "stable"
+      case "FAILURE"  => "failed"
+      case "ABORTED"  => "cancelled"
+      case "UNSTABLE" => "unstable"
+      case _          => s
     }).getOrElse("pending")
-  
 
   def fetchBuild(baseUrl: String, buildNumber: Int): Future[JsObject] = {
     val url = s"$baseUrl/$buildNumber/api/json?tree=timestamp,estimatedDuration,result,culprits[fullName],changeSet[items[author[id]]]"
@@ -51,7 +77,7 @@ object JenkinsFetcher {
       val json = Json.parse(responseDetails.body)
       val authors = (json \ "changeSet" \ "items").asOpt[List[JsValue]].getOrElse(List())
       val ids = authors.map(_ \ "author").distinct
-      println((json\"result").asOpt[String])
+      println((json \ "result").asOpt[String])
       Json.obj(
         "status" -> mapBuildStatus((json \ "result").asOpt[String]),
         "number" -> buildNumber,
@@ -73,7 +99,7 @@ object JenkinsFetcher {
         details.filter(_ != None)
           .map(d => d.get) // unwrap optionals
           .groupBy(_._1) // group by build
-          .map{case (k, v) => (k, v.head._2)}
+          .map { case (k, v) => (k, v.head._2) }
       })
     }
   }

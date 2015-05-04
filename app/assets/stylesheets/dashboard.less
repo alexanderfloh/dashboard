@@ -1,252 +1,288 @@
 
 /* Eric Meyer's Reset CSS v2.0 - http://cssreset.com */
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{border:0;font-size:100%;font:inherit;vertical-align:baseline;margin:0;padding:0}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:none}table{border-collapse:collapse;border-spacing:0}
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+    margin: 0;
+    padding: 0;
+}
+
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+
+body {
+    line-height: 1;
+}
+
+ol, ul {
+    list-style: none;
+}
+
+blockquote, q {
+    quotes: none;
+}
+
+blockquote:before, blockquote:after, q:before, q:after {
+    content: none;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
 
 @import url(http://fonts.googleapis.com/css?family=Quicksand:400,700);
 @import url(http://fonts.googleapis.com/css?family=Fugaz+One);
 @import url(http://fonts.googleapis.com/css?family=Roboto+Slab);
 
 body {
-  //overflow: hidden;
+    //overflow: hidden;
 }
 
 .font-sans {
-  font-family: 'Quicksand', sans-serif;
-  font-weight: 400;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 400;
 }
 
 .font-cursive {
-  font-family: 'Fugaz One', cursive;
-  font-weight: 400;
+    font-family: 'Fugaz One', cursive;
+    font-weight: 400;
 }
 
 .font-serif {
-  font-family: 'Roboto Slab', serif;
-  font-weight: 400;
+    font-family: 'Roboto Slab', serif;
+    font-weight: 400;
 }
 
 @grey: #CCCCCC;
-//@blue: #3498DB;
+@blue: #3498DB;
 @green: #458B00;
-@yellow: #f1c40f;
 @red: #c0392b;
-@orange: #d35400;
-@midnight-blue: #2c3e50;
-@blue: #2980b9;
-@asbestos: #e0e0e0;
+@orange: #fbc02d;
+@blue: #455ede;
 
+@midnight-blue: #2c3e50;
 @primary: @midnight-blue;
-// @primary: white;
 @secondary: @orange;
 
-
-
-
-@background: #757575;
-@labels: @secondary; // lighten(black, 60%);
+@background: white;
+@labels: @secondary;
 @icons: @primary;
 
 .circled {
-  border-radius: 50%;
-  background-clip: border-box;
-  background-color: @primary;
+    border-radius: 50%;
+    background-clip: border-box;
+    background-color: @primary;
 }
 
-@grey: #616161;
-
 * {
-  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-  -moz-box-sizing: border-box;    /* Firefox, other Gecko */
-  box-sizing: border-box;
+    /* Safari/Chrome, other WebKit */
+    -webkit-box-sizing: border-box;
+    /* Firefox, other Gecko */
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 body {
-  background-color: @background;
-  .font-sans;
-
+    background-color: @background;
+    .font-sans;
 }
 
-// body:before {
-//   content: '';
-//   //margin: 15px 0.1em 10px 0px;
-//   //padding-right: 0.2em;
-//   position: absolute;
-//   top: 0px;
-//   left: 0px;
-//   width: 150px;
-//   bottom: 0px;
-//   z-index: 5000;
-//   background-image: -webkit-linear-gradient(left, @background 25%, transparent);
-// }
-
 .global-footer {
-  margin-top: 5em;
-  padding: 2em;
-  text-align: center;
-  background-color: @primary;
-  .font-serif;
-  a {
-    color: white;
-  }
+    margin-top: 5em;
+    padding: 2em;
+    text-align: center;
+    background-color: @primary;
+    .font-serif;
+
+    a {
+        color: black;
+    }
 }
 
 article {
-  display: block;
-  width: 100%;
-  text-align: right;
-  //background-color: darken(white, 20%);
+    display: block;
+    width: 100%;
+}
 
-  section {
-    text-align: left;
+section {
+    width: 120em;
+}
+
+aside {
+    float: left;
+    width: 29em;
+    text-align: center;
+    border: groove;
+}
+
+h1 {
+    text-align: center;
+    font-size: large;
+    padding-bottom: 0.3em;
+    padding-top: 0.3em;
+    clear: both;
+}
+
+// ---------------------------- classes ---------------------------- //
+.build-section {
+    padding-top: 1em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+
+    .nevergreens {
+        background-color: transparent;
+
+        .nevergreen-list {
+            text-align: left;
+            margin-left: 1em;
+
+            .nevergreen {
+                font-family: monospace;
+                font-size: 1.2em;
+                padding: 0.2em;
+                display: inline-block;
+                background-color: transparent;
+                width: 100%;
+
+                a {
+                    color: black;
+                }
+            }
+        }
+    }
+
+    .build-list {
+        display: inline-block;
+        float: left;
+        border: groove;
+
+        li {
+            padding-left: 0.5em;
+        }
+    }
+}
+
+.build-item {
     display: inline-block;
-    margin: 1em;
-    background-color: white;
-    //background-color: @asbestos;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    margin-bottom: 0.5em;
+    height: auto;
     color: #424242;
     font-size: 2em;
+    width: 10em;
 
-    .status {
-      //display: block;
-      //width: 100%;
-      font-size: 2em;
-      padding: 0.2em 0.2em 0.2em 0em;
-      //color: @background;
-      margin: 5px 0px 5px 0px;
+    .build-item-header {
+        text-align: left;
+        border: dashed;
+        border-radius: 20px;
+        margin-left: 0.5em;
+        background-color: darken(white, 5%);
+        padding-left: 0.1em;
+
+        .build-number {
+            text-align: center;
+        }
+
+        .status, .core, .kdt, .workbench {
+            font-size: 1em;
+            padding: 0.2em 0.2em 0.2em 0em;
+            margin: 5px 0px 5px 0px;
+        }
+
+        .status:before, .core:before, .kdt:before, .workbench:before {
+            content: "";
+            margin: 15px 0.1em 10px 0.5px;
+            padding-right: 0.3em;
+        }
+
+        .status:after, .core:after, .workbench:after, .kdt:after {
+            display: block;
+            font-size: 0.3em;
+            text-align: right;
+            font-weight: bold;
+            padding-top: 0.1em;
+        }
+
+        .status:after {
+            content: "Build";
+        }
+
+        .core:after {
+            content: 'Core';
+        }
+
+        .workbench:after {
+            content: 'Workbench';
+        }
+
+        .kdt:after {
+            content: 'KDT';
+        }
+
+        .stable:before {
+            background: @green;
+        }
+
+        .unstable:before {
+            background: @orange;
+        }
+
+        .failed:before {
+            background: @red;
+        }
+
+        .cancelled:before {
+            background: @grey;
+        }
+
+        .pending:before {
+            background: @blue;
+        }
     }
+}
 
-    .status:before {
-      content: "";
-      margin: 15px 0.1em 10px 0px;
-      padding-right: 0.3em;
-    }
-    .committers {
-      //min-height: 5em;
-      padding: 0.2em 1em 0.2em 1em;
+.avatars {
+    text-align: center;
+    border: medium;
+    border-radius: 20px;
+    margin-left: 0.5em;
+    background-color: darken(white, 5%);
+    height: auto;
 
-      .avatar {
+
+    .avatar {
         width: 48px;
         height: 48px;
         border-radius: 50%;
         background-size: contain;
         display: inline-block;
         margin: 5px;
-        -webkit-transition:all .4s;
-        -moz-transition:all .4s;
-        -ms-transition:all .4s;
-        -o-transition:all .4s;
-        transition:all .4s;
-      }
-      .avatar:not(:hover) {
-        -webkit-filter:grayscale(100%);
-        -moz-filter:grayscale(100%);
-        -ms-filter:grayscale(100%);
-        -o-filter:grayscale(100%);
-        filter:grayscale(100%);
-      }
-      .avatar & :hover {
-        -webkit-filter:grayscale(0%);
-        -moz-filter:grayscale(0%);
-        -ms-filter:grayscale(0%);
-        -o-filter:grayscale(0%);
-        filter:grayscale(0%);
-      }
+        -webkit-transition: all .4s;
+        -moz-transition: all .4s;
+        -ms-transition: all .4s;
+        -o-transition: all .4s;
+        transition: all .4s;
+        float: inherit;
     }
 
-    .tests {
-      //color: @background;
-      font-size: 2em;
-      padding: 0.2em 0.2em 0.2em 0em;
-      margin: 5px 0px 5px 0px;
+    .avatar:not(:hover) {
+        -webkit-filter: grayscale(100%);
+        -moz-filter: grayscale(100%);
+        -ms-filter: grayscale(100%);
+        -o-filter: grayscale(100%);
+        filter: grayscale(100%);
     }
 
-    .tests:before {
-      content: "";
-      margin: 15px 0.1em 10px 0px;
-      padding-right: 0.3em;
+    .avatar & :hover {
+        -webkit-filter: grayscale(0%);
+        -moz-filter: grayscale(0%);
+        -ms-filter: grayscale(0%);
+        -o-filter: grayscale(0%);
+        filter: grayscale(0%);
     }
-    .tests:after {
-      content: 'Tests';
-      display: block;
-      font-size: 0.3em;
-      text-align: right;
-      font-weight: bold;
-    }
-    .status:after {
-      content: 'Build';
-      display: block;
-      font-size: 0.3em;
-      text-align: right;
-      font-weight: bold;
-    }
-  }
-}
-
-.build-list {
-  margin-left: -500%;
-  width: 600%;
-  // &:before {
-  //   content: '';
-  //   //margin: 15px 0.1em 10px 0px;
-  //   //padding-right: 0.2em;
-  //   position: absolute;
-  //   top: 0px;
-  //   left: 0px;
-  //   width: 150px;
-  //   bottom: 0px;
-  //   z-index: 5000;
-  //   max-height: 100%;
-  //   background-image: -webkit-linear-gradient(left, @background 25%, transparent);
-  // }
-}
-
-.nevergreens {
-  
-  text-align: left;
-}
-
-.nevergreen {
-  display: inline-block;
-  margin: 10px;
-  padding: 5px;
-  background-color: white;
-  a {
-  	color: black;
-  }
-}
-
-.stable{
-//  background: #aed581;
-  //background-color: @green;
-  //color: @background;
-}
-.stable:before, {
-  background: @green;
-}
-.unstable {
-//  background: #ffee58;
-}
-
-.unstable:before {
-  //background-color: @yellow;
-  background: #fbc02d;
-}
-.failed {
-//  background: #f36c60;
-}
-.failed:before {
-  //background-color: @red;
-  background: @red;
-  margin-left: -2px;
-}
-.cancelled:before {
-  //background-color: @grey;
-  background: @grey;
-  
-}
-.pending {
-//  background: #91a7ff;
-}
-.pending:before {
-  //background-color: @grey;
-  background: #455ede;
 }

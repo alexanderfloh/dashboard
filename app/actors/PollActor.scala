@@ -17,6 +17,7 @@ case object PollNightly
 class PollActor extends Actor {
   val urlCi = Play.current.configuration.getString("dashboard.urlCi")
     .getOrElse(throw new RuntimeException("dashboard.urlCi not configured"))
+    
   val urlNightly = Play.current.configuration.getString("dashboard.urlNightly")
     .getOrElse(throw new RuntimeException("dashboard.urlNightly not configured"))
 
@@ -24,7 +25,7 @@ class PollActor extends Actor {
 
   def receive = {
     case PollCi => {
-      fetchCi(urlCi).map { response =>
+      fetch(urlCi).map { response =>
         router ! Broadcast(UpdateResponseCi(response))
       }
     }
@@ -36,7 +37,7 @@ class PollActor extends Actor {
     }
   }
 
-  def fetchCi(baseUrl: String): Future[String] = {
+  def fetch(baseUrl: String): Future[String] = {
     WS.url(baseUrl + "/api/json").get.flatMap { response =>
       val json = Json.parse(response.body)
       val lastCompletedBuild = (json \ "lastCompletedBuild" \ "number").as[Int]
