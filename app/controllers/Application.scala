@@ -26,7 +26,8 @@ import actors.GetResponseNightly
 import util.CI
 import util.Nightly
 import util.JenkinsFetcher
-
+import util.PhabricatorFetcher
+import scala.concurrent.Await
 object Application extends Controller {
 
   def index = Action {
@@ -47,10 +48,23 @@ object Application extends Controller {
     if (Play.current.configuration.getBoolean("dashboard.mockResponse").getOrElse(false)) {
       Future(Ok(MockResponseGenerator(Nightly)).as("text; charset=utf-8"))
     } else {
+      
       val urlNightly = Play.current.configuration.getString("dashboard.urlNightly")
         .getOrElse(throw new RuntimeException("dashboard.urlNightly not configured"))
       JenkinsFetcher.fetchNightly(urlNightly, "buildNightly", 1).map(Ok(_))
+      
     }
   }
-
+  
+  def getPhabUser = Action.async {
+    val response = PhabricatorFetcher.fetchPhabricatorUser("http://lnz-phabricator.microfocus.com/", "AlexanderFl", "wxuhvuaaow2wzf76juqwskpfstz6pfpn2ez3yx5wdpagtaqtnsobr3hjx3d23wpvcnscec7zh3i4g5myyvxy4efkwxcfmwzozfj2kbemx5lqyuqhoxsawxdtmgtvet57c25qrgbwlvvv77dccjzep6oiskct3tmmaimlnnqm2hmb7sxhz6bulln2l6lak5siw2gyhyonx6opjwb7wi74vpowttb3cbsce54emwrabur6dqea2uzv26ajytu4xvo");
+    val f: Future[String] = Future(response)
+    f.map { Ok(_) }
+  }
+  
+  def getPhabAudits = Action.async {
+    val response = PhabricatorFetcher.fetchOpenAudits("http://lnz-phabricator.microfocus.com/", "AlexanderFl", "wxuhvuaaow2wzf76juqwskpfstz6pfpn2ez3yx5wdpagtaqtnsobr3hjx3d23wpvcnscec7zh3i4g5myyvxy4efkwxcfmwzozfj2kbemx5lqyuqhoxsawxdtmgtvet57c25qrgbwlvvv77dccjzep6oiskct3tmmaimlnnqm2hmb7sxhz6bulln2l6lak5siw2gyhyonx6opjwb7wi74vpowttb3cbsce54emwrabur6dqea2uzv26ajytu4xvo");
+    val f: Future[String] = Future(response)
+    f.map { Ok(_) }
+  }
 }

@@ -8,6 +8,8 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         buildCI: [],
       	buildNightly: [],
         nevergreens: [],
+        users:[],
+        audits:[]
       };
     },
 
@@ -34,6 +36,28 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
             console.error(this.props.url, status, err.toString());
           }.bind(this)
         });
+      
+      $.ajax({
+        url: '/getPhabUser',
+        dataType: 'json',
+        success: function(data1) {
+          this.setState(data1);
+        }.bind(this),
+        error: function(xhr, status, err) {
+          console.error(this.props.url, status, err.toString());
+        }.bind(this)
+      });
+      
+      $.ajax({
+        url: '/getPhabAudits',
+        dataType: 'json',
+        success: function(data1) {
+          this.setState(data1);
+        }.bind(this),
+        error: function(xhr, status, err) {
+          console.error(this.props.url, status, err.toString());
+        }.bind(this)
+      });
     },
 
     componentWillMount: function() {
@@ -52,10 +76,52 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
     },
 
     render: function() {
+      // ----------------------- helper -----------------------//
+      function getAuditsForUser(user, audits){
+        var res = 0;
+        for (var i = 0; i < audits.length; i++){
+          if (user.phid == audits[i].auditorPHID){
+            res++;
+          }
+        }
+        return res;
+      }
+      
+      function getNotAssignedAudits(audits){
+        var res = 0;
+        for(var i = 0; i<audits.length; i++){
+            if (audits[i].status === "audit-required"){
+              res++;
+          }
+        }
+        return res;
+      }
+      
+      function mergeUserAudits(users, audits){
+        var resultArray = new Array();
+        for (var i = 0; i < users.length; i++){
+          var cnt = getAuditsForUser(users[i], audits);
+          if (cnt > 0){
+            var userAudit = {
+                userName : users[i].realName,
+                numberOfAudits : cnt
+            };
+            resultArray.push(userAudit);
+          }
+        }
+        
+        var userAudit = {
+            userName : "No Auditor",
+            numberOfAudits : getNotAssignedAudits(audits)
+        };
+        resultArray.push(userAudit);
+        
+        return resultArray;
+      }
       
       function getCommitters(committer){
         var avatarUrlStyle = {
-            background: 'url(/assets/images/avatars/' + committer.id + '.jpg)',
+            background: 'url(http://austria/global/images/employees/' + committer.fullName.replace(" ", ".").replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/Ä/g,"Ae").replace(/Ö/g,"Oe").replace(/Ü/g,"Ue").replace(/ß/g,"ss") + '.jpg)',
             backgroundSize: 'cover',
         };
         return (    
@@ -82,8 +148,10 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         });
       }
       
+   // ----------------------- render functions -----------------------//
+      
       function nodesBuild(build){
-        var committerNodes = build.authors.map(getCommitters);
+        var committerNodes = build.culprits.map(getCommitters);
         var classesStatus = getStatusClassSet(build, "status");
         return (
             <div key={build.number}  className="build-item">
@@ -95,7 +163,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
                   {build.status}
                 </div>
               </div>  
-              <h1> Commiters </h1>
+              <h1> Committers </h1>
               <div className="avatars">
                   {committerNodes}
               </div>
@@ -128,8 +196,8 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
     	
       function getNevergreens(nevergreen) {
         var linkText = nevergreen.definitionName;
-        if (linkText.length > 45){
-          linkText = linkText.substring(0,42).concat('...');
+        if (linkText.length > 40){
+          linkText = linkText.substring(0,37).concat('...');
         }
         return (    		
       		<li key={nevergreen.id} className="nevergreen">
@@ -139,12 +207,23 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       		</li>
       	);
       };
-   
+      
+      function renderAudit(audit) {
+        return (
+          <div>
+            {audit.userName} : {audit.numberOfAudits}
+          </div>
+        );
+      }
+
+   // ----------------------- generate html -----------------------//
       var buildCI = this.state.buildCI.map(nodesBuild);
       var buildTests = this.state.buildCI.map(nodesTest);
       var buildNightly = this.state.buildNightly.map(nodesBuild);
       var nevergreenNodes = this.state.nevergreens.map(getNevergreens);
+      var audits = mergeUserAudits(this.state.users, this.state.audits).sort(function(a, b){return b.numberOfAudits-a.numberOfAudits}).map(renderAudit);
       
+   // ----------------------- html site structure -----------------------//
       return (
         <div>
           <article className="build-section">
@@ -158,9 +237,12 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
               	<li>
               	  {buildTests}
               	</li>
+              	<h1> Open Audits </h1>
+              	<li>
+              	  {audits}
+              	</li>
             	</ul>
             </section>
-            
             <aside id="nevergreens" className="nevergreens">
               <h1> Nightly Build </h1>
               {buildNightly} 
@@ -169,7 +251,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
                 {nevergreenNodes.slice(0,35)}
               </ul>
             </aside>
-          </article>          
+          </article> 
         </div>
       );
     }

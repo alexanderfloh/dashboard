@@ -77,7 +77,6 @@ object JenkinsFetcher {
       val json = Json.parse(responseDetails.body)
       val authors = (json \ "changeSet" \ "items").asOpt[List[JsValue]].getOrElse(List())
       val ids = authors.map(_ \ "author").distinct
-      println((json \ "result").asOpt[String])
       Json.obj(
         "status" -> mapBuildStatus((json \ "result").asOpt[String]),
         "number" -> buildNumber,
