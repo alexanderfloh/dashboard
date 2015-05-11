@@ -38,10 +38,6 @@ table {
 @import url(http://fonts.googleapis.com/css?family=Fugaz+One);
 @import url(http://fonts.googleapis.com/css?family=Roboto+Slab);
 
-body {
-    //overflow: hidden;
-}
-
 .font-sans {
     font-family: 'Quicksand', sans-serif;
     font-weight: 400;
@@ -92,13 +88,8 @@ body {
 }
 
 .global-footer {
-    margin-top: 5em;
-    padding: 2em;
     text-align: center;
-    background-color: @primary;
-    .font-serif;
-
-    a {
+    a{
         color: black;
     }
 }
@@ -109,7 +100,10 @@ article {
 }
 
 section {
-    width: 120em;
+    width: 88em;
+    float: right;
+    height: 66em;
+    margin-bottom: 2em;
 }
 
 aside {
@@ -117,14 +111,22 @@ aside {
     width: 29em;
     text-align: center;
     border: groove;
+    height: 66em;
+    margin-bottom: 2em;
 }
 
 h1 {
     text-align: center;
-    font-size: large;
+    font-size: 2em;
     padding-bottom: 0.3em;
     padding-top: 0.3em;
     clear: both;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+    display: block;
 }
 
 // ---------------------------- classes ---------------------------- //
@@ -139,9 +141,13 @@ h1 {
         .nevergreen-list {
             text-align: left;
             margin-left: 1em;
+            margin-right: 1em;
 
             .nevergreen {
                 font-family: monospace;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
                 font-size: 1.2em;
                 padding: 0.2em;
                 display: inline-block;
@@ -149,6 +155,10 @@ h1 {
                 width: 100%;
 
                 a {
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    text-decoration: underline;
                     color: black;
                 }
             }
@@ -156,91 +166,80 @@ h1 {
     }
 
     .build-list {
-        display: inline-block;
-        float: left;
         border: groove;
 
-        li {
-            padding-left: 0.5em;
+        .audits {
+            padding-left: 20em;
+            padding-right: 20em;
+            padding-top: 0.5em;
+            font-size: 1.5em;
+
+            .audit-name {
+                display: inline;
+                float: left;
+            }
+
+            .audit-cnt {
+                display: inline;
+                float: right;
+            }
         }
     }
 }
 
-.build-item {
-    display: inline-block;
-    margin-left: 0.5em;
-    margin-right: 0.5em;
-    margin-bottom: 0.5em;
-    height: auto;
-    color: #424242;
-    font-size: 2em;
-    width: 10em;
+.build-list-item:last-child {
+    font-weight: bold;
+}
 
-    .build-item-header {
-        text-align: left;
-        border: dashed;
-        border-radius: 20px;
+.build-list-item {
+    display: inline;
+
+    .build-item {
+        margin-top: 0.5em;
+        display: inline-block;
         margin-left: 0.5em;
-        background-color: darken(white, 5%);
-        padding-left: 0.1em;
+        margin-right: 0.5em;
+        height: auto;
+        color: white;
+        font-size: 2em;
+        width: 9.9em;
+        border: groove;
+        background: lighten(@grey, 10%);
 
         .build-number {
             text-align: center;
+            font-size: 2em;
+            color: black;
         }
 
         .status, .core, .kdt, .workbench {
             font-size: 1em;
             padding: 0.2em 0.2em 0.2em 0em;
             margin: 5px 0px 5px 0px;
+            text-align: center;
         }
 
-        .status:before, .core:before, .kdt:before, .workbench:before {
-            content: "";
-            margin: 15px 0.1em 10px 0.5px;
-            padding-right: 0.3em;
+        .status {
+            font-size: 3em;
         }
 
-        .status:after, .core:after, .workbench:after, .kdt:after {
-            display: block;
-            font-size: 0.3em;
-            text-align: right;
-            font-weight: bold;
-            padding-top: 0.1em;
-        }
-
-        .status:after {
-            content: "Build";
-        }
-
-        .core:after {
-            content: 'Core';
-        }
-
-        .workbench:after {
-            content: 'Workbench';
-        }
-
-        .kdt:after {
-            content: 'KDT';
-        }
-
-        .stable:before {
+        .stable {
             background: @green;
         }
 
-        .unstable:before {
+        .unstable {
             background: @orange;
         }
 
-        .failed:before {
+        .failed {
             background: @red;
         }
 
-        .cancelled:before {
+        .cancelled {
             background: @grey;
         }
 
-        .pending:before {
+        .pending {
             background: @blue;
         }
     }
@@ -249,17 +248,17 @@ h1 {
 .avatars {
     text-align: center;
     border: medium;
-    border-radius: 20px;
     margin-left: 0.5em;
-    background-color: darken(white, 5%);
+    margin-right: 0.5em;
     height: auto;
-
-
+    min-height: 202px;
+    max-height: 202px;
+    color: black;
     .avatar {
-        width: 48px;
-        height: 48px;
+        width: 70px;
+        height: 70px;
         border-radius: 50%;
-        background-size: contain;
+        background-size: cover;
         display: inline-block;
         margin: 5px;
         -webkit-transition: all .4s;
@@ -284,5 +283,58 @@ h1 {
         -ms-filter: grayscale(0%);
         -o-filter: grayscale(0%);
         filter: grayscale(0%);
+    }
+}
+
+.device-container {
+    .device {
+        width: 100%;
+    }
+
+    .deviceLine:first-child td {
+        padding-top: 0px;
+        /*opacity: 0;*/
+        transition: padding-top 1s ease-in-out /*, opacity 2s 2s ease-in*/;
+        -webkit-transition: padding-top 1s ease-in-out /*, opacity 2s 2s ease-in*/;
+    }
+
+    .deviceLine td {
+        opacity: 1;
+        padding-top: 18px;
+    }
+
+    .deviceLine {
+        line-height: 1;
+    }
+
+    .deviceName {
+        padding-right: 1em;
+        text-align: right;
+        font-size: 2em;
+        color: @primary;
+        width: 65%;
+        .font-serif;
+        background-repeat: no-repeat;
+        background-position: right;
+
+        &.android {
+            background-image: url('../images/android-logo.png');
+        }
+
+        &.ios {
+            background-image: url('../images/apple-logo.jpg');
+        }
+    }
+
+    .deviceLocation {
+        color: @orange;
+        .font-cursive;
+        text-align: left;
+        font-size: 1.5em;
+        width: 35%;
+    }
+
+    #smartphone {
+        fill: @icons;
     }
 }

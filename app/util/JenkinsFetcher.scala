@@ -81,7 +81,8 @@ object JenkinsFetcher {
         "status" -> mapBuildStatus((json \ "result").asOpt[String]),
         "number" -> buildNumber,
         "culprits" -> (json \ "culprits"),
-        "authors" -> ids)
+        "authors" -> ids,
+        "link" -> s"$baseUrl/$buildNumber")
     }
   }
 
@@ -93,7 +94,6 @@ object JenkinsFetcher {
       val detailsF = Future.sequence(builds.map(build => {
         fetchTestDetails(baseUrl, build)
       }))
-
       detailsF.map(details => {
         details.filter(_ != None)
           .map(d => d.get) // unwrap optionals
@@ -109,7 +109,7 @@ object JenkinsFetcher {
       val json = Json.parse(responseDetails.body)
       val triggeringBuild = (json \\ "upstreamBuild").headOption.map(_.as[Int])
       triggeringBuild.map(build =>
-        (build, Json.obj("status" -> mapBuildStatus((json \ "result").asOpt[String]))))
+        (build, Json.obj("status" -> mapBuildStatus((json \ "result").asOpt[String]), "link" -> s"$baseUrl/$buildNumber")))
     }
   }
 
