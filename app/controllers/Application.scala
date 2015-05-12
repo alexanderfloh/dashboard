@@ -68,9 +68,8 @@ object Application extends Controller {
   }
 
   def getUsers() = Action.async {
-
     val response = UserFetcher.getUsers("http://austria/global/images/employees/");
-    response.map{Ok(_)}
+    response.map { Ok(_) }
   }
 
   def setDevice() = Action { implicit request =>

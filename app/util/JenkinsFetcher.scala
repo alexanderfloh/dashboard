@@ -12,16 +12,19 @@ import scala.util.parsing.json.JSONArray
 
 object JenkinsFetcher {
 
+    def getDetails(body:String, numberOfItems:Integer, baseUrl: String): Future[List[JsObject]] ={
+      val json = Json.parse(body)
+      val buildsJson = (json \ "builds").as[List[JsValue]]
+      val builds = buildsJson.map(build => (build \ "number").as[Int]).reverse.takeRight(numberOfItems)
+      Future.sequence(builds.map(build => {
+        fetchBuild(baseUrl, build)
+      }))
+  }
+  
   // fetch ci build with tests (core, workbench, kdt)
   def fetchCI(baseUrl: String, mapName: String, numberOfItems: Integer): Future[String] = {
     WS.url(baseUrl + "/api/json").get.flatMap { response =>
-      val json = Json.parse(response.body)
-      val buildsJson = (json \ "builds").as[List[JsValue]]
-      val builds = buildsJson.map(build => (build \ "number").as[Int]).reverse.takeRight(numberOfItems)
-
-      val details = Future.sequence(builds.map(build => {
-        fetchBuild(baseUrl, build)
-      }))
+      val details = getDetails(response.body, numberOfItems, baseUrl)
       for {
         core <- fetchTests("http://lnz-bobthebuilder/jenkins/job/NTF%20Core%20Regressions")
         workbench <- fetchTests("http://lnz-bobthebuilder/jenkins/job/NTF%20Workbench%20Regressions");
@@ -39,17 +42,11 @@ object JenkinsFetcher {
       }
     }
   }
-
+  
   // fetch nightly build with nevergreen list
   def fetchNightly(baseUrl: String, mapName: String, numberOfItems: Integer): Future[String] = {
     WS.url(baseUrl + "/api/json").get.flatMap { response =>
-      val json = Json.parse(response.body)
-      val buildsJson = (json \ "builds").as[List[JsValue]]
-      val builds = buildsJson.map(build => (build \ "number").as[Int]).reverse.takeRight(numberOfItems)
-
-      val details = Future.sequence(builds.map(build => {
-        fetchBuild(baseUrl, build)
-      }))
+      val details = getDetails(response.body, numberOfItems, baseUrl)
       for {
         lastCompletedDetails <- details
         nevergreensXML <- ScFetcher.fetchNevergreens

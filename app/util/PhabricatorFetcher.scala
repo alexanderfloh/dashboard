@@ -45,7 +45,7 @@ object PhabricatorFetcher {
         "sessionKey" -> json.\\("sessionKey").last,
         "connectionID" -> json.\\("connectionID").last)
     }
-    // wait for the session
+    // we have to wait for the session
     Await.result(conduit, Duration(3000, "millis"))
   }
 

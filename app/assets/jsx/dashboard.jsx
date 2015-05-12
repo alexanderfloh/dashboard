@@ -4,7 +4,6 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
   var LoadStatusMixin = {
     getInitialState: function() {
       return {
-        lastCompletedBuild: { culprits: [], changesetItems: [] },
         buildCI: [],
       	buildNightly: [],
         nevergreens: [],
@@ -14,7 +13,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       };
     },
 
-    // load data from jenkins
+    // load data from jenkins, austria and phabricator
     loadStatus: function() {
       $.ajax({
         url: '/buildCI',
@@ -72,13 +71,13 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       });
     },
     
-
     componentWillMount: function() {
       this.loadStatus();
       setInterval(this.loadStatus, this.props.pollInterval);
     },
   };
 
+  
   var Dashboard = React.createClass({
     mixins: [LoadStatusMixin],
 
