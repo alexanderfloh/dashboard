@@ -353,7 +353,6 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       );
     }
   });
-
   
   var Devices = React.createClass({
     getInitialState: function() {
