@@ -348,9 +348,6 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
           <article className="device-container">
             <Devices pollInterval={15000}/>
           </article>
-            <footer className="global-footer">
-            <a href="/assets/DevicePusher/DevicePusher.UI.application" download="DevicePusher.UI.application">Download Device Pusher</a>
-          </footer>
         </div>
         
       );
@@ -434,20 +431,13 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       });
 
       return (
-        <section>
-          <header>
-            <svg id="smartphone" x="0px" y="0px" width="100px" height="100px" viewBox="0 0 100 100" enable-background="new 0 0 100 100">
-              <g>
-                <path d="M64.812,14.25H35.188c-4.418,0-8,3.582-8,8v55.5c0,4.418,3.582,8,8,8h29.625c4.418,0,8-3.582,8-8v-55.5   C72.812,17.831,69.23,14.25,64.812,14.25z M64.812,77.75H35.188v-55.5h29.625V77.75z"/>
-                <circle cx="49.579" cy="70.85" r="4"/>
-              </g>
-            </svg>
-            <h2>
-              Device Rental
-            </h2>
-            <span>({devices.length} connected)</span>
-          </header>
-          <table className="device">
+        <section className="deviceSection">
+          <h1 className="deviceSummery">
+            Connected devices ({devices.length}):
+            <a href="/assets/DevicePusher/DevicePusher.UI.application" download="DevicePusher.UI.application">(Download Device Pusher)</a>
+          </h1>
+
+          <table className="deviceTable">
             {deviceNodes}
           </table>
         </section>

@@ -87,14 +87,6 @@ body {
     .font-sans;
 }
 
-.global-footer {
-    text-align: center;
-
-    a {
-        color: black;
-    }
-}
-
 article {
     display: block;
     width: 100%;
@@ -168,12 +160,14 @@ a {
 
     .build-list {
         border: groove;
-        text-align:center;
+        text-align: center;
+
         .audits {
             padding-top: 1em;
             font-size: 1.5em;
             display: inline-block;
             width: 25%;
+
             .audit-name {
                 .avatar {
                     width: 90px;
@@ -190,17 +184,18 @@ a {
             }
 
             .audit-cnt {
-                
                 display: inline;
-                border-radius: 20%;
+                border-radius: 15%;
                 text-align: center;
                 position: relative;
                 left: 30px;
                 top: -105px;
                 font-weight: bold;
                 font-size: 1.5em;
-                color: red;
-                
+                color: white;
+                background-color: #c0392b;
+                padding: 5px;
+                min-width: 1.5em;
             }
         }
     }
@@ -273,11 +268,11 @@ a {
     min-height: 202px;
     max-height: 202px;
     color: black;
+
     .avatar {
         width: 70px;
         height: 70px;
         border-radius: 50%;
-        
         display: inline-block;
         margin: 5px;
         -webkit-transition: all .4s;
@@ -306,54 +301,61 @@ a {
 }
 
 .device-container {
-    .device {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    height: auto;
+
+    .deviceSection {
         width: 100%;
-    }
+        padding-left: 1em;
+        border: groove;
 
-    .deviceLine:first-child td {
-        padding-top: 0px;
-        /*opacity: 0;*/
-        transition: padding-top 1s ease-in-out /*, opacity 2s 2s ease-in*/;
-        -webkit-transition: padding-top 1s ease-in-out /*, opacity 2s 2s ease-in*/;
-    }
+        .deviceSummery {
+            .font-serif;
 
-    .deviceLine td {
-        opacity: 1;
-        padding-top: 0.5em;
-    }
-
-    .deviceLine {
-        line-height: 1;
-    }
-
-    .deviceName {
-        padding-right: 1em;
-        text-align: right;
-        font-size: 2em;
-        color: @primary;
-        width: 65%;
-        .font-serif;
-        background-repeat: no-repeat;
-        background-position: right;
-
-        &.android {
-            background-image: url('../images/android-logo.png');
+            a {
+                .font-sans;
+                font-size: 0.5em;
+                color: initial;
+                text-align: center;
+                position: sticky;
+            }
         }
 
-        &.ios {
-            background-image: url('../images/apple-logo.jpg');
+        .deviceTable {
+            margin-left: auto;
+            margin-right: auto;
+
+            .deviceLine {
+                line-height: 1;
+            }
+
+            .deviceName {
+                padding-right: 1em;
+                text-align: right;
+                font-size: 2em;
+                color: @primary;
+                width: 65%;
+                .font-serif;
+                background-repeat: no-repeat;
+                background-position: right;
+
+                &.android {
+                    background-image: url('../images/android-logo.png');
+                }
+
+                &.ios {
+                    background-image: url('../images/apple-logo.jpg');
+                }
+            }
+
+            .deviceLocation {
+                color: @orange;
+                .font-cursive;
+                text-align: left;
+                font-size: 1.5em;
+                width: 35%;
+            }
         }
-    }
-
-    .deviceLocation {
-        color: @orange;
-        .font-cursive;
-        text-align: left;
-        font-size: 1.5em;
-        width: 35%;
-    }
-
-    #smartphone {
-        fill: @icons;
     }
 }
