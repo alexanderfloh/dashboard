@@ -152,7 +152,10 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       function getPicture(name){
         name = formatEmplName(name);
         
-        if (empl.match(name.toLowerCase()) == null){
+        if (name == "No.Auditor.jpg"){
+          return '/assets/images/avatars/silkTestLogo.jpg';
+        }
+        else if (empl.match(name.toLowerCase()) == null){
           return getDefaultPicture();
         }
         else{
