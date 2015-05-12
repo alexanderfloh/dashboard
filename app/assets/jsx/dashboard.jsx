@@ -84,7 +84,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
 
     getDefaultProps: function() {
       return {
-        pollInterval: 5000
+        pollInterval: 10000
       };
     },
 
@@ -133,25 +133,19 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         return resultArray;
       }
       
-      function UrlExists(url) {
-        var http = new XMLHttpRequest();
-        http.open('HEAD', url, false);
-        http.send();
-        return http.status!=404;
-      }
-      
-      function checkImage (src, good) {
-        var img = new Image();
-        img.onload = good; 
-        img. src = src;
-      }
-      
       function getDefaultPicture(){
         return '/assets/images/avatars/default.jpg';
       }
       
       function formatEmplName(name){
-        return name.replace(" ", ".").replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/Ä/g,"Ae").replace(/Ö/g,"Oe").replace(/Ü/g,"Ue").replace(/ß/g,"ss") + '.jpg';
+        return name.replace(" ", ".")
+                   .replace(/ä/g,"ae")
+                   .replace(/ö/g,"oe")
+                   .replace(/ü/g,"ue")
+                   .replace(/Ä/g,"Ae")
+                   .replace(/Ö/g,"Oe")
+                   .replace(/Ü/g,"Ue")
+                   .replace(/ß/g,"ss") + '.jpg';
       }
       
       var empl = this.state.employeesAustria;
@@ -171,15 +165,30 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         var picture = getPicture(committer.fullName);
 
         var avatarUrlStyle = {
-            background: 'url(' + picture + ')',
-            backgroundSize: 'cover'
+            backgroundImage: 'url(' + picture + ')',
+            backgroundSize: '100%',
         };
-        
         return (    
             <div className="avatar" 
                  style={avatarUrlStyle} 
-                 key={committer.id} 
-                 title={committer.id} >
+                 key={committer.fullName} 
+                 title={committer.fullName} >
+            </div>
+        );
+      }
+      
+      function getAuditorPic(auditor){
+        var picture = getPicture(auditor.userName);
+
+        var avatarUrlStyle = {
+            background: 'url(' + picture + ')',
+            backgroundSize: 'cover'
+        };
+        return (    
+            <div className="avatar" 
+                 style={avatarUrlStyle}
+                 key={auditor.userName}
+                 title={auditor.userName} >
             </div>
         );
       }
@@ -214,12 +223,10 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
           andOthers = "+ " + (committerNodes.length - 6) + " other(s)";
         }
         return (
-            <li className="build-list-item">
+            <li className="build-list-item"
+              key={build.number}>
               <div className="build-item">
                 <ul>
-                  <li className="build-number">
-                    
-                  </li>
                   <li className="avatars">
                     {committerNodes.slice(0,6)}
                     <div>{andOthers}</div>
@@ -267,9 +274,6 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
             <li className="build-list-item">
               <div className="build-item">
                 <ul>
-                  <li className="build-number">
-                    
-                  </li>
                   <li className="avatars">
                     {committerNodes.slice(0,6)}
                     <div>{andOthers}</div>
@@ -307,9 +311,8 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         return (
           <div className="audits">
             <div className="audit-name"> 
-              {audit.userName}
+              {getAuditorPic(audit)}
             </div>
-            :
             <div className="audit-cnt"> 
               {audit.numberOfAudits}
             </div>
@@ -332,7 +335,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
                 {buildItems}
             	</ul>
               <h1> Open Audits </h1>
-              {audits.slice(0,13)}
+              {audits.slice(0,12)}
             </section>
             <aside id="nevergreens" className="nevergreens">
               {buildNightly} 
@@ -343,7 +346,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
             </aside>
           </article> 
           <article className="device-container">
-            <Devices pollInterval={5000}/>
+            <Devices pollInterval={15000}/>
           </article>
             <footer className="global-footer">
             <a href="/assets/DevicePusher/DevicePusher.UI.application" download="DevicePusher.UI.application">Download Device Pusher</a>

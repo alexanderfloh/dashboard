@@ -11,16 +11,10 @@ import scala.concurrent.Await
 import play.api.libs.json._
 
 object UserFetcher {
-  def getUsers(url: String): String = {
-    val request = WS.url(url).get();
-    
-    val res = request.map { req =>
-      //val json = Json.parse(req.body)
-            
-      Json.obj(
-        "employeesAustria" -> req.body)
+  def getUsers(url: String): Future[String] = {
+    WS.url(url).get() map { req =>
+      Json.prettyPrint(Json.obj(
+        "employeesAustria" -> req.body))
     }
-    
-    Json.prettyPrint(Await.result(res, Duration.Inf));
   }
 }

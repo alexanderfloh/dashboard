@@ -89,7 +89,8 @@ body {
 
 .global-footer {
     text-align: center;
-    a{
+
+    a {
         color: black;
     }
 }
@@ -167,21 +168,39 @@ a {
 
     .build-list {
         border: groove;
-
+        text-align:center;
         .audits {
-            padding-left: 20em;
-            padding-right: 20em;
-            padding-top: 0.5em;
+            padding-top: 1em;
             font-size: 1.5em;
-
+            display: inline-block;
+            width: 25%;
             .audit-name {
-                display: inline;
-                float: left;
+                .avatar {
+                    width: 90px;
+                    height: 90px;
+                    border-radius: 50%;
+                    background-size: cover;
+                    display: inline-block;
+                    -webkit-transition: all .4s;
+                    -moz-transition: all .4s;
+                    -ms-transition: all .4s;
+                    -o-transition: all .4s;
+                    transition: all .4s;
+                }
             }
 
             .audit-cnt {
+                
                 display: inline;
-                float: right;
+                border-radius: 20%;
+                text-align: center;
+                position: relative;
+                left: 30px;
+                top: -105px;
+                font-weight: bold;
+                font-size: 1.5em;
+                color: red;
+                
             }
         }
     }
@@ -258,7 +277,7 @@ a {
         width: 70px;
         height: 70px;
         border-radius: 50%;
-        background-size: cover;
+        
         display: inline-block;
         margin: 5px;
         -webkit-transition: all .4s;
@@ -300,7 +319,7 @@ a {
 
     .deviceLine td {
         opacity: 1;
-        padding-top: 18px;
+        padding-top: 0.5em;
     }
 
     .deviceLine {

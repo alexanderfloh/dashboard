@@ -45,37 +45,36 @@ object PhabricatorFetcher {
         "sessionKey" -> json.\\("sessionKey").last,
         "connectionID" -> json.\\("connectionID").last)
     }
-    Await.result(conduit, Duration.Inf)
+    // wait for the session
+    Await.result(conduit, Duration(3000, "millis"))
   }
 
-  def fetchPhabricatorUser(baseUrl: String, user: String, cert: String): String = {
+  def fetchPhabricatorUser(baseUrl: String, user: String, cert: String): Future[String] = {
     val params = Json.obj(
       "__conduit__" -> conduitConnect(baseUrl, user, cert))
 
     val request = WS.url(baseUrl + "api/user.query")
       .withQueryString(("params", params.toString()), ("output", "json")).post("")
 
-    val res = request.map { req =>
+    request.map { req =>
       val json = Json.parse(req.body)
       val list = (json\"result").as[List[JsObject]]
             
-      Json.obj(
-        "users" -> list)
+      Json.prettyPrint(Json.obj(
+        "users" -> list))
     }
-    Json.prettyPrint(Await.result(res, Duration.Inf))
   }
 
-  def fetchOpenAudits(baseUrl: String, user: String, cert: String): String = {
+  def fetchOpenAudits(baseUrl: String, user: String, cert: String): Future[String] = {
     val params = Json.obj(
       "__conduit__" -> conduitConnect(baseUrl, user, cert),
       "status" -> "audit-status-open")
     val request = WS.url(baseUrl + "api/audit.query")
       .withQueryString(("params", params.toString()), ("output", "json")).post("")
-    val res = request.map { req =>
+    request.map { req =>
       val json = Json.parse(req.body)
-      Json.obj(
-        "audits" -> json.\("result"))
+      Json.prettyPrint(Json.obj(
+        "audits" -> json.\("result")))
     }
-    Json.prettyPrint(Await.result(res, Duration.Inf))
   }
 }
