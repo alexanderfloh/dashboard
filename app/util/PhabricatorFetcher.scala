@@ -36,45 +36,43 @@ object PhabricatorFetcher {
       "output" -> "json",
       "__conduit__" -> true)
 
-    val response = WS.url(baseUrl + "api/conduit.connect")
-      .withQueryString(("params", connect_params.toString()), ("output", "json"), ("__conduit__", "True")).post("")
-
-    val conduit = response.map { respon =>
-      val json = Json.parse(respon.body);
-      Json.obj(
-        "sessionKey" -> json.\\("sessionKey").last,
-        "connectionID" -> json.\\("connectionID").last)
-    }
-    // we have to wait for the session
-    Await.result(conduit, Duration(3000, "millis"))
+    Await.result(WS.url(baseUrl + "api/conduit.connect")
+      .withQueryString(("params", connect_params.toString()), ("output", "json"), ("__conduit__", "True"))
+      .post("")
+      .map { respon =>
+        val json = Json.parse(respon.body);
+        Json.obj(
+          "sessionKey" -> json.\\("sessionKey").last,
+          "connectionID" -> json.\\("connectionID").last)
+      }, Duration(3000, "millis"))
   }
 
   def fetchPhabricatorUser(baseUrl: String, user: String, cert: String): Future[String] = {
     val params = Json.obj(
       "__conduit__" -> conduitConnect(baseUrl, user, cert))
 
-    val request = WS.url(baseUrl + "api/user.query")
-      .withQueryString(("params", params.toString()), ("output", "json")).post("")
-
-    request.map { req =>
-      val json = Json.parse(req.body)
-      val list = (json\"result").as[List[JsObject]]
-            
-      Json.prettyPrint(Json.obj(
-        "users" -> list))
-    }
+    WS.url(baseUrl + "api/user.query")
+      .withQueryString(("params", params.toString()), ("output", "json"))
+      .post("")
+      .map { req =>
+        val json = Json.parse(req.body)
+        val list = (json \ "result").as[List[JsObject]]
+        Json.prettyPrint(Json.obj(
+          "users" -> list))
+      }
   }
 
   def fetchOpenAudits(baseUrl: String, user: String, cert: String): Future[String] = {
     val params = Json.obj(
       "__conduit__" -> conduitConnect(baseUrl, user, cert),
       "status" -> "audit-status-open")
-    val request = WS.url(baseUrl + "api/audit.query")
-      .withQueryString(("params", params.toString()), ("output", "json")).post("")
-    request.map { req =>
-      val json = Json.parse(req.body)
-      Json.prettyPrint(Json.obj(
-        "audits" -> json.\("result")))
-    }
+    WS.url(baseUrl + "api/audit.query")
+      .withQueryString(("params", params.toString()), ("output", "json"))
+      .post("")
+      .map { req =>
+        val json = Json.parse(req.body)
+        Json.prettyPrint(Json.obj(
+          "audits" -> json.\("result")))
+      }
   }
 }

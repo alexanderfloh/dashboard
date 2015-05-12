@@ -12,15 +12,15 @@ import scala.util.parsing.json.JSONArray
 
 object JenkinsFetcher {
 
-    def getDetails(body:String, numberOfItems:Integer, baseUrl: String): Future[List[JsObject]] ={
-      val json = Json.parse(body)
-      val buildsJson = (json \ "builds").as[List[JsValue]]
-      val builds = buildsJson.map(build => (build \ "number").as[Int]).reverse.takeRight(numberOfItems)
-      Future.sequence(builds.map(build => {
-        fetchBuild(baseUrl, build)
-      }))
+  def getDetails(body: String, numberOfItems: Integer, baseUrl: String): Future[List[JsObject]] = {
+    val json = Json.parse(body)
+    val buildsJson = (json \ "builds").as[List[JsValue]]
+    val builds = buildsJson.map(build => (build \ "number").as[Int]).reverse.takeRight(numberOfItems)
+    Future.sequence(builds.map(build => {
+      fetchBuild(baseUrl, build)
+    }))
   }
-  
+
   // fetch ci build with tests (core, workbench, kdt)
   def fetchCI(baseUrl: String, mapName: String, numberOfItems: Integer): Future[String] = {
     WS.url(baseUrl + "/api/json").get.flatMap { response =>
@@ -42,7 +42,7 @@ object JenkinsFetcher {
       }
     }
   }
-  
+
   // fetch nightly build with nevergreen list
   def fetchNightly(baseUrl: String, mapName: String, numberOfItems: Integer): Future[String] = {
     WS.url(baseUrl + "/api/json").get.flatMap { response =>
@@ -109,5 +109,4 @@ object JenkinsFetcher {
         (build, Json.obj("status" -> mapBuildStatus((json \ "result").asOpt[String]), "link" -> s"$baseUrl/$buildNumber")))
     }
   }
-
 }
