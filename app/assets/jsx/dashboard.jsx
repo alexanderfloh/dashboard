@@ -9,6 +9,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         nevergreens: [],
         users:[],
         audits:[],
+        lastBuild:[],
         employeesAustria:""
       };
     },
@@ -153,7 +154,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         name = formatEmplName(name);
         
         if (name == "No.Auditor.jpg"){
-          return '/assets/images/avatars/silkTestLogo.jpg';
+          return '/assets/images/avatars/silkTestLogo.png';
         }
         else if (empl.match(name.toLowerCase()) == null){
           return getDefaultPicture();
@@ -179,15 +180,23 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         );
       }
       
+      function getAvatarClassSet(name){
+        var cx = React.addons.classSet;
+        return cx({
+          'avatar': name !== 'No Auditor',
+          'silkTest': name === 'No Auditor'
+        });
+      }
+      
       function getAuditorPic(auditor){
         var picture = getPicture(auditor.userName);
-
+        var avatarClass = getAvatarClassSet(auditor.userName);
         var avatarUrlStyle = {
             background: 'url(' + picture + ')',
             backgroundSize: 'cover'
         };
         return (    
-            <div className="avatar" 
+            <div className={avatarClass}
                  style={avatarUrlStyle}
                  key={auditor.userName}
                  title={auditor.userName} >
@@ -211,11 +220,32 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       }
       
    // ----------------------- render functions -----------------------//
-
+      var currentBuild = this.state.lastBuild;
+      function buildStatus(build){
+        var classesStatus = getStatusClassSet(build, "status");
+        
+        if (currentBuild.building && currentBuild.buildNumber === build.number){
+          return (
+              <li className="status pending">
+              <a href={build.link}>
+                <BuildProgress lastBuild={currentBuild} /> 
+              </a>
+            </li>
+               
+          )
+        }
+        return (
+            <li className={classesStatus}>
+              <a href={build.link}>
+                {build.number}
+              </a>
+            </li>)
+      }
+      
       function buildItems(build){
         var committerNodes = build.culprits.map(getCommitters);
         
-        var classesStatus = getStatusClassSet(build, "status");
+        
         var classesCoreResults = getStatusClassSet(build.core, 'core');        
         var classesWorkbenchResults = getStatusClassSet(build.workbench, 'workbench');
         var classesKDTResults = getStatusClassSet(build.kdt, 'kdt');
@@ -233,11 +263,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
                     {committerNodes.slice(0,6)}
                     <div>{andOthers}</div>
                   </li>
-                  <li className={classesStatus}>
-                    <a href={build.link}>
-                      {build.number}
-                    </a>
-                  </li>
+                  {buildStatus(build)}
                   <li>
                     <div>
                       <ul className="regression-list">
@@ -443,6 +469,44 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
           </table>
         </section>
       );
+    }
+  });
+  
+  var BuildProgress = React.createClass({
+    render: function() {
+      if(this.props.lastBuild.building) {
+        var timeSpent = Date.now() - this.props.lastBuild.timestamp;
+        var timeLeft = (this.props.lastBuild.timestamp + this.props.lastBuild.estimatedDuration) - Date.now();
+        var progress = parseInt((timeSpent / this.props.lastBuild.estimatedDuration) * 100, 10);
+        var formatTime = function(d) {
+          if(timeLeft > 0) {
+            return Moment(d).from(Moment(0), true) + ' remaining';
+          } else {
+            return 'any moment now...';
+          }
+        };
+        var widthStyle = {
+          width: Math.min(progress, 95) + '%'
+        }
+        return (
+          <div className="buildProgress">
+            <div className="progress-bar-background">
+              <span className="bar" style={widthStyle}> </span>
+            </div>
+            <div className="label">
+              <div className="buildNumber">
+                {this.props.lastBuild.buildNumber}
+              </div>
+              <div className="timeLeft">
+                {formatTime(timeLeft)}
+              </div>
+            </div>
+          </div>
+        );
+      }
+      else {
+        return (<div className="buildProgress" />);
+      }
     }
   });
   

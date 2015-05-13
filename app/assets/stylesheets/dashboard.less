@@ -169,7 +169,7 @@ a {
             width: 25%;
 
             .audit-name {
-                .avatar {
+                .avatar, .silkTest {
                     width: 90px;
                     height: 90px;
                     border-radius: 50%;
@@ -180,6 +180,10 @@ a {
                     -ms-transition: all .4s;
                     -o-transition: all .4s;
                     transition: all .4s;
+                }
+
+                .silkTest {
+                    border-radius: initial;
                 }
             }
 
@@ -235,6 +239,8 @@ a {
 
         .status {
             font-size: 3em;
+            min-height: 130px;
+            max-height: 130px;
         }
 
         .stable {
@@ -254,7 +260,40 @@ a {
         }
 
         .pending {
-            background: @blue;
+            background: darkblue;
+
+            .buildProgress {
+                text-align: center;
+
+                .progress-bar-background {
+                    text-align: left;
+                    height: 0.2em;
+
+                    .bar {
+                        background-color: @blue;
+                        display: inline-block;
+                        height: 0.95em;
+                        margin-left: 0.05em;
+                    }
+                }
+
+                .label {
+                    position: relative;
+                    top: -25px;
+                    font-size: 0.2em;
+                    color: white;
+
+                    .buildNumber {
+                        text-align: center;
+                        font-size: 5.2em;
+                    }
+
+                    .timeLeft {
+                        position: relative;
+                        top: -4px;
+                    }
+                }
+            }
         }
     }
 }

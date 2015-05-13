@@ -59,12 +59,18 @@ object Application extends Controller {
 
   def getPhabUser = Action.async {
     val response = PhabricatorFetcher.fetchPhabricatorUser("http://lnz-phabricator.microfocus.com/", "AlexanderFl", "wxuhvuaaow2wzf76juqwskpfstz6pfpn2ez3yx5wdpagtaqtnsobr3hjx3d23wpvcnscec7zh3i4g5myyvxy4efkwxcfmwzozfj2kbemx5lqyuqhoxsawxdtmgtvet57c25qrgbwlvvv77dccjzep6oiskct3tmmaimlnnqm2hmb7sxhz6bulln2l6lak5siw2gyhyonx6opjwb7wi74vpowttb3cbsce54emwrabur6dqea2uzv26ajytu4xvo");
-    response.map { Ok(_) }
+    if (response == null)
+      Future("").map { Ok(_) }
+    else
+      response.map { Ok(_) }
   }
 
   def getPhabAudits = Action.async {
     val response = PhabricatorFetcher.fetchOpenAudits("http://lnz-phabricator.microfocus.com/", "AlexanderFl", "wxuhvuaaow2wzf76juqwskpfstz6pfpn2ez3yx5wdpagtaqtnsobr3hjx3d23wpvcnscec7zh3i4g5myyvxy4efkwxcfmwzozfj2kbemx5lqyuqhoxsawxdtmgtvet57c25qrgbwlvvv77dccjzep6oiskct3tmmaimlnnqm2hmb7sxhz6bulln2l6lak5siw2gyhyonx6opjwb7wi74vpowttb3cbsce54emwrabur6dqea2uzv26ajytu4xvo");
-    response.map { Ok(_) }
+    if (response == null)
+      Future("").map { Ok(_) }
+    else
+      response.map { Ok(_) }
   }
 
   def getUsers() = Action.async {

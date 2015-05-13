@@ -15,6 +15,7 @@ import java.security.MessageDigest
 import java.lang.String
 import scala.concurrent.duration.Duration
 import scala.concurrent.Await
+import java.util.concurrent.TimeoutException
 object PhabricatorFetcher {
 
   def conduitConnect(baseUrl: String, user: String, cert: String): JsObject = {
@@ -36,43 +37,61 @@ object PhabricatorFetcher {
       "output" -> "json",
       "__conduit__" -> true)
 
-    Await.result(WS.url(baseUrl + "api/conduit.connect")
-      .withQueryString(("params", connect_params.toString()), ("output", "json"), ("__conduit__", "True"))
-      .post("")
-      .map { respon =>
-        val json = Json.parse(respon.body);
-        Json.obj(
-          "sessionKey" -> json.\\("sessionKey").last,
-          "connectionID" -> json.\\("connectionID").last)
-      }, Duration(3000, "millis"))
+    try {
+      Await.result(WS.url(baseUrl + "api/conduit.connect")
+        .withQueryString(("params", connect_params.toString()), ("output", "json"), ("__conduit__", "True"))
+        .post("")
+        .map { respon =>
+          val json = Json.parse(respon.body);
+          Json.obj(
+            "sessionKey" -> json.\\("sessionKey").last,
+            "connectionID" -> json.\\("connectionID").last)
+        }, Duration(1000, "millis"))
+    } catch {
+      case e: IllegalArgumentException => println("Faild: Get phabricator session (IllegalArgumentException)"); null;
+      case e: InterruptedException     => println("Faild: Get phabricator session (InterruptedException)"); null;
+      case e: TimeoutException         => println("Faild: Get phabricator session (TimeoutException)"); null;
+    }
+
   }
 
   def fetchPhabricatorUser(baseUrl: String, user: String, cert: String): Future[String] = {
-    val params = Json.obj(
-      "__conduit__" -> conduitConnect(baseUrl, user, cert))
+    val conduit = conduitConnect(baseUrl, user, cert)
+    if (conduit == null) {
+      null
+    } else {
+      val params = Json.obj(
+        "__conduit__" -> conduit)
 
-    WS.url(baseUrl + "api/user.query")
-      .withQueryString(("params", params.toString()), ("output", "json"))
-      .post("")
-      .map { req =>
-        val json = Json.parse(req.body)
-        val list = (json \ "result").as[List[JsObject]]
-        Json.prettyPrint(Json.obj(
-          "users" -> list))
-      }
+      WS.url(baseUrl + "api/user.query")
+        .withQueryString(("params", params.toString()), ("output", "json"))
+        .post("")
+        .map { req =>
+          val json = Json.parse(req.body)
+          val list = (json \ "result").as[List[JsObject]]
+          Json.prettyPrint(Json.obj(
+            "users" -> list))
+        }
+    }
   }
 
   def fetchOpenAudits(baseUrl: String, user: String, cert: String): Future[String] = {
-    val params = Json.obj(
-      "__conduit__" -> conduitConnect(baseUrl, user, cert),
-      "status" -> "audit-status-open")
-    WS.url(baseUrl + "api/audit.query")
-      .withQueryString(("params", params.toString()), ("output", "json"))
-      .post("")
-      .map { req =>
-        val json = Json.parse(req.body)
-        Json.prettyPrint(Json.obj(
-          "audits" -> json.\("result")))
-      }
+    val conduit = conduitConnect(baseUrl, user, cert)
+    if (conduit == null) {
+      null
+    } else {
+      val params = Json.obj(
+        "__conduit__" -> conduit,
+        "status" -> "audit-status-open")
+
+      WS.url(baseUrl + "api/audit.query")
+        .withQueryString(("params", params.toString()), ("output", "json"))
+        .post("")
+        .map { req =>
+          val json = Json.parse(req.body)
+          Json.prettyPrint(Json.obj(
+            "audits" -> json.\("result")))
+        }
+    }
   }
 }
