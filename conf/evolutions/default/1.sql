@@ -1,5 +1,6 @@
 
 # --- !Ups
+
 CREATE SEQUENCE device_id_seq;
 CREATE SEQUENCE location_id_seq;
 
@@ -17,8 +18,9 @@ CREATE TABLE location (
 );
 
 # --- !Downs
+
 DROP TABLE device;
 DROP TABLE location;
 
 DROP SEQUENCE device_id_seq;
-DROP SEQUENCE locaiton_id_seq;
+DROP SEQUENCE location_id_seq;
