@@ -337,14 +337,14 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       
       function renderAudit(audit) {
         return (
-          <div className="audits">
+          <li className="audit">
             <div className="audit-name"> 
               {getAuditorPic(audit)}
             </div>
             <div className="audit-cnt"> 
               {audit.numberOfAudits}
             </div>
-          </div>
+          </li>
         );
       }
 
@@ -357,25 +357,33 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
    // ----------------------- html site structure -----------------------//
       return (
         <div>
-          <article className="build-section">
-            <section className="build-list">
-            	<ul className="build-items">
+          <article className="dashboard">
+            <section className="build-section">
+            	<ul className="ci-build-list">
                 {buildItems}
             	</ul>
-              <h1> Open Audits </h1>
-              {audits.slice(0,12)}
             </section>
-            <aside id="nevergreens" className="nevergreens">
+            
+            <section className="audit-section">
+              <h1> Open Audits </h1>
+              <ul className="audit-list">
+                {audits.slice(0,12)}
+              </ul>
+            </section>
+            
+            <section className="deviceSection">
+              <Devices pollInterval={15000}/>
+            </section>
+            
+            <aside id="nightly-build" className="nightly-build">
               {buildNightly} 
               <h1> Nevergreens </h1>
               <ul className="nevergreen-list">
                 {nevergreenNodes.slice(0,26)}
               </ul>
             </aside>
+            
           </article> 
-          <article className="device-container">
-            <Devices pollInterval={15000}/>
-          </article>
         </div>
         
       );
@@ -458,16 +466,16 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       });
 
       return (
-        <section className="deviceSection">
-          <h1 className="deviceSummery">
-            Connected devices ({devices.length}):
-            <a href="/assets/DevicePusher/DevicePusher.UI.application" download="DevicePusher.UI.application">(Download Device Pusher)</a>
-          </h1>
+          <div>
+        <h1 className="deviceSummery">
+          Connected devices ({devices.length}):
+          <a href="/assets/DevicePusher/DevicePusher.UI.application" download="DevicePusher.UI.application">(Download Device Pusher)</a>
+        </h1>
 
-          <table className="deviceTable">
-            {deviceNodes}
-          </table>
-        </section>
+        <table className="deviceTable">
+          {deviceNodes}
+        </table>
+        </div>
       );
     }
   });

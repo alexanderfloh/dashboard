@@ -89,23 +89,26 @@ body {
 
 article {
     display: block;
-    width: 100%;
 }
 
 section {
+    float: left;
+    margin-left: 30em;
+    border: groove;
+    padding-bottom: 1em;
     width: 88em;
-    float: right;
-    height: 66em;
-    margin-bottom: 2em;
+    background-color:white;
 }
 
 aside {
     float: left;
+    position: fixed;
     width: 29em;
+    height: 100%;
     text-align: center;
     border: groove;
-    height: 66em;
-    margin-bottom: 2em;
+    z-index: -1;
+    overflow-y: scroll;
 }
 
 h1 {
@@ -123,232 +126,72 @@ a {
 }
 
 // ---------------------------- classes ---------------------------- //
-.build-section {
+.dashboard {
     padding-top: 1em;
     padding-left: 0.5em;
     padding-right: 0.5em;
 
-    .nevergreens {
-        background-color: transparent;
+    .build-section {
+        white-space: nowrap;
 
-        .nevergreen-list {
-            text-align: left;
-            margin-left: 1em;
-            margin-right: 1em;
-
-            .nevergreen {
-                font-family: monospace;
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-                font-size: 1.2em;
-                padding: 0.2em;
-                display: inline-block;
-                background-color: transparent;
-                width: 100%;
-
-                a {
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-                    text-decoration: underline;
-                    color: black;
-                }
-            }
-        }
-    }
-
-    .build-list {
-        border: groove;
-        text-align: center;
-
-        .audits {
-            padding-top: 1em;
-            font-size: 1.5em;
-            display: inline-block;
-            width: 25%;
-
-            .audit-name {
-                .avatar, .silkTest {
-                    width: 90px;
-                    height: 90px;
-                    border-radius: 50%;
-                    background-size: cover;
-                    display: inline-block;
-                    -webkit-transition: all .4s;
-                    -moz-transition: all .4s;
-                    -ms-transition: all .4s;
-                    -o-transition: all .4s;
-                    transition: all .4s;
-                }
-
-                .silkTest {
-                    border-radius: initial;
-                }
-            }
-
-            .audit-cnt {
-                display: inline;
-                border-radius: 15%;
-                text-align: center;
-                position: relative;
-                left: 30px;
-                top: -105px;
+        .ci-build-list {
+            .build-list-item:last-child {
                 font-weight: bold;
+            }
+        }
+    }
+
+    .audit-section {
+        text-align:center;
+        .audit-list {
+            -webkit-column-count: 5;
+            -moz-column-count: 5;
+            column-count: 5;
+            padding-left: 15em;
+            .audit {
+                padding-top: 1em;
                 font-size: 1.5em;
-                color: white;
-                background-color: @red;
-                padding: 5px;
-                min-width: 1.5em;
-            }
-        }
-    }
-}
-
-.build-list-item:last-child {
-    font-weight: bold;
-}
-
-.build-list-item {
-    display: inline;
-
-    .build-item {
-        margin-top: 0.5em;
-        display: inline-block;
-        margin-left: 0.5em;
-        margin-right: 0.5em;
-        height: auto;
-        color: white;
-        font-size: 2em;
-        width: 9.9em;
-        border: groove;
-        background: lighten(@grey, 10%);
-
-        .build-number {
-            text-align: center;
-            font-size: 2em;
-            color: black;
-        }
-
-        .status, .core, .kdt, .workbench {
-            font-size: 1em;
-            padding: 0.2em 0.2em 0.2em 0em;
-            margin: 5px 0px 5px 0px;
-            text-align: center;
-        }
-
-        .status {
-            font-size: 3em;
-            min-height: 130px;
-            max-height: 130px;
-        }
-
-        .stable {
-            background: @green;
-        }
-
-        .unstable {
-            background: @orange;
-        }
-
-        .failed {
-            background: @red;
-        }
-
-        .cancelled {
-            background: @grey;
-        }
-
-        .pending {
-            background: darkblue;
-
-            .buildProgress {
-                text-align: center;
-
-                .progress-bar-background {
-                    text-align: left;
-                    height: 0.2em;
-
-                    .bar {
-                        background-color: @blue;
+                display: inline-block;
+                width:100%;
+                .audit-name {
+                    .avatar, .silkTest {
+                        width: 90px;
+                        height: 90px;
+                        border-radius: 50%;
+                        background-size: cover;
                         display: inline-block;
-                        height: 0.95em;
-                        margin-left: 0.05em;
+                        -webkit-transition: all .4s;
+                        -moz-transition: all .4s;
+                        -ms-transition: all .4s;
+                        -o-transition: all .4s;
+                        transition: all .4s;
+                    }
+
+                    .silkTest {
+                        border-radius: initial;
                     }
                 }
 
-                .label {
+                .audit-cnt {
+                    display: inline;
+                    border-radius: 15%;
+                    text-align: center;
                     position: relative;
-                    top: -25px;
-                    font-size: 0.2em;
+                    left: 30px;
+                    top: -105px;
+                    font-weight: bold;
+                    font-size: 1.5em;
                     color: white;
-
-                    .buildNumber {
-                        text-align: center;
-                        font-size: 5.2em;
-                    }
-
-                    .timeLeft {
-                        position: relative;
-                        top: -4px;
-                    }
+                    background-color: @red;
+                    padding: 5px;
+                    min-width: 1.5em;
                 }
             }
         }
     }
-}
-
-.avatars {
-    text-align: center;
-    border: medium;
-    margin-left: 0.5em;
-    margin-right: 0.5em;
-    height: auto;
-    min-height: 202px;
-    max-height: 202px;
-    color: black;
-
-    .avatar {
-        width: 70px;
-        height: 70px;
-        border-radius: 50%;
-        display: inline-block;
-        margin: 5px;
-        -webkit-transition: all .4s;
-        -moz-transition: all .4s;
-        -ms-transition: all .4s;
-        -o-transition: all .4s;
-        transition: all .4s;
-        float: inherit;
-    }
-
-    .avatar:not(:hover) {
-        -webkit-filter: grayscale(100%);
-        -moz-filter: grayscale(100%);
-        -ms-filter: grayscale(100%);
-        -o-filter: grayscale(100%);
-        filter: grayscale(100%);
-    }
-
-    .avatar & :hover {
-        -webkit-filter: grayscale(0%);
-        -moz-filter: grayscale(0%);
-        -ms-filter: grayscale(0%);
-        -o-filter: grayscale(0%);
-        filter: grayscale(0%);
-    }
-}
-
-.device-container {
-    padding-left: 0.5em;
-    padding-right: 0.5em;
-    height: auto;
 
     .deviceSection {
-        width: 100%;
-        padding-left: 1em;
-        border: groove;
-
+        /*margin-top: 70em;*/
         .deviceSummery {
             .font-serif;
 
@@ -395,6 +238,168 @@ a {
                 font-size: 1.5em;
                 width: 35%;
             }
+        }
+    }
+
+    .nightly-build {
+        background-color: transparent;
+
+        .nevergreen-list {
+            text-align: left;
+            margin-left: 1em;
+            margin-right: 1em;
+
+            .nevergreen {
+                font-family: monospace;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                font-size: 1.2em;
+                padding: 0.2em;
+                display: inline-block;
+                background-color: transparent;
+                width: 100%;
+
+                a {
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    text-decoration: underline;
+                    color: black;
+                }
+            }
+        }
+    }
+
+
+
+    .build-list-item {
+        display: inline;
+
+        .build-item {
+            margin-top: 0.5em;
+            display: inline-block;
+            margin-left: 0.5em;
+            margin-right: 0.5em;
+            height: auto;
+            color: white;
+            font-size: 2em;
+            width: 9.9em;
+            border: groove;
+            background: lighten(@grey, 10%);
+
+            .build-number {
+                text-align: center;
+                font-size: 2em;
+                color: black;
+            }
+
+            .status, .core, .kdt, .workbench {
+                font-size: 1em;
+                padding: 0.2em 0.2em 0.2em 0em;
+                margin: 5px 0px 5px 0px;
+                text-align: center;
+            }
+
+            .status {
+                font-size: 3em;
+                min-height: 130px;
+                max-height: 130px;
+            }
+
+            .stable {
+                background: @green;
+            }
+
+            .unstable {
+                background: @orange;
+            }
+
+            .failed {
+                background: @red;
+            }
+
+            .cancelled {
+                background: @grey;
+            }
+
+            .pending {
+                background: darkblue;
+
+                .buildProgress {
+                    text-align: center;
+
+                    .progress-bar-background {
+                        text-align: left;
+                        height: 0.2em;
+
+                        .bar {
+                            background-color: @blue;
+                            display: inline-block;
+                            height: 0.95em;
+                            margin-left: 0.05em;
+                        }
+                    }
+
+                    .label {
+                        position: relative;
+                        top: -25px;
+                        font-size: 0.2em;
+                        color: white;
+
+                        .buildNumber {
+                            text-align: center;
+                            font-size: 5.2em;
+                        }
+
+                        .timeLeft {
+                            position: relative;
+                            top: -4px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .avatars {
+        text-align: center;
+        border: medium;
+        margin-left: 0.5em;
+        margin-right: 0.5em;
+        height: auto;
+        min-height: 202px;
+        max-height: 202px;
+        color: black;
+
+        .avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 5px;
+            -webkit-transition: all .4s;
+            -moz-transition: all .4s;
+            -ms-transition: all .4s;
+            -o-transition: all .4s;
+            transition: all .4s;
+            float: inherit;
+        }
+
+        .avatar:not(:hover) {
+            -webkit-filter: grayscale(100%);
+            -moz-filter: grayscale(100%);
+            -ms-filter: grayscale(100%);
+            -o-filter: grayscale(100%);
+            filter: grayscale(100%);
+        }
+
+        .avatar & :hover {
+            -webkit-filter: grayscale(0%);
+            -moz-filter: grayscale(0%);
+            -ms-filter: grayscale(0%);
+            -o-filter: grayscale(0%);
+            filter: grayscale(0%);
         }
     }
 }
