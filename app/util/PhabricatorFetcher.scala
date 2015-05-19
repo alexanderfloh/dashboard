@@ -1,6 +1,7 @@
 package util
 
 import scala.concurrent.Future
+import play.api.Play
 import play.api.libs.ws.WS
 import play.api.libs.ws.WSRequestHolder
 import play.api.Play.current
@@ -18,16 +19,21 @@ import scala.concurrent.Await
 import java.util.concurrent.TimeoutException
 object PhabricatorFetcher {
 
-  def conduitConnect(baseUrl: String, user: String, cert: String): JsObject = {
+  def conduitConnect(baseUrl: String): JsObject = {
+    val phabUser = Play.current.configuration.getString("dashboard.phabUser")
+    .getOrElse(throw new RuntimeException("dashboard.phabUser not configured"))
+    val phabUserCert = Play.current.configuration.getString("dashboard.phabUserCert")
+    .getOrElse(throw new RuntimeException("dashboard.phabUserCert not configured"))
+    
     val token = System.currentTimeMillis / 1000
     val md = java.security.MessageDigest.getInstance("SHA-1")
-    val signature = md.digest((token.toString() + cert).getBytes("UTF-8")).map("%02x".format(_)).mkString
+    val signature = md.digest((token.toString() + phabUserCert).getBytes("UTF-8")).map("%02x".format(_)).mkString
 
     val connect_params = Json.obj(
       "client" -> "Dashboard",
       "clientVersion" -> "0",
       "clientDescription" -> "Get commits where audit is needed",
-      "user" -> user,
+      "user" -> phabUser,
       "host" -> baseUrl,
       "authToken" -> token,
       "authSignature" -> signature)
@@ -55,8 +61,10 @@ object PhabricatorFetcher {
 
   }
 
-  def fetchPhabricatorUser(baseUrl: String, user: String, cert: String): Future[String] = {
-    val conduit = conduitConnect(baseUrl, user, cert)
+  def fetchPhabricatorUser(): Future[String] = {
+    val baseUrl = Play.current.configuration.getString("dashboard.urlPhabricator")
+    .getOrElse(throw new RuntimeException("dashboard.urlPhabricator not configured"))
+    val conduit = conduitConnect(baseUrl)
     if (conduit == null) {
       null
     } else {
@@ -75,8 +83,10 @@ object PhabricatorFetcher {
     }
   }
 
-  def fetchOpenAudits(baseUrl: String, user: String, cert: String): Future[String] = {
-    val conduit = conduitConnect(baseUrl, user, cert)
+  def fetchOpenAudits(): Future[String] = {
+    val baseUrl = Play.current.configuration.getString("dashboard.urlPhabricator")
+    .getOrElse(throw new RuntimeException("dashboard.urlPhabricator not configured"))
+    val conduit = conduitConnect(baseUrl)
     if (conduit == null) {
       null
     } else {
