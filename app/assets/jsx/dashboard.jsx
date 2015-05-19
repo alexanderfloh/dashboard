@@ -104,7 +104,8 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       function getNotAssignedAudits(audits){
         var res = 0;
         for(var i = 0; i<audits.length; i++){
-            if (audits[i].status === "audit-required"){
+            if (audits[i].status === "audit-required" &&
+                audits[i].reasons[0] === "H4 ST Audit Triggered Audit"){
               res++;
           }
         }
@@ -208,9 +209,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         var cx = React.addons.classSet;
         return cx({
           'status': name === 'status',
-          'core': name === 'core',
-          'workbench': name === 'workbench',
-          'kdt': name === 'kdt',
+          'regression': name === 'regression',
           'stable': build.status === 'stable',
           'cancelled': build.status === 'cancelled',
           'unstable': build.status === 'unstable',
@@ -244,11 +243,16 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       
       function buildItems(build){
         var committerNodes = build.culprits.map(getCommitters);
+        var regressionName1 = "---";
+        var regressionName2 = "---";
+        var regressionName3 = "---";
+        try{
+          regressionName1 = build.regression1.name.toUpperCase();
+          regressionName2 = build.regression2.name.toUpperCase();
+          regressionName3 = build.regression3.name.toUpperCase();
+        }catch(e){}
         
-        
-        var classesCoreResults = getStatusClassSet(build.core, 'core');        
-        var classesWorkbenchResults = getStatusClassSet(build.workbench, 'workbench');
-        var classesKDTResults = getStatusClassSet(build.kdt, 'kdt');
+        var classesRegressionResult = getStatusClassSet(build.regression1, "regression");        
         
         var andOthers = ""; 
         if (committerNodes.length > 6){
@@ -267,19 +271,19 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
                   <li>
                     <div>
                       <ul className="regression-list">
-                        <li className={classesCoreResults}>
-                          <a href={build.core.link}>
-                            CORE
+                        <li className={classesRegressionResult}>
+                          <a href={build.regression1.link}>
+                            {regressionName1}
                           </a>
                         </li>
-                        <li className={classesWorkbenchResults}>
-                          <a href={build.workbench.link}>
-                            WORKBENCH
+                        <li className={classesRegressionResult}>
+                          <a href={build.regression2.link}>
+                            {regressionName2}
                           </a>
                         </li>
-                        <li className={classesKDTResults}>
-                          <a href={build.kdt.link}>
-                            KDT
+                        <li className={classesRegressionResult}>
+                          <a href={build.regression3.link}>
+                            {regressionName3}
                           </a>
                         </li>
                       </ul>
