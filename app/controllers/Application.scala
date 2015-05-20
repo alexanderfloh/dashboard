@@ -40,8 +40,8 @@ object Application extends Controller {
     if (Play.current.configuration.getBoolean("dashboard.mockResponse").getOrElse(false)) {
       Future(Ok(MockResponseGenerator(CI)).as("text; charset=utf-8"))
     } else {
-      val urlCi = Play.current.configuration.getString("dashboard.urlCi")
-        .getOrElse(throw new RuntimeException("dashboard.urlCi not configured"))
+      val urlCi = Play.current.configuration.getString("dashboard.urlTrunk")
+        .getOrElse(throw new RuntimeException("dashboard.urlTrunk not configured"))
       JenkinsFetcher.fetchCI(urlCi, "buildCI", 4).map(Ok(_))
     }
   }
@@ -51,8 +51,8 @@ object Application extends Controller {
       Future(Ok(MockResponseGenerator(Nightly)).as("text; charset=utf-8"))
     } else {
 
-      val urlNightly = Play.current.configuration.getString("dashboard.urlNightly")
-        .getOrElse(throw new RuntimeException("dashboard.urlNightly not configured"))
+      val urlNightly = Play.current.configuration.getString("dashboard.urlBuildAll")
+        .getOrElse(throw new RuntimeException("dashboard.urlBuildAll not configured"))
       JenkinsFetcher.fetchNightly(urlNightly, "buildNightly", 1).map(Ok(_))
     }
   }
@@ -65,6 +65,14 @@ object Application extends Controller {
       response.map { Ok(_) }
   }
 
+  def getPhabProject = Action.async {
+    val response = PhabricatorFetcher.fetchPhabricatorProject();
+    if (response == null)
+      Future("").map { Ok(_) }
+    else
+      response.map { Ok(_) }
+  }
+  
   def getPhabAudits = Action.async {
     val response = PhabricatorFetcher.fetchOpenAudits();
     if (response == null)

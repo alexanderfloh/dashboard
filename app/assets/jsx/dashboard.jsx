@@ -6,8 +6,8 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       return {
         buildCI: [],
       	buildNightly: [],
-        nevergreens: [],
         users:[],
+        project:[],
         audits:[],
         lastBuild:[],
         employeesAustria:""
@@ -40,6 +40,17 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       
       $.ajax({
         url: '/getPhabUser',
+        dataType: 'json',
+        success: function(data1) {
+          this.setState(data1);
+        }.bind(this),
+        error: function(xhr, status, err) {
+          console.error(this.props.url, status, err.toString());
+        }.bind(this)
+      });
+      
+      $.ajax({
+        url: '/getPhabProject',
         dataType: 'json',
         success: function(data1) {
           this.setState(data1);
@@ -165,8 +176,17 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
           }
         }
       
+      var phabUsers = this.state.users;
       function getCommitters(committer){
-        var picture = getPicture(committer.fullName);
+        var name = committer.fullName;
+        
+        for (var i = 0; i < phabUsers.length; i++){
+          if (phabUsers[i].userName.toLowerCase() == name.toLowerCase()){
+            name = phabUsers[i].realName;
+            break;
+          }
+        }
+        var picture = getPicture(name);
 
         var avatarUrlStyle = {
             backgroundImage: 'url(' + picture + ')',
@@ -236,23 +256,29 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         return (
             <li className={classesStatus}>
               <a href={build.link}>
-                {build.number}
+                {build.DAILY_NUMBER}
               </a>
             </li>)
+      }
+      
+      function regressionStatus(regression, name){
+        var classesStatus = getStatusClassSet(regression, "regression");
+        return (
+            <li className={classesStatus}>
+              <a href={regression.link}>
+                {name}
+              </a>
+            </li>
+          );
       }
       
       function buildItems(build){
         var committerNodes = build.culprits.map(getCommitters);
         var regressionName1 = "---";
-        var regressionName2 = "---";
-        var regressionName3 = "---";
         try{
           regressionName1 = build.regression1.name.toUpperCase();
-          regressionName2 = build.regression2.name.toUpperCase();
-          regressionName3 = build.regression3.name.toUpperCase();
         }catch(e){}
         
-        var classesRegressionResult = getStatusClassSet(build.regression1, "regression");        
         
         var andOthers = ""; 
         if (committerNodes.length > 6){
@@ -271,21 +297,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
                   <li>
                     <div>
                       <ul className="regression-list">
-                        <li className={classesRegressionResult}>
-                          <a href={build.regression1.link}>
-                            {regressionName1}
-                          </a>
-                        </li>
-                        <li className={classesRegressionResult}>
-                          <a href={build.regression2.link}>
-                            {regressionName2}
-                          </a>
-                        </li>
-                        <li className={classesRegressionResult}>
-                          <a href={build.regression3.link}>
-                            {regressionName3}
-                          </a>
-                        </li>
+                        {regressionStatus(build.regression1, regressionName1)}
                       </ul>
                     </div>
                   </li>
@@ -296,24 +308,37 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       };
       
       function buildItemsNightly(build){
-        var committerNodes = build.culprits.map(getCommitters);
+        var regressionName1 = "---";
+        var regressionName2 = "---";
+        var regressionName3 = "---";
+        var regressionName4 = "---";
+        var regressionName5 = "---";
+        try{
+          regressionName1 = build.regression1.name.toUpperCase();
+          regressionName2 = build.regression2.name.toUpperCase();
+          regressionName3 = build.regression3.name.toUpperCase();
+          regressionName4 = build.regression4.name.toUpperCase();
+          regressionName5 = build.regression5.name.toUpperCase();
+        }catch(e){}
+        
+        var classesRegressionResult = getStatusClassSet(build.regression1, "regression");
         var classesStatus = getStatusClassSet(build, "status");
-        var andOthers = ""; 
-        if (committerNodes.length > 6){
-          andOthers = "+ " + (committerNodes.length - 6) + " other(s)";
-        }
         return (
-            <li className="build-list-item">
+            <li className="build-list-item"
+              key={build.number}>
               <div className="build-item">
                 <ul>
-                  <li className="avatars">
-                    {committerNodes.slice(0,6)}
-                    <div>{andOthers}</div>
-                  </li>
-                  <li className={classesStatus}>
-                    <a href={build.link}>
-                      {build.number}
-                    </a>
+                  {buildStatus(build)}
+                  <li>
+                    <div>
+                      <ul className="regression-list">
+                        {regressionStatus(build.regression1, regressionName1)}
+                        {regressionStatus(build.regression2, regressionName2)}
+                        {regressionStatus(build.regression3, regressionName3)}
+                        {regressionStatus(build.regression4, regressionName4)}
+                        {regressionStatus(build.regression5, regressionName5)}
+                      </ul>
+                    </div>
                   </li>
                 </ul>
               </div>
@@ -321,24 +346,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         );
       };
     	
-      function getNevergreens(nevergreen) {
-        var linkText = nevergreen.definitionName;
-        // cut off namespaces
-        var nameArray = linkText.split(".");
-        linkText = nameArray[nameArray.length-1];
-        // fix in case of "... cases_None.opt\""," string
-        if (linkText.length < 5){ 
-          linkText = nevergreen.definitionName;
-        }
-        return (    		
-      		<li key={nevergreen.id} className="nevergreen">
-      		  <a href={nevergreen.link}>
-      		    {nevergreen.nrOfFailures} &times; {linkText}
-      		  </a>
-      		</li>
-      	);
-      };
-      
+     
       function renderAudit(audit) {
         return (
           <li className="audit">
@@ -355,7 +363,6 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
    // ----------------------- generate html -----------------------//
       var buildItems = this.state.buildCI.map(buildItems);
       var buildNightly = this.state.buildNightly.map(buildItemsNightly);
-      var nevergreenNodes = this.state.nevergreens.map(getNevergreens);
       var audits = mergeUserAudits(this.state.users, this.state.audits).sort(function(a, b){return b.numberOfAudits-a.numberOfAudits}).map(renderAudit);
       
    // ----------------------- html site structure -----------------------//
@@ -374,112 +381,15 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
                 {audits.slice(0,12)}
               </ul>
             </section>
-            
-            <section className="deviceSection">
-              <Devices pollInterval={15000}/>
-            </section>
-            
             <aside id="nightly-build" className="nightly-build">
               {buildNightly} 
-              <h1> Nevergreens </h1>
-              <ul className="nevergreen-list">
-                {nevergreenNodes.slice(0,26)}
-              </ul>
+              <iframe className="failureSummary" src="http://lnz-spbuilder/jenkins/job/Status_all_Core_Regressions/Core_Regressions_Status/output.html" scrolling="no" 
+                seamless="seamless"/>
             </aside>
             
           </article> 
         </div>
         
-      );
-    }
-  });
-  
-  var Devices = React.createClass({
-    getInitialState: function() {
-      return { devices: [],
-        deviceIndex: -1 };
-    },
-
-    loadStatus: function() {
-      $.ajax({
-        url: '/getDevices/',
-        dataType: 'json',
-        success: function(data) {
-          var newDeviceIndex = (this.state.deviceIndex + 1) % (data && data.length > 0 ? data.length : 1);
-          this.setState({
-            devices: data,
-            deviceIndex: newDeviceIndex});
-        }.bind(this),
-        error: function(xhr, status, err) {
-          console.error(status, err.toString());
-        }.bind(this)
-      });
-    },
-
-    componentWillMount: function() {
-      this.loadStatus();
-      setInterval(this.loadStatus, this.props.pollInterval);
-    },
-
-    editDeviceLocation: function(deviceLocation) {
-      var result = '';
-      if (deviceLocation) {
-        result = deviceLocation;
-        var dashIndex = result.indexOf("-");
-        if (dashIndex > -1) {
-          result = result.substring(dashIndex + 1, result.length);
-        }
-        result = result.toLowerCase();
-      }
-
-      return result;
-    },
-
-    isOffscreen: function(elem$) {
-      var offset = elem$.offset();
-      return offset.top > $(window).height();
-    },
-
-    wrapAround: function(originalDevices, deviceIndex) {
-      var result = originalDevices.slice(0);
-      var len = $("tr.deviceLine").length;
-      if (len > 0) {
-        var lastElem$ = $("tr.deviceLine:last");
-        if (this.isOffscreen(lastElem$)) {
-          var first = result.splice(0, deviceIndex);
-          for (var i = 0; i < first.length; i++) {
-            result.push(first[i]);
-          }
-        }
-      }
-      return result;
-    },
-
-    render: function() {
-      var that = this;
-      var devices = this.wrapAround(this.state.devices, this.state.deviceIndex);
-      var deviceNodes = devices.map(function(device) {
-        var deviceLocation = that.editDeviceLocation(device.location);
-        var classString = " deviceName " + device.osType;
-        return (
-            <tr className="deviceLine" key={device.id}>
-            <td className={classString}>{device.name}</td>
-              <td className="deviceLocation"><div>{deviceLocation}</div></td>
-            </tr>
-          );
-      });
-
-      return (
-          <div>
-        <h1 className="deviceSummery">
-          Connected devices ({devices.length}):
-          <a href="/assets/DevicePusher/DevicePusher.UI.application" download="DevicePusher.UI.application">(Download Device Pusher)</a>
-        </h1>
-
-        <table className="deviceTable">
-          {deviceNodes}
-        </table>
-        </div>
       );
     }
   });

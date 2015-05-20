@@ -8,6 +8,7 @@ GET   /                 controllers.Application.index
 GET   /buildNightly     controllers.Application.buildNightly()
 GET   /buildCI          controllers.Application.buildCI()
 GET   /getPhabUser      controllers.Application.getPhabUser()
+GET   /getPhabProject   controllers.Application.getPhabProject()
 GET   /getPhabAudits    controllers.Application.getPhabAudits()
 GET   /getDevices/      controllers.Application.getDevices()
 GET   /getUsers         controllers.Application.getUsers()

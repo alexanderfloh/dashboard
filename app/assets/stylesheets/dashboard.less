@@ -104,11 +104,10 @@ aside {
     float: left;
     position: fixed;
     width: 29em;
-    height: 100%;
+    height: auto;
     text-align: center;
     border: groove;
     z-index: -1;
-    overflow-y: scroll;
 }
 
 h1 {
@@ -132,6 +131,7 @@ a {
     padding-right: 0.5em;
 
     .build-section {
+        height:28em;
         .ci-build-list {
             .build-list-item:last-child {
                 font-weight: bold;
@@ -141,6 +141,7 @@ a {
 
     .audit-section {
         text-align:center;
+        height:auto;
         .audit-list {
             -webkit-column-count: 5;
             -moz-column-count: 5;
@@ -189,56 +190,6 @@ a {
         }
     }
 
-    .deviceSection {
-        .deviceSummery {
-            .font-serif;
-
-            a {
-                .font-sans;
-                font-size: 0.5em;
-                color: initial;
-                text-align: center;
-                position: sticky;
-            }
-        }
-
-        .deviceTable {
-            margin-left: auto;
-            margin-right: auto;
-
-            .deviceLine {
-                line-height: 1;
-            }
-
-            .deviceName {
-                padding-right: 1em;
-                text-align: right;
-                font-size: 2em;
-                color: @primary;
-                width: 65%;
-                .font-serif;
-                background-repeat: no-repeat;
-                background-position: right;
-
-                &.android {
-                    background-image: url('../images/android-logo.png');
-                }
-
-                &.ios {
-                    background-image: url('../images/apple-logo.png');
-                }
-            }
-
-            .deviceLocation {
-                color: @orange;
-                .font-cursive;
-                text-align: left;
-                font-size: 1.5em;
-                width: 35%;
-            }
-        }
-    }
-
     .nightly-build {
         background-color: transparent;
 
@@ -266,6 +217,11 @@ a {
                     color: black;
                 }
             }
+        }
+        .failureSummary {
+            
+            width:100%;
+            height:24em;
         }
     }
 

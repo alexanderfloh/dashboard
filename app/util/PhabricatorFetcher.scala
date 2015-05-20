@@ -83,6 +83,32 @@ object PhabricatorFetcher {
     }
   }
 
+  def fetchPhabricatorProject(): Future[String] = {
+    val baseUrl = Play.current.configuration.getString("dashboard.urlPhabricator")
+    .getOrElse(throw new RuntimeException("dashboard.urlPhabricator not configured"))
+    val projectId = Play.current.configuration.getString("dashboard.phabProject")
+    .getOrElse(throw new RuntimeException("dashboard.phabProject not configured"))
+    
+    val conduit = conduitConnect(baseUrl)
+    if (conduit == null) {
+      null
+    } else {
+      val params = Json.obj(
+        "__conduit__" -> conduit,
+        "phids" -> Json.arr(projectId))
+
+      WS.url(baseUrl + "api/project.query")
+        .withQueryString(("params", params.toString()), ("output", "json"))
+        .post("")
+        .map { req =>
+          val json = Json.parse(req.body)
+          val list = (json \ "result").as[JsObject]
+          Json.prettyPrint(Json.obj(
+            "project" -> list))
+        }
+    }
+  }
+  
   def fetchOpenAudits(): Future[String] = {
     val baseUrl = Play.current.configuration.getString("dashboard.urlPhabricator")
     .getOrElse(throw new RuntimeException("dashboard.urlPhabricator not configured"))
