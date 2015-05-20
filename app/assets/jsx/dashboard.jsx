@@ -8,6 +8,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       	buildNightly: [],
         nevergreens: [],
         users:[],
+        project:[],
         audits:[],
         lastBuild:[],
         employeesAustria:""
@@ -61,6 +62,17 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       });
       
       $.ajax({
+        url: '/getPhabProject',
+        dataType: 'json',
+        success: function(data1) {
+          this.setState(data1);
+        }.bind(this),
+        error: function(xhr, status, err) {
+          console.error(this.props.url, status, err.toString());
+        }.bind(this)
+      });
+      
+      $.ajax({
         url: '/getUsers',
         dataType: 'json',
         success: function(data1) {
@@ -92,6 +104,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       // ----------------------- helper -----------------------//
       function getAuditsForUser(user, audits){
         var res = 0;
+        if (!isUserInProject(user)) return res;
         for (var i = 0; i < audits.length; i++){
           if (user.phid == audits[i].auditorPHID &&
               audits[i].status != "accepted"){
@@ -99,6 +112,14 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
           }
         }
         return res;
+      }
+      var project = this.state.project;
+      function isUserInProject(user){
+        var key = Object.keys(project.data)
+        for (var i = 0; i < project.data[key].members.length; i++)
+          if (project.data[key].members[i] == user.phid)
+            return true;
+        return false;
       }
       
       function getNotAssignedAudits(audits){
@@ -282,9 +303,9 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
                   <li>
                     <div>
                       <ul className="regression-list">
-                      {regressionStatus(build.regression1, regressionName1)}
-                      {regressionStatus(build.regression2, regressionName2)}
-                      {regressionStatus(build.regression3, regressionName3)}
+                        {regressionStatus(build.regression1, regressionName1)}
+                        {regressionStatus(build.regression2, regressionName2)}
+                        {regressionStatus(build.regression3, regressionName3)}
                       </ul>
                     </div>
                   </li>
