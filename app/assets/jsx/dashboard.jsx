@@ -241,6 +241,17 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
             </li>)
       }
       
+      function regressionStatus(regression, name){
+        var classesStatus = getStatusClassSet(regression, "regression");
+        return (
+            <li className={classesStatus}>
+              <a href={regression.link}>
+                {name}
+              </a>
+            </li>
+          );
+      }
+      
       function buildItems(build){
         var committerNodes = build.culprits.map(getCommitters);
         var regressionName1 = "---";
@@ -271,21 +282,9 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
                   <li>
                     <div>
                       <ul className="regression-list">
-                        <li className={classesRegressionResult}>
-                          <a href={build.regression1.link}>
-                            {regressionName1}
-                          </a>
-                        </li>
-                        <li className={classesRegressionResult}>
-                          <a href={build.regression2.link}>
-                            {regressionName2}
-                          </a>
-                        </li>
-                        <li className={classesRegressionResult}>
-                          <a href={build.regression3.link}>
-                            {regressionName3}
-                          </a>
-                        </li>
+                      {regressionStatus(build.regression1, regressionName1)}
+                      {regressionStatus(build.regression2, regressionName2)}
+                      {regressionStatus(build.regression3, regressionName3)}
                       </ul>
                     </div>
                   </li>
