@@ -103,6 +103,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       // ----------------------- helper -----------------------//
       function getAuditsForUser(user, audits){
         var res = 0;
+        if (!isUserInProject(user)) return res;
         for (var i = 0; i < audits.length; i++){
           if (user.phid == audits[i].auditorPHID &&
               audits[i].status != "accepted"){
@@ -111,12 +112,19 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         }
         return res;
       }
-      
+      var project = this.state.project;
+      function isUserInProject(user){
+        var key = Object.keys(project.data)
+        for (var i = 0; i < project.data[key].members.length; i++)
+          if (project.data[key].members[i] == user.phid)
+            return true;
+        return false;
+      }
       function getNotAssignedAudits(audits){
         var res = 0;
         for(var i = 0; i<audits.length; i++){
             if (audits[i].status === "audit-required" &&
-                audits[i].reasons[0] === "H4 ST Audit Triggered Audit"){
+                audits[i].auditorPHID === Object.keys(project.data)){
               res++;
           }
         }
