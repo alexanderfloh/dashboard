@@ -124,7 +124,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         var res = 0;
         for(var i = 0; i<audits.length; i++){
             if (audits[i].status === "audit-required" &&
-                audits[i].auditorPHID === Object.keys(project.data)){
+                audits[i].auditorPHID == Object.keys(project.data)){
               res++;
           }
         }
