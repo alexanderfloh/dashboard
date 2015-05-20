@@ -174,7 +174,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         name = formatEmplName(name);
         
         if (name == "No.Auditor.jpg"){
-          return '/assets/images/avatars/silkTestLogo.png';
+          return '/assets/images/avatars/silkPerformerLogo.png';
         }
         else if (empl.match(name.toLowerCase()) == null){
           return getDefaultPicture();
