@@ -124,7 +124,7 @@ object JenkinsFetcher {
       parameter = Json.toJson(buildNumber)
       try{
         parameter = (((json \ "actions").as[Array[JsValue]].take(1).last \ "parameters").as[Array[JsValue]].take(1).last\"value")
-      }catch{case e : Exception => println("")}
+      }catch{case e : Exception => }
       Json.obj(
         "status" -> mapBuildStatus((json \ "result").asOpt[String]),
         "number" -> buildNumber,
