@@ -170,7 +170,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
                    .replace(/ß/g,"ss") + '.jpg';
       }
       
-      var empl = this.state.employeesAustria;
+      var empl = this.state.employeesAustria.toLowerCase();
       
       function getPicture(name){
         name = formatEmplName(name);
