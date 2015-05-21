@@ -12,9 +12,12 @@ import models.NevergreenResult
 import scala.util.parsing.json.JSONArray
 import scala.util.Try
 
-trait JenkinsFetcher {
+object JenkinsFetcherFactory {
 
-  // fetch ci build with tests
-  def fetchMain(mapName: String, numberOfItems: Integer): Future[String]
-  def fetchAside(mapName: String, numberOfItems: Integer): Future[String]
+  def getFetcher(fetcher:String): JenkinsFetcher = {
+    fetcher match {
+      case "performer" => JenkinsFetcherPerformer
+      case "silktest"  => JenkinsFetcherSilkTest
+    }
+  }
 }

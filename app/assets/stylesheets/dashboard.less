@@ -1,4 +1,3 @@
-
 /* Eric Meyer's Reset CSS v2.0 - http://cssreset.com */
 html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
     border: 0;
@@ -97,17 +96,18 @@ section {
     border: groove;
     padding-bottom: 1em;
     width: 88em;
-    background-color:white;
+    background-color: white;
 }
 
 aside {
     float: left;
     position: fixed;
     width: 29em;
-    height: auto;
+    height: 100%;
     text-align: center;
     border: groove;
     z-index: -1;
+    overflow-y: scroll;
 }
 
 h1 {
@@ -131,7 +131,6 @@ a {
     padding-right: 0.5em;
 
     .build-section {
-        height:28em;
         .ci-build-list {
             .build-list-item:last-child {
                 font-weight: bold;
@@ -140,18 +139,20 @@ a {
     }
 
     .audit-section {
-        text-align:center;
-        height:auto;
+        text-align: center;
+
         .audit-list {
             -webkit-column-count: 5;
             -moz-column-count: 5;
             column-count: 5;
             padding-left: 15em;
+
             .audit {
                 padding-top: 1em;
                 font-size: 1.5em;
                 display: inline-block;
-                width:100%;
+                width: 100%;
+
                 .audit-name {
                     .avatar, .silkTest {
                         width: 90px;
@@ -172,7 +173,7 @@ a {
                 }
 
                 .audit-cnt {
-                    font-family:Consolas;
+                    font-family: Consolas;
                     display: inline;
                     border-radius: 15%;
                     text-align: center;
@@ -186,6 +187,56 @@ a {
                     padding: 5px;
                     min-width: 1.5em;
                 }
+            }
+        }
+    }
+
+    .deviceSection {
+        .deviceSummery {
+            .font-serif;
+
+            a {
+                .font-sans;
+                font-size: 0.5em;
+                color: initial;
+                text-align: center;
+                position: sticky;
+            }
+        }
+
+        .deviceTable {
+            margin-left: auto;
+            margin-right: auto;
+
+            .deviceLine {
+                line-height: 1;
+            }
+
+            .deviceName {
+                padding-right: 1em;
+                text-align: right;
+                font-size: 2em;
+                color: @primary;
+                width: 65%;
+                .font-serif;
+                background-repeat: no-repeat;
+                background-position: right;
+
+                &.android {
+                    background-image: url('../images/android-logo.png');
+                }
+
+                &.ios {
+                    background-image: url('../images/apple-logo.png');
+                }
+            }
+
+            .deviceLocation {
+                color: @orange;
+                .font-cursive;
+                text-align: left;
+                font-size: 1.5em;
+                width: 35%;
             }
         }
     }
@@ -218,10 +269,10 @@ a {
                 }
             }
         }
+
         .failureSummary {
-            
-            width:100%;
-            height:24em;
+            width: 100%;
+            height: 24em;
         }
     }
 
@@ -248,7 +299,7 @@ a {
                 color: black;
             }
 
-            .status, .regression{
+            .status, .regression {
                 font-size: 1em;
                 padding: 0.2em 0.2em 0.2em 0em;
                 margin: 5px 0px 5px 0px;
@@ -315,46 +366,45 @@ a {
             }
         }
     }
-
-    
 }
+
 .avatars {
-        text-align: center;
-        border: medium;
-        margin-left: 0.5em;
-        margin-right: 0.5em;
-        height: auto;
-        min-height: 202px;
-        max-height: 202px;
-        color: black;
+    text-align: center;
+    border: medium;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    height: auto;
+    min-height: 202px;
+    max-height: 202px;
+    color: black;
 
-        .avatar {
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            display: inline-block;
-            margin: 5px;
-            -webkit-transition: all .4s;
-            -moz-transition: all .4s;
-            -ms-transition: all .4s;
-            -o-transition: all .4s;
-            transition: all .4s;
-            float: inherit;
-        }
-
-        .avatar:not(:hover) {
-            -webkit-filter: grayscale(100%);
-            -moz-filter: grayscale(100%);
-            -ms-filter: grayscale(100%);
-            -o-filter: grayscale(100%);
-            filter: grayscale(100%);
-        }
-
-        .avatar & :hover {
-            -webkit-filter: grayscale(0%);
-            -moz-filter: grayscale(0%);
-            -ms-filter: grayscale(0%);
-            -o-filter: grayscale(0%);
-            filter: grayscale(0%);
-        }
+    .avatar {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        display: inline-block;
+        margin: 5px;
+        -webkit-transition: all .4s;
+        -moz-transition: all .4s;
+        -ms-transition: all .4s;
+        -o-transition: all .4s;
+        transition: all .4s;
+        float: inherit;
     }
+
+    .avatar:not(:hover) {
+        -webkit-filter: grayscale(100%);
+        -moz-filter: grayscale(100%);
+        -ms-filter: grayscale(100%);
+        -o-filter: grayscale(100%);
+        filter: grayscale(100%);
+    }
+
+    .avatar & :hover {
+        -webkit-filter: grayscale(0%);
+        -moz-filter: grayscale(0%);
+        -ms-filter: grayscale(0%);
+        -o-filter: grayscale(0%);
+        filter: grayscale(0%);
+    }
+}

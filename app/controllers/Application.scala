@@ -23,7 +23,7 @@ import akka.util.Timeout
 import scala.concurrent.duration._
 import util.CI
 import util.Nightly
-import util.JenkinsFetcher
+import util.JenkinsFetcherFactory
 import util.PhabricatorFetcher
 import scala.concurrent.Await
 import models.Location
@@ -36,25 +36,19 @@ object Application extends Controller {
     Ok(views.html.index())
   }
 
-  def buildCI = Action.async {
-    if (Play.current.configuration.getBoolean("dashboard.mockResponse").getOrElse(false)) {
-      Future(Ok(MockResponseGenerator(CI)).as("text; charset=utf-8"))
-    } else {
-      val urlCi = Play.current.configuration.getString("dashboard.urlTrunk")
-        .getOrElse(throw new RuntimeException("dashboard.urlTrunk not configured"))
-      JenkinsFetcher.fetchCI(urlCi, "buildCI", 4).map(Ok(_))
-    }
+  def fetcher = Play.current.configuration.getString("dashboard.fetcher")
+    .getOrElse(throw new RuntimeException("dashboard.fetcher not configured"))
+
+  def buildMain = Action.async {
+    JenkinsFetcherFactory.getFetcher(fetcher).fetchMain("buildCI", 4).map(Ok(_))
   }
 
-  def buildNightly = Action.async {
-    if (Play.current.configuration.getBoolean("dashboard.mockResponse").getOrElse(false)) {
-      Future(Ok(MockResponseGenerator(Nightly)).as("text; charset=utf-8"))
-    } else {
+  def buildAside = Action.async {
+    JenkinsFetcherFactory.getFetcher(fetcher).fetchAside("buildNightly", 1).map(Ok(_))
+  }
 
-      val urlNightly = Play.current.configuration.getString("dashboard.urlBuildAll")
-        .getOrElse(throw new RuntimeException("dashboard.urlBuildAll not configured"))
-      JenkinsFetcher.fetchNightly(urlNightly, "buildNightly", 1).map(Ok(_))
-    }
+  def getConfig = Action.async {
+    Future(fetcher).map { Ok(_) }
   }
 
   def getPhabUser = Action.async {
@@ -66,13 +60,13 @@ object Application extends Controller {
   }
 
   def getPhabProject = Action.async {
-    val response = PhabricatorFetcher.fetchPhabricatorProject();
+    val response = PhabricatorFetcher.fetchPhabricatorProject(fetcher);
     if (response == null)
       Future("").map { Ok(_) }
     else
       response.map { Ok(_) }
   }
-  
+
   def getPhabAudits = Action.async {
     val response = PhabricatorFetcher.fetchOpenAudits();
     if (response == null)

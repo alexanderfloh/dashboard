@@ -21,10 +21,10 @@ object PhabricatorFetcher {
 
   def conduitConnect(baseUrl: String): JsObject = {
     val phabUser = Play.current.configuration.getString("dashboard.phabUser")
-    .getOrElse(throw new RuntimeException("dashboard.phabUser not configured"))
+      .getOrElse(throw new RuntimeException("dashboard.phabUser not configured"))
     val phabUserCert = Play.current.configuration.getString("dashboard.phabUserCert")
-    .getOrElse(throw new RuntimeException("dashboard.phabUserCert not configured"))
-    
+      .getOrElse(throw new RuntimeException("dashboard.phabUserCert not configured"))
+
     val token = System.currentTimeMillis / 1000
     val md = java.security.MessageDigest.getInstance("SHA-1")
     val signature = md.digest((token.toString() + phabUserCert).getBytes("UTF-8")).map("%02x".format(_)).mkString
@@ -63,7 +63,7 @@ object PhabricatorFetcher {
 
   def fetchPhabricatorUser(): Future[String] = {
     val baseUrl = Play.current.configuration.getString("dashboard.urlPhabricator")
-    .getOrElse(throw new RuntimeException("dashboard.urlPhabricator not configured"))
+      .getOrElse(throw new RuntimeException("dashboard.urlPhabricator not configured"))
     val conduit = conduitConnect(baseUrl)
     if (conduit == null) {
       null
@@ -83,12 +83,17 @@ object PhabricatorFetcher {
     }
   }
 
-  def fetchPhabricatorProject(): Future[String] = {
+  def fetchPhabricatorProject(fetcher: String): Future[String] = {
     val baseUrl = Play.current.configuration.getString("dashboard.urlPhabricator")
-    .getOrElse(throw new RuntimeException("dashboard.urlPhabricator not configured"))
-    val projectId = Play.current.configuration.getString("dashboard.phabProject")
-    .getOrElse(throw new RuntimeException("dashboard.phabProject not configured"))
-    
+      .getOrElse(throw new RuntimeException("dashboard.urlPhabricator not configured"))
+    var projectId = ""
+    fetcher match {
+      case "performer" => projectId = Play.current.configuration.getString("dashboard.performer.phabProject")
+        .getOrElse(throw new RuntimeException("dashboard.performer.phabProject not configured"))
+      case "silktest" => projectId = Play.current.configuration.getString("dashboard.silktest.phabProject")
+        .getOrElse(throw new RuntimeException("dashboard.silktest.phabProject not configured"))
+    }
+
     val conduit = conduitConnect(baseUrl)
     if (conduit == null) {
       null
@@ -108,10 +113,10 @@ object PhabricatorFetcher {
         }
     }
   }
-  
+
   def fetchOpenAudits(): Future[String] = {
     val baseUrl = Play.current.configuration.getString("dashboard.urlPhabricator")
-    .getOrElse(throw new RuntimeException("dashboard.urlPhabricator not configured"))
+      .getOrElse(throw new RuntimeException("dashboard.urlPhabricator not configured"))
     val conduit = conduitConnect(baseUrl)
     if (conduit == null) {
       null
