@@ -1,99 +1,9 @@
 /** @jsx React.DOM */
 
 define(['react', 'jquery', 'moment'], function(React, $, Moment) {
-  var LoadStatusMixin = {
-    getInitialState: function() {
-      return {
-        buildCI: [],
-        buildNightly: [],
-        nevergreens: [],
-        users:[],
-        project:[],
-        audits:[],
-        lastBuild:[],
-        employeesAustria:""
-      };
-    },
 
-    // load data from jenkins, austria and phabricator
-    loadStatus: function() {
-      $.ajax({
-        url: '/buildMain',
-        dataType: 'json',
-        success: function(data1) {
-          this.setState(data1);
-        }.bind(this),
-        error: function(xhr, status, err) {
-          console.error(this.props.url, status, err.toString());
-        }.bind(this)
-      });
-      
-      $.ajax({
-          url: '/buildAside',
-          dataType: 'json',
-          success: function(data1) {
-            this.setState(data1);
-          }.bind(this),
-          error: function(xhr, status, err) {
-            console.error(this.props.url, status, err.toString());
-          }.bind(this)
-        });
-      
-      $.ajax({
-        url: '/getPhabUser',
-        dataType: 'json',
-        success: function(data1) {
-          this.setState(data1);
-        }.bind(this),
-        error: function(xhr, status, err) {
-          console.error(this.props.url, status, err.toString());
-        }.bind(this)
-      });
-      
-      $.ajax({
-        url: '/getPhabAudits',
-        dataType: 'json',
-        success: function(data1) {
-          this.setState(data1);
-        }.bind(this),
-        error: function(xhr, status, err) {
-          console.error(this.props.url, status, err.toString());
-        }.bind(this)
-      });
-      
-      $.ajax({
-        url: '/getPhabProject',
-        dataType: 'json',
-        success: function(data1) {
-          this.setState(data1);
-        }.bind(this),
-        error: function(xhr, status, err) {
-          console.error(this.props.url, status, err.toString());
-        }.bind(this)
-      });
-      
-      $.ajax({
-        url: '/getUsers',
-        dataType: 'json',
-        success: function(data1) {
-          this.setState(data1);
-        }.bind(this),
-        error: function(xhr, status, err) {
-          console.error(this.props.url, status, err.toString());
-        }.bind(this)
-      });
-    },
-    
-    componentWillMount: function() {
-      this.loadStatus();
-      setInterval(this.loadStatus, this.props.pollInterval);
-    },
-  };
-
-  
   var Dashboard = React.createClass({
-    mixins: [LoadStatusMixin],
-
+    mixins: [getStatusMixin()],
     getDefaultProps: function() {
       return {
         pollInterval: 10000
@@ -101,77 +11,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
     },
 
     render: function() {
-      // ----------------------- helper -----------------------//
-      function getAuditsForUser(user, audits){
-        var res = 0;
-        if (!isUserInProject(user)) return res;
-        for (var i = 0; i < audits.length; i++){
-          if (user.phid == audits[i].auditorPHID &&
-              audits[i].status != "accepted"){
-            res++;
-          }
-        }
-        return res;
-      }
-      var project = this.state.project;
-      function isUserInProject(user){
-        var key = Object.keys(project.data)
-        for (var i = 0; i < project.data[key].members.length; i++)
-          if (project.data[key].members[i] == user.phid)
-            return true;
-        return false;
-      }
-      
-      function getNotAssignedAudits(audits){
-        var res = 0;
-        for(var i = 0; i<audits.length; i++){
-            if (audits[i].status === "audit-required" &&
-                audits[i].auditorPHID == Object.keys(project.data)){
-              res++;
-          }
-        }
-        return res;
-      }
-      
-      function mergeUserAudits(users, audits){
-        var resultArray = new Array();
-        for (var i = 0; i < users.length; i++){
-          var cnt = getAuditsForUser(users[i], audits);
-          if (cnt > 0){
-            var userAudit = {
-                userName : users[i].realName,
-                numberOfAudits : cnt
-            };
-            resultArray.push(userAudit);
-          }
-        }
-        
-        var userAudit = {
-            userName : "No Auditor",
-            numberOfAudits : getNotAssignedAudits(audits)
-        };
-        resultArray.push(userAudit);
-        
-        return resultArray;
-      }
-      
-      function getDefaultPicture(){
-        return '/assets/images/avatars/default.jpg';
-      }
-      
-      function formatEmplName(name){
-        return name.replace(" ", ".")
-                   .replace(/ä/g,"ae")
-                   .replace(/ö/g,"oe")
-                   .replace(/ü/g,"ue")
-                   .replace(/Ä/g,"Ae")
-                   .replace(/Ö/g,"Oe")
-                   .replace(/Ü/g,"Ue")
-                   .replace(/ß/g,"ss") + '.jpg';
-      }
-      
-      var empl = this.state.employeesAustria;
-      
+      var empl = this.state.employeesAustria.toLowerCase();
       function getPicture(name){
         name = formatEmplName(name);
         
@@ -183,11 +23,11 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         }
         else{
             return 'http://austria/global/images/employees/' +  name;      
-          }
         }
+      }
       
       function getCommitters(committer){
-        var picture = getPicture(committer.fullName);
+        var picture = getPicture(committer.fullName, empl);
 
         var avatarUrlStyle = {
             backgroundImage: 'url(' + picture + ')',
@@ -211,7 +51,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       }
       
       function getAuditorPic(auditor){
-        var picture = getPicture(auditor.userName);
+        var picture = getPicture(auditor.userName, empl);
         var avatarClass = getAvatarClassSet(auditor.userName);
         var avatarUrlStyle = {
             background: 'url(' + picture + ')',
@@ -251,7 +91,6 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
                 <BuildProgress lastBuild={currentBuild} /> 
               </a>
             </li>
-               
           )
         }
         return (
@@ -376,7 +215,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       var buildItems = this.state.buildCI.map(buildItems);
       var buildNightly = this.state.buildNightly.map(buildItemsNightly);
       var nevergreenNodes = this.state.nevergreens.map(getNevergreens);
-      var audits = mergeUserAudits(this.state.users, this.state.audits).sort(function(a, b){return b.numberOfAudits-a.numberOfAudits}).map(renderAudit);
+      var audits = mergeUserAudits(this.state.users, this.state.audits, this.state.project).sort(function(a, b){return b.numberOfAudits-a.numberOfAudits}).map(renderAudit);
       
    // ----------------------- html site structure -----------------------//
       return (

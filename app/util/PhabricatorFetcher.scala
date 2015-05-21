@@ -3,20 +3,16 @@ package util
 import scala.concurrent.Future
 import play.api.Play
 import play.api.libs.ws.WS
-import play.api.libs.ws.WSRequestHolder
 import play.api.Play.current
 import play.api.libs.json._
 import scala.concurrent.ExecutionContext.Implicits.global
-import java.util.Date
-import play.Logger
-import models.NevergreenResult
-import scala.util.parsing.json.JSONArray
 import akka.util.HashCode
 import java.security.MessageDigest
 import java.lang.String
 import scala.concurrent.duration.Duration
 import scala.concurrent.Await
 import java.util.concurrent.TimeoutException
+
 object PhabricatorFetcher {
 
   def conduitConnect(baseUrl: String): JsObject = {

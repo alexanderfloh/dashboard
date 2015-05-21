@@ -9,7 +9,7 @@ requirejs.config({
 });
 
 define(function(require) {
-  var config = "";
+  //var config = "";
   $.ajax({
     url : '/getConfig',
     dataType : 'text',
