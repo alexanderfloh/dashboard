@@ -75,6 +75,14 @@ object Application extends Controller {
       response.map { Ok(_) }
   }
 
+  def getPhabProject = Action.async {
+    val response = PhabricatorFetcher.fetchPhabricatorProject();
+    if (response == null)
+      Future("").map { Ok(_) }
+    else
+      response.map { Ok(_) }
+  }
+  
   def getUsers() = Action.async {
     val response = UserFetcher.getUsers("http://austria/global/images/employees/");
     response.map { Ok(_) }
