@@ -1,335 +1,410 @@
-
 /* Eric Meyer's Reset CSS v2.0 - http://cssreset.com */
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video{border:0;font-size:100%;font:inherit;vertical-align:baseline;margin:0;padding:0}article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section{display:block}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:none}table{border-collapse:collapse;border-spacing:0}
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+    margin: 0;
+    padding: 0;
+}
+
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+
+body {
+    line-height: 1;
+}
+
+ol, ul {
+    list-style: none;
+}
+
+blockquote, q {
+    quotes: none;
+}
+
+blockquote:before, blockquote:after, q:before, q:after {
+    content: none;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
 
 @import url(http://fonts.googleapis.com/css?family=Quicksand:400,700);
 @import url(http://fonts.googleapis.com/css?family=Fugaz+One);
 @import url(http://fonts.googleapis.com/css?family=Roboto+Slab);
 
-body {
-  overflow: hidden;
-}
-
 .font-sans {
-  font-family: 'Quicksand', sans-serif;
-  font-weight: 400;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 400;
 }
 
 .font-cursive {
-  font-family: 'Fugaz One', cursive;
-  font-weight: 400;
+    font-family: 'Fugaz One', cursive;
+    font-weight: 400;
 }
 
 .font-serif {
-  font-family: 'Roboto Slab', serif;
-  font-weight: 400;
+    font-family: 'Roboto Slab', serif;
+    font-weight: 400;
 }
 
 @grey: #CCCCCC;
 @blue: #3498DB;
 @green: #458B00;
-@yellow: #f1c40f;
 @red: #c0392b;
-@orange: #d35400;
-@midnight-blue: #2c3e50;
+@orange: #fbc02d;
+@blue: #455ede;
 
+@midnight-blue: #2c3e50;
 @primary: @midnight-blue;
-// @primary: white;
 @secondary: @orange;
 
-
-
-
 @background: white;
-@labels: @secondary; // lighten(black, 60%);
+@labels: @secondary;
 @icons: @primary;
 
 .circled {
-  border-radius: 50%;
-  background-clip: border-box;
-  background-color: @primary;
+    border-radius: 50%;
+    background-clip: border-box;
+    background-color: @primary;
 }
 
-@grey: #616161;
-
 * {
-  -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-  -moz-box-sizing: border-box;    /* Firefox, other Gecko */
-  box-sizing: border-box;
+    /* Safari/Chrome, other WebKit */
+    -webkit-box-sizing: border-box;
+    /* Firefox, other Gecko */
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 body {
-  background-color: @background;
-  .font-sans;
-}
-
-header {
-  padding-top: 2em;
-  padding-bottom: 2em;
-
-  h2 {
-    .font-cursive;
-    font-size: 2em;
-    color: @labels;
-    text-align: center;
-  }
-}
-
-footer {
-  padding: 1em 0 0 0;
-}
-
-.global-footer {
-  margin-top: 5em;
-  padding: 2em;
-  text-align: center;
-  background-color: @primary;
-  .font-serif;
-  a {
-    color: white;
-  }
+    background-color: @background;
+    .font-sans;
 }
 
 article {
-  display: inline-block;
-  vertical-align:top;
-  text-align: center;
-  width: 100%;
-}
-
-.left {
-  width: 66%;
-  display: inline-block;
-  vertical-align: top;
-}
-
-.right {
-  width: 33%;
-  display: inline-block;
-  vertical-align: top;
-}
-
-.stable {
-  background-color: @green;
-  color: white;
-}
-.successful {
-  background-color: @yellow;
-  color: white;
-}
-.failed {
-  background-color: @red;
-  color: white;
-}
-.cancelled {
-  background-color: @grey;
-  color: white;
-}
-
-.status-details {
-  display: inline-block;
+    display: block;
 }
 
 section {
-  //background-color: #333;
-  //border: 1px solid black;
+    float: left;
+    margin-left: 30em;
+    border: groove;
+    padding-bottom: 1em;
+    width: 88em;
+    background-color: white;
 }
 
-svg {
-  //.circled;
-  margin-bottom: 0.5em;
-}
-
-.build-status-container {
-  min-height: 300px;
-
-  section {
-    display: inline-block;
-    width: 50%;
+aside {
+    float: left;
+    position: fixed;
+    width: 29em;
     height: 100%;
-    vertical-align: top;
-    header {
-      min-height: 100px;
-    }
-  }
-  .build-status-ci {
-    width: 50%;
-  }
-
-  #moon {
-    fill: @icons;
-  }
-
-  #repeat {
-    fill: @icons;
-  }
-
-  .vertical-separator {
-    display: inline-block;
-    border-right: 1px solid #555;
-    height: 60%;
-    margin: 10px 10px -20px 10px;
-
-  }
-
-  .build-status {
-    .font-sans;
     text-align: center;
-    padding: 10px;
-
-    &.ci {
-      font-size: 5em;
-    }
-
-    &.nightly {
-      font-size: 1.5em;
-      text-align: right;
-      padding: 10px 0 0 0;
-      background-color: transparent;
-      color: @primary;
-      .font-serif;
-    }
-  }
-
-  .buildProgress {
-    margin: 0 1em;
-    text-align: right;
-
-    .progress-bar-background {
-      background-color: @primary;
-      text-align: left;
-      height: 0.2em;
-      margin: 0.5em 0;
-
-      .bar {
-        background-color: @secondary;
-        display: inline-block;
-        height: 1.2em;
-        margin: -1em 0 0 0;
-      }
-    }
-    .label {
-      color: @primary;
-      font-size: 1.5em;
-      margin-top: 0.5em;
-      display: inline-block;
-      .font-serif;
-    }
-  }
-
-  .culprits {
-    .font-serif;
-    font-size: 1.1em;
-    color: white;
-    text-align: left;
-    background-color: @red;
-    padding: 1em;
-
-    h2 {
-      .font-cursive;
-    }
-
-    li {
-      line-height: 1.4;
-    }
-  }
-
-  .buildstats {
-    .font-sans;
-    font-size: 5em;
-    text-align: center;
-    padding: 10px;
-  }
+    border: groove;
+    z-index: -1;
+    overflow-y: scroll;
 }
 
-.commit-message-container {
-  padding-top: 5em;
-
-  #commit {
-    fill: @icons;
-  }
-  .commitMsgs {
-    font-size: 1.6em;
-    color: @primary;
-    .font-serif;
-    text-align: left;
-    line-height: 1.4;
-    margin-bottom: 10%;
-    padding-left: 1em;
-
-    .commitMsg {
-      border-left: 3px solid @secondary;
-      padding-left: 0.5em;
-      margin-bottom: 0.5em;
-
-      .commitTimeAndUser {
-        .font-cursive;
-        font-size: 90%;
-        text-align: right;
-        color: @primary;
-
-        .user {
-          color: @secondary;
-          font-size: 1.5em;
-        }
-
-        :first-of-type:before {
-          content: '-';
-          color: @primary;
-        }
-      }
-
-    }
-  }
-}
-
-.device-container {
-  .device {
-    width: 100%;
-  }
-  
-  .deviceLine:first-child td {
-    padding-top: 0px;
-    /*opacity: 0;*/
-    transition: padding-top 1s ease-in-out/*, opacity 2s 2s ease-in*/;
-    -webkit-transition: padding-top 1s ease-in-out/*, opacity 2s 2s ease-in*/;
-  }
-  
-  .deviceLine td {
-    opacity: 1;
-    padding-top: 18px;
-  }
-  
-  .deviceLine {
-    line-height: 1;
-  }
-
-  .deviceName {
-    padding-right: 1em;
-    text-align: right;
+h1 {
+    text-align: center;
     font-size: 2em;
-    color: @primary;
-    width: 65%;
-    .font-serif;
-    background-repeat: no-repeat;
-    background-position: right;
-    &.android {
-      background-image: url('../images/android-logo.png');
-    }
-    &.ios {
-      background-image: url('../images/apple-logo.jpg');
-    }
-  }
+    padding-bottom: 0.3em;
+    padding-top: 0.3em;
+    clear: both;
+}
 
-  .deviceLocation {
-    color: @orange;
-    .font-cursive;
-    text-align: left;
-    font-size: 1.5em;
-    width: 35%;
-  }
+a {
+    color: white;
+    text-decoration: none;
+    display: block;
+}
 
-  #smartphone {
-    fill: @icons;
-  }
+// ---------------------------- classes ---------------------------- //
+.dashboard {
+    padding-top: 1em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+
+    .build-section {
+        .ci-build-list {
+            .build-list-item:last-child {
+                font-weight: bold;
+            }
+        }
+    }
+
+    .audit-section {
+        text-align: center;
+
+        .audit-list {
+            -webkit-column-count: 5;
+            -moz-column-count: 5;
+            column-count: 5;
+            padding-left: 15em;
+
+            .audit {
+                padding-top: 1em;
+                font-size: 1.5em;
+                display: inline-block;
+                width: 100%;
+
+                .audit-name {
+                    .avatar, .silkTest {
+                        width: 90px;
+                        height: 90px;
+                        border-radius: 50%;
+                        background-size: cover;
+                        display: inline-block;
+                        -webkit-transition: all .4s;
+                        -moz-transition: all .4s;
+                        -ms-transition: all .4s;
+                        -o-transition: all .4s;
+                        transition: all .4s;
+                    }
+
+                    .silkTest {
+                        border-radius: initial;
+                    }
+                }
+
+                .audit-cnt {
+                    font-family: Consolas;
+                    display: inline;
+                    border-radius: 15%;
+                    text-align: center;
+                    position: relative;
+                    left: 30px;
+                    top: -105px;
+                    font-weight: bold;
+                    font-size: 1.5em;
+                    color: white;
+                    background-color: @red;
+                    padding: 5px;
+                    min-width: 1.5em;
+                }
+            }
+        }
+    }
+
+    .deviceSection {
+        .deviceSummery {
+            .font-serif;
+
+            a {
+                .font-sans;
+                font-size: 0.5em;
+                color: initial;
+                text-align: center;
+                position: sticky;
+            }
+        }
+
+        .deviceTable {
+            margin-left: auto;
+            margin-right: auto;
+
+            .deviceLine {
+                line-height: 1;
+            }
+
+            .deviceName {
+                padding-right: 1em;
+                text-align: right;
+                font-size: 2em;
+                color: @primary;
+                width: 65%;
+                .font-serif;
+                background-repeat: no-repeat;
+                background-position: right;
+
+                &.android {
+                    background-image: url('../images/android-logo.png');
+                }
+
+                &.ios {
+                    background-image: url('../images/apple-logo.png');
+                }
+            }
+
+            .deviceLocation {
+                color: @orange;
+                .font-cursive;
+                text-align: left;
+                font-size: 1.5em;
+                width: 35%;
+            }
+        }
+    }
+
+    .nightly-build {
+        background-color: transparent;
+
+        .nevergreen-list {
+            text-align: left;
+            margin-left: 1em;
+            margin-right: 1em;
+
+            .nevergreen {
+                font-family: monospace;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                font-size: 1.2em;
+                padding: 0.2em;
+                display: inline-block;
+                background-color: transparent;
+                width: 100%;
+
+                a {
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    text-decoration: underline;
+                    color: black;
+                }
+            }
+        }
+
+        .failureSummary {
+            width: 100%;
+            height: 24em;
+        }
+    }
+
+
+
+    .build-list-item {
+        display: inline;
+
+        .build-item {
+            margin-top: 0.5em;
+            display: inline-block;
+            margin-left: 0.5em;
+            margin-right: 0.5em;
+            height: auto;
+            color: white;
+            font-size: 2em;
+            width: 9.9em;
+            border: groove;
+            background: lighten(@grey, 10%);
+
+            .build-number {
+                text-align: center;
+                font-size: 2em;
+                color: black;
+            }
+
+            .status, .regression {
+                font-size: 1em;
+                padding: 0.2em 0.2em 0.2em 0em;
+                margin: 5px 0px 5px 0px;
+                text-align: center;
+            }
+
+            .status {
+                font-size: 3em;
+                min-height: 130px;
+                max-height: 130px;
+            }
+
+            .stable {
+                background: @green;
+            }
+
+            .unstable {
+                background: @orange;
+            }
+
+            .failed {
+                background: @red;
+            }
+
+            .cancelled {
+                background: @grey;
+            }
+
+            .pending {
+                background: darkblue;
+
+                .buildProgress {
+                    text-align: center;
+
+                    .progress-bar-background {
+                        text-align: left;
+                        height: 0.2em;
+
+                        .bar {
+                            background-color: @blue;
+                            display: inline-block;
+                            height: 0.95em;
+                            margin-left: 0.05em;
+                        }
+                    }
+
+                    .label {
+                        position: relative;
+                        top: -25px;
+                        font-size: 0.2em;
+                        color: white;
+
+                        .buildNumber {
+                            text-align: center;
+                            font-size: 5.2em;
+                        }
+
+                        .timeLeft {
+                            position: relative;
+                            top: -4px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.avatars {
+    text-align: center;
+    border: medium;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    height: auto;
+    min-height: 202px;
+    max-height: 202px;
+    color: black;
+
+    .avatar {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        display: inline-block;
+        margin: 5px;
+        -webkit-transition: all .4s;
+        -moz-transition: all .4s;
+        -ms-transition: all .4s;
+        -o-transition: all .4s;
+        transition: all .4s;
+        float: inherit;
+    }
+
+    .avatar:not(:hover) {
+        -webkit-filter: grayscale(100%);
+        -moz-filter: grayscale(100%);
+        -ms-filter: grayscale(100%);
+        -o-filter: grayscale(100%);
+        filter: grayscale(100%);
+    }
+
+    .avatar & :hover {
+        -webkit-filter: grayscale(0%);
+        -moz-filter: grayscale(0%);
+        -ms-filter: grayscale(0%);
+        -o-filter: grayscale(0%);
+        filter: grayscale(0%);
+    }
 }

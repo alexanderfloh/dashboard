@@ -1,6 +1,7 @@
 logs
 project/project
 project/target
+public/DevicePusher
 target
 tmp
 .history
