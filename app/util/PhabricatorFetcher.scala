@@ -79,7 +79,6 @@ object PhabricatorFetcher {
     }
   }
 
-<<<<<<< HEAD
   def fetchPhabricatorProject(fetcher: String): Future[String] = {
     val baseUrl = Play.current.configuration.getString("dashboard.urlPhabricator")
       .getOrElse(throw new RuntimeException("dashboard.urlPhabricator not configured"))
@@ -90,13 +89,6 @@ object PhabricatorFetcher {
       case "silktest" => projectId = Play.current.configuration.getString("dashboard.silktest.phabProject")
         .getOrElse(throw new RuntimeException("dashboard.silktest.phabProject not configured"))
     }
-=======
-  def fetchPhabricatorProject(): Future[String] = {
-    val baseUrl = Play.current.configuration.getString("dashboard.urlPhabricator")
-      .getOrElse(throw new RuntimeException("dashboard.urlPhabricator not configured"))
-    val projectId = Play.current.configuration.getString("dashboard.phabProject")
-      .getOrElse(throw new RuntimeException("dashboard.phabProject not configured"))
->>>>>>> refs/heads/master
 
     val conduit = conduitConnect(baseUrl)
     if (conduit == null) {

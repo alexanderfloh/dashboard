@@ -12,7 +12,6 @@ import play.api.libs.json.Json
 import play.api.libs.ws.WS
 import play.api.mvc.Action
 import play.api.mvc.Controller
-import util.MockResponseGenerator
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsValue
 import play.api.libs.json.JsObject
@@ -21,8 +20,6 @@ import play.api.Play.current
 import akka.pattern.ask
 import akka.util.Timeout
 import scala.concurrent.duration._
-import util.CI
-import util.Nightly
 import util.JenkinsFetcherFactory
 import util.PhabricatorFetcher
 import scala.concurrent.Await
@@ -69,14 +66,6 @@ object Application extends Controller {
 
   def getPhabAudits = Action.async {
     val response = PhabricatorFetcher.fetchOpenAudits();
-    if (response == null)
-      Future("").map { Ok(_) }
-    else
-      response.map { Ok(_) }
-  }
-
-  def getPhabProject = Action.async {
-    val response = PhabricatorFetcher.fetchPhabricatorProject();
     if (response == null)
       Future("").map { Ok(_) }
     else
