@@ -1,18 +1,15 @@
 import scala.concurrent.duration._
 import scala.io.Source
-import actors.PollActor
-import actors.PollCi
 import akka.actor.Props
-import models.Location
-import models.MobileDevice
 import play.Logger
 import play.Play
 import play.api.GlobalSettings
 import play.libs.Akka
 import play.api.libs.concurrent.Execution.Implicits._
-import actors.PollNightly
-import actors.CachedResponseActor
-import akka.routing.RoundRobinRouter
+import akka.routing.RoundRobinPool
+import Akka.system
+import models.MobileDevice
+import models.Location
 
 object Global extends GlobalSettings {
   override def onStart(app: play.api.Application) = {
@@ -42,13 +39,5 @@ object Global extends GlobalSettings {
       MobileDevice.byDeviceId("CCFB03C4E8131B9B059051EA22FC97B9CF8D9A6F")
         .map(MobileDevice.setLocation(_, serverRoom.id))
     }
-    
-    import Akka.system
-    val actor = system.actorOf(Props[PollActor], name = "pollActor")
-    
-    system.scheduler.schedule(0.seconds, 30.seconds, actor, PollCi)
-    system.scheduler.schedule(0.seconds, 5.minutes, actor, PollNightly)
-    
-    val router = system.actorOf(Props[CachedResponseActor].withRouter(RoundRobinRouter(3)), "router")
   }
 }

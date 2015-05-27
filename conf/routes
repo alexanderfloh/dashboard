@@ -5,13 +5,16 @@
 # Home page
 GET   /                 controllers.Application.index
 
-GET   /fetchAllCI    controllers.Application.fetchAllCi
-GET   /fetchAllNightly    controllers.Application.fetchAllNightly
-
-GET   /getDevices/   controllers.Application.getDevices()
-
-POST  /setDevice/    controllers.Application.setDevice()
-
+GET   /buildAside       controllers.Application.buildAside()
+GET   /buildMain        controllers.Application.buildMain()
+GET   /getPhabUser      controllers.Application.getPhabUser()
+GET   /getPhabProject   controllers.Application.getPhabProject()
+GET   /getPhabAudits    controllers.Application.getPhabAudits()
+GET   /getPhabProject   controllers.Application.getPhabProject()
+GET   /getDevices/      controllers.Application.getDevices()
+GET   /getUsers         controllers.Application.getUsers()
+GET   /getConfig        controllers.Application.getConfig()
+POST  /setDevice/       controllers.Application.setDevice()
 # Map static resources from the /public folder to the /assets URL path
 GET   /assets/*file     controllers.Assets.at(path="/public", file)
-GET   /assets/*file                            controllers.Assets.versioned(path="/public", file: Asset)
+GET   /assets/*file     controllers.Assets.versioned(path="/public", file: Asset)

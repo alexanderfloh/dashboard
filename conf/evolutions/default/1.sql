@@ -9,7 +9,7 @@ CREATE TABLE device (
     name varchar(255),
     deviceId varchar(255) unique,
     locationId int DEFAULT NULL,
-    osType varchar(255)
+    ostype varchar(255) NULL
 );
 
 CREATE TABLE location (
@@ -23,4 +23,4 @@ DROP TABLE device;
 DROP TABLE location;
 
 DROP SEQUENCE device_id_seq;
-DROP SEQUENCE locaiton_id_seq;
+DROP SEQUENCE location_id_seq;

@@ -1,19 +1,30 @@
 requirejs.config({
-  paths: {
-    'jquery': '../lib/jquery/jquery',
-    'react': '../lib/react/react-with-addons',
-    'moment': '../lib/momentjs/moment',
-    'dashboard': '../jsx/dashboard'
+  paths : {
+    'jquery' : '../lib/jquery/jquery',
+    'react' : '../lib/react/react-with-addons',
+    'moment' : '../lib/momentjs/moment',
+    'dashboardSilkTest' : '../jsx/dashboardSilkTest',
+    'dashboardPerformer' : '../jsx/dashboardPerformer',
   }
 });
 
 define(function(require) {
-  var jQuery = require('jquery'),
-  React = require('react'),
-  dashboard = require('dashboard');
+  //var config = "";
+  $.ajax({
+    url : '/getConfig',
+    dataType : 'text',
+    async: false,
+  }).done(function(result){
+    config = result;
+  });
 
-  React.renderComponent(
-    dashboard(),
-    document.getElementById('content')
-  );
+  var jQuery = require('jquery');
+  var React = require('react');
+  var dashboard;
+  if (config == "silktest")
+    dashboard = require('dashboardSilkTest');
+  else if (config == "performer")
+    dashboard = require('dashboardPerformer');
+  
+  React.renderComponent(dashboard(), document.getElementById('content'));
 });
