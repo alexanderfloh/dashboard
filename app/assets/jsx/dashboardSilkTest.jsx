@@ -117,13 +117,13 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         var regressionName1 = "---";
         var regressionName2 = "---";
         var regressionName3 = "---";
+        var regressionName4 = "---";
         try{
           regressionName1 = build.regression1.name.toUpperCase();
           regressionName2 = build.regression2.name.toUpperCase();
           regressionName3 = build.regression3.name.toUpperCase();
+          regressionName4 = build.regression4.name.toUpperCase();
         }catch(e){}
-        
-        var classesRegressionResult = getStatusClassSet(build.regression1, "regression");        
         
         var andOthers = ""; 
         if (committerNodes.length > 6){
@@ -145,6 +145,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
                         {regressionStatus(build.regression1, regressionName1)}
                         {regressionStatus(build.regression2, regressionName2)}
                         {regressionStatus(build.regression3, regressionName3)}
+                        {regressionStatus(build.regression4, regressionName4)}
                       </ul>
                     </div>
                   </li>
@@ -157,6 +158,12 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       function buildItemsNightly(build){
         var committerNodes = build.culprits.map(getCommitters);
         var classesStatus = getStatusClassSet(build, "status");
+        
+        var regressionName5 = "---";
+        try{
+          regressionName5 = build.regression5.name.toUpperCase();
+        }catch(e){}
+        
         var andOthers = ""; 
         if (committerNodes.length > 6){
           andOthers = "+ " + (committerNodes.length - 6) + " other(s)";
@@ -174,6 +181,13 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
                       {build.number}
                     </a>
                   </li>
+                  <li>
+                  <div>
+                    <ul className="regression-list">
+                      {regressionStatus(build.regression5, regressionName5)}
+                    </ul>
+                  </div>
+                </li>
                 </ul>
               </div>
             </li>

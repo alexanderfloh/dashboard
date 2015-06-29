@@ -214,7 +214,8 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       var buildNightly = this.state.buildNightly.map(buildItemsNightly);
       var audits = mergeUserAudits(this.state.users, this.state.audits, this.state.project).sort(function(a, b){return b.numberOfAudits-a.numberOfAudits}).map(renderAudit);
       var iFrameStyle = {
-          height: '100%'
+          height: '400em',
+          width: '100%'
         }
    // ----------------------- html site structure -----------------------//
       return (
@@ -225,15 +226,17 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
                 {buildItems}
             	</ul>
             </section>
-            <section className="audit-section">
-              <h1> Open Audits </h1>
-              <ul className="audit-list">
-                {audits.slice(0,12)}
-              </ul>
+            <section>
+              <iframe style={iFrameStyle} className="failureSummary" src="http://lnz-spbuilder/jenkins/job/Status_all_Core_Regressions/Core_Regressions_Status/output.html" scrolling="no"/>
             </section>
             <aside id="nightly-build" className="nightly-build">
               {buildNightly} 
-              <iframe style={iFrameStyle} className="failureSummary" src="http://lnz-spbuilder/jenkins/job/Status_all_Core_Regressions/Core_Regressions_Status/output.html" scrolling="no"/>
+              <section className="audit-section">
+                <h1> Open Audits </h1>
+                <ul className="audit-list">
+                  {audits.slice(0,12)}
+                </ul>
+              </section> 
             </aside>
           </article> 
         </div>
