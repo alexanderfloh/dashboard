@@ -1,0 +1,417 @@
+/* Eric Meyer's Reset CSS v2.0 - http://cssreset.com */
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+    margin: 0;
+    padding: 0;
+}
+
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+
+body {
+    line-height: 1;
+}
+
+ol, ul {
+    list-style: none;
+}
+
+blockquote, q {
+    quotes: none;
+}
+
+blockquote:before, blockquote:after, q:before, q:after {
+    content: none;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+@import url(http://fonts.googleapis.com/css?family=Quicksand:400,700);
+@import url(http://fonts.googleapis.com/css?family=Fugaz+One);
+@import url(http://fonts.googleapis.com/css?family=Roboto+Slab);
+
+.font-sans {
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 400;
+}
+
+.font-cursive {
+    font-family: 'Fugaz One', cursive;
+    font-weight: 400;
+}
+
+.font-serif {
+    font-family: 'Roboto Slab', serif;
+    font-weight: 400;
+}
+
+@grey: #CCCCCC;
+@blue: #3498DB;
+@green: #458B00;
+@red: #c0392b;
+@orange: #fbc02d;
+@blue: #455ede;
+
+@midnight-blue: #2c3e50;
+@primary: @midnight-blue;
+@secondary: @orange;
+
+@background: white;
+@labels: @secondary;
+@icons: @primary;
+
+.circled {
+    border-radius: 50%;
+    background-clip: border-box;
+    background-color: @primary;
+}
+
+* {
+    /* Safari/Chrome, other WebKit */
+    -webkit-box-sizing: border-box;
+    /* Firefox, other Gecko */
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: @background;
+    .font-sans;
+}
+
+article {
+    display: block;
+}
+
+section {
+    float: left;
+    margin-left: 30em;
+    border: groove;
+    padding-bottom: 1em;
+    width: 88em;
+    background-color: white;
+}
+
+aside {
+    float: left;
+    position: fixed;
+    width: 29em;
+    height: 100%;
+    text-align: center;
+    border: groove;
+    z-index: -1;
+    overflow-y: scroll;
+}
+
+h1 {
+    text-align: center;
+    font-size: 2em;
+    padding-bottom: 0.3em;
+    padding-top: 0.3em;
+    clear: both;
+}
+
+a {
+    color: white;
+    text-decoration: none;
+    display: block;
+}
+
+// ---------------------------- classes ---------------------------- //
+
+.audit-section {
+   float: left;
+    margin-left: 0em;
+    border: none;
+    padding-top: 1em;
+    width: 28em;
+    background-color: white;
+    .audit-list {
+        -webkit-column-count: 3;
+        -moz-column-count: 3;
+        column-count: 3;
+        padding-top: 1em;
+
+        .audit {
+            padding-top: 2em;
+            font-size: 1.5em;
+            display: inline-block;
+            width: 100%;
+
+            .audit-name {
+                .avatar, .silkTest {
+                    width: 80px;
+                    height: 80px;
+                    border-radius: 50%;
+                    background-size: cover;
+                    display: inline-block;
+                    -webkit-transition: all .4s;
+                    -moz-transition: all .4s;
+                    -ms-transition: all .4s;
+                    -o-transition: all .4s;
+                    transition: all .4s;
+                }
+
+                .silkTest {
+                    border-radius: initial;
+                }
+            }
+
+            .audit-cnt {
+                font-family: Consolas;
+                display: inline;
+                border-radius: 15%;
+                text-align: center;
+                position: relative;
+                left: 30px;
+                top: -105px;
+                font-weight: bold;
+                font-size: 1.5em;
+                color: white;
+                background-color: @red;
+                padding: 5px;
+                min-width: 1.5em;
+            }
+        }
+    }
+}
+
+.dashboard {
+    padding-top: 1em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+
+    .build-section {
+        .ci-build-list {
+            .build-list-item:last-child {
+                font-weight: bold;
+            }
+        }
+    }
+
+
+
+    .deviceSection {
+        .deviceSummery {
+            .font-serif;
+
+            a {
+                .font-sans;
+                font-size: 0.5em;
+                color: initial;
+                text-align: center;
+                position: sticky;
+            }
+        }
+
+        .deviceTable {
+            margin-left: auto;
+            margin-right: auto;
+
+            .deviceLine {
+                line-height: 1;
+            }
+
+            .deviceName {
+                padding-right: 1em;
+                text-align: right;
+                font-size: 2em;
+                color: @primary;
+                width: 65%;
+                .font-serif;
+                background-repeat: no-repeat;
+                background-position: right;
+
+                &.android {
+                    background-image: url('../images/android-logo.png');
+                }
+
+                &.ios {
+                    background-image: url('../images/apple-logo.png');
+                }
+            }
+
+            .deviceLocation {
+                color: @orange;
+                .font-cursive;
+                text-align: left;
+                font-size: 1.5em;
+                width: 35%;
+            }
+        }
+    }
+
+    .nightly-build {
+        background-color: transparent;
+
+        .nevergreen-list {
+            text-align: left;
+            margin-left: 1em;
+            margin-right: 1em;
+
+            .nevergreen {
+                font-family: monospace;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                font-size: 1.2em;
+                padding: 0.2em;
+                display: inline-block;
+                background-color: transparent;
+                width: 100%;
+
+                a {
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    text-decoration: underline;
+                    color: black;
+                }
+            }
+        }
+
+        .failureSummary {
+            width: auto;
+            height: auto;
+        }
+    }
+
+
+
+    .build-list-item {
+        display: inline;
+
+        .build-item {
+            margin-top: 0.5em;
+            display: inline-block;
+            margin-left: 0.5em;
+            margin-right: 0.5em;
+            height: auto;
+            color: white;
+            font-size: 2em;
+            width: 9.9em;
+            border: groove;
+            background: lighten(@grey, 10%);
+
+            .build-number {
+                text-align: center;
+                font-size: 2em;
+                color: black;
+            }
+
+            .status, .regression {
+                font-size: 1em;
+                padding: 0.2em 0.2em 0.2em 0em;
+                margin: 5px 0px 5px 0px;
+                text-align: center;
+            }
+
+            .status {
+                font-size: 3em;
+                min-height: 130px;
+                max-height: 130px;
+            }
+
+            .stable {
+                background: @green;
+            }
+
+            .unstable {
+                background: @orange;
+            }
+
+            .failed {
+                background: @red;
+            }
+
+            .cancelled {
+                background: @grey;
+            }
+
+            .pending {
+                background: darkblue;
+
+                .buildProgress {
+                    text-align: center;
+
+                    .progress-bar-background {
+                        text-align: left;
+                        height: 0.2em;
+
+                        .bar {
+                            background-color: @blue;
+                            display: inline-block;
+                            height: 0.95em;
+                            margin-left: 0.05em;
+                        }
+                    }
+
+                    .label {
+                        position: relative;
+                        top: -25px;
+                        font-size: 0.2em;
+                        color: white;
+
+                        .buildNumber {
+                            text-align: center;
+                            font-size: 5.2em;
+                        }
+
+                        .timeLeft {
+                            position: relative;
+                            top: -4px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.avatars {
+    text-align: center;
+    border: medium;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+    height: auto;
+    min-height: 202px;
+    max-height: 202px;
+    color: black;
+
+    .avatar {
+        width: 70px;
+        height: 70px;
+        border-radius: 50%;
+        display: inline-block;
+        margin: 5px;
+        -webkit-transition: all .4s;
+        -moz-transition: all .4s;
+        -ms-transition: all .4s;
+        -o-transition: all .4s;
+        transition: all .4s;
+        float: inherit;
+    }
+
+    .avatar:not(:hover) {
+        -webkit-filter: grayscale(100%);
+        -moz-filter: grayscale(100%);
+        -ms-filter: grayscale(100%);
+        -o-filter: grayscale(100%);
+        filter: grayscale(100%);
+    }
+
+    .avatar & :hover {
+        -webkit-filter: grayscale(0%);
+        -moz-filter: grayscale(0%);
+        -ms-filter: grayscale(0%);
+        -o-filter: grayscale(0%);
+        filter: grayscale(0%);
+    }
+}
