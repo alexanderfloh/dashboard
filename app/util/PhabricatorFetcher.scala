@@ -15,15 +15,18 @@ import java.util.concurrent.TimeoutException
 
 object PhabricatorFetcher {
 
-  def conduitConnect(baseUrl: String): JsObject = {
-    val phabUser = Play.current.configuration.getString("dashboard.phabUser")
+  val config = Play.current.configuration
+
+  def conduitConnect(baseUrl: String): Future[JsObject] = {
+    val phabUser = config.getString("dashboard.phabUser")
       .getOrElse(throw new RuntimeException("dashboard.phabUser not configured"))
-    val phabUserCert = Play.current.configuration.getString("dashboard.phabUserCert")
+    val phabUserCert = config.getString("dashboard.phabUserCert")
       .getOrElse(throw new RuntimeException("dashboard.phabUserCert not configured"))
 
     val token = System.currentTimeMillis / 1000
     val md = java.security.MessageDigest.getInstance("SHA-1")
-    val signature = md.digest((token.toString() + phabUserCert).getBytes("UTF-8")).map("%02x".format(_)).mkString
+    val signature = md.digest((token.toString() + phabUserCert).getBytes("UTF-8"))
+      .map("%02x".format(_)).mkString
 
     val connect_params = Json.obj(
       "client" -> "Dashboard",
@@ -39,31 +42,27 @@ object PhabricatorFetcher {
       "output" -> "json",
       "__conduit__" -> true)
 
-    try {
-      Await.result(WS.url(baseUrl + "api/conduit.connect")
-        .withQueryString(("params", connect_params.toString()), ("output", "json"), ("__conduit__", "True"))
-        .post("")
-        .map { respon =>
-          val json = Json.parse(respon.body);
-          Json.obj(
-            "sessionKey" -> json.\\("sessionKey").last,
-            "connectionID" -> json.\\("connectionID").last)
-        }, Duration(1000, "millis"))
-    } catch {
-      case e: IllegalArgumentException => println("Faild: Get phabricator session (IllegalArgumentException)"); null;
-      case e: InterruptedException     => println("Faild: Get phabricator session (InterruptedException)"); null;
-      case e: TimeoutException         => println("Faild: Get phabricator session (TimeoutException)"); null;
-    }
+    WS.url(baseUrl + "api/conduit.connect")
+      .withQueryString(
+        ("params", connect_params.toString()),
+        ("output", "json"),
+        ("__conduit__", "True"))
+      .post("")
+      .map { response =>
+        val json = Json.parse(response.body);
+        Json.obj(
+          "sessionKey" -> (json \\ "sessionKey").last,
+          "connectionID" -> (json \\ "connectionID").last)
+      }
 
   }
 
   def fetchPhabricatorUser(): Future[String] = {
-    val baseUrl = Play.current.configuration.getString("dashboard.urlPhabricator")
+    val baseUrl = config.getString("dashboard.urlPhabricator")
       .getOrElse(throw new RuntimeException("dashboard.urlPhabricator not configured"))
+
     val conduit = conduitConnect(baseUrl)
-    if (conduit == null) {
-      null
-    } else {
+    conduit.flatMap { conduit =>
       val params = Json.obj(
         "__conduit__" -> conduit)
 
@@ -73,50 +72,46 @@ object PhabricatorFetcher {
         .map { req =>
           val json = Json.parse(req.body)
           val list = (json \ "result").as[List[JsObject]]
-          Json.prettyPrint(Json.obj(
-            "users" -> list))
+          Json.prettyPrint(Json.obj("users" -> list))
         }
     }
   }
 
   def fetchPhabricatorProject(fetcher: String): Future[String] = {
-    val baseUrl = Play.current.configuration.getString("dashboard.urlPhabricator")
+    val baseUrl = config.getString("dashboard.urlPhabricator")
       .getOrElse(throw new RuntimeException("dashboard.urlPhabricator not configured"))
-    var projectId = ""
-    fetcher match {
-      case "performer" => projectId = Play.current.configuration.getString("dashboard.performer.phabProject")
+
+    val projectId = fetcher match {
+      case "performer" => config.getString("dashboard.performer.phabProject")
         .getOrElse(throw new RuntimeException("dashboard.performer.phabProject not configured"))
-      case "silktest" => projectId = Play.current.configuration.getString("dashboard.silktest.phabProject")
+      case "silktest" => config.getString("dashboard.silktest.phabProject")
         .getOrElse(throw new RuntimeException("dashboard.silktest.phabProject not configured"))
     }
 
     val conduit = conduitConnect(baseUrl)
-    if (conduit == null) {
-      null
-    } else {
+    conduit.flatMap { conduit =>
       val params = Json.obj(
         "__conduit__" -> conduit,
         "phids" -> Json.arr(projectId))
 
-      WS.url(baseUrl + "api/project.query")
+      val response = WS.url(baseUrl + "api/project.query")
         .withQueryString(("params", params.toString()), ("output", "json"))
         .post("")
-        .map { req =>
-          val json = Json.parse(req.body)
-          val list = (json \ "result").as[JsObject]
-          Json.prettyPrint(Json.obj(
-            "project" -> list))
-        }
+
+      response.map { response =>
+        val json = Json.parse(response.body)
+        val list = (json \ "result").as[JsObject]
+        Json.prettyPrint(Json.obj("project" -> list))
+      }
     }
   }
 
   def fetchOpenAudits(): Future[String] = {
-    val baseUrl = Play.current.configuration.getString("dashboard.urlPhabricator")
+    val baseUrl = config.getString("dashboard.urlPhabricator")
       .getOrElse(throw new RuntimeException("dashboard.urlPhabricator not configured"))
+
     val conduit = conduitConnect(baseUrl)
-    if (conduit == null) {
-      null
-    } else {
+    conduit.flatMap { conduit =>
       val params = Json.obj(
         "__conduit__" -> conduit,
         "status" -> "audit-status-open")
@@ -126,8 +121,7 @@ object PhabricatorFetcher {
         .post("")
         .map { req =>
           val json = Json.parse(req.body)
-          Json.prettyPrint(Json.obj(
-            "audits" -> json.\("result")))
+          Json.prettyPrint(Json.obj("audits" -> json \ "result"))
         }
     }
   }
