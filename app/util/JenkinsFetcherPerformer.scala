@@ -33,7 +33,7 @@ object JenkinsFetcherPerformer extends JenkinsFetcher {
         val detailsWithTests = lastCompletedDetails.map(jsVal => {
           val buildNumber = (jsVal \ "number").as[Int]
           jsVal +
-            (("regression1", regression1.getOrElse(buildNumber, Json.toJson(""))))
+            (("regression1", regression1._2.getOrElse(buildNumber, Json.toJson(""))))
         });
         Json.prettyPrint(Json.obj(mapName -> detailsWithTests, "lastBuild" -> lastBuildDetails))
       }
@@ -85,11 +85,11 @@ object JenkinsFetcherPerformer extends JenkinsFetcher {
         val detailsWithTests = lastCompletedDetails.map(jsVal => {
           val buildNumber = (jsVal \ "number").as[Int]
           jsVal +
-            (("regression1", regression1.getOrElse(buildNumber, Json.toJson("")))) +
-            (("regression2", regression2.getOrElse(buildNumber, Json.toJson("")))) +
-            (("regression3", regression3.getOrElse(buildNumber, Json.toJson("")))) +
-            (("regression4", regression4.getOrElse(buildNumber, Json.toJson("")))) +
-            (("regression5", regression5.getOrElse(buildNumber, Json.toJson(""))))
+            (("regression1", regression1._2.getOrElse(buildNumber, Json.toJson("")))) +
+            (("regression2", regression2._2.getOrElse(buildNumber, Json.toJson("")))) +
+            (("regression3", regression3._2.getOrElse(buildNumber, Json.toJson("")))) +
+            (("regression4", regression4._2.getOrElse(buildNumber, Json.toJson("")))) +
+            (("regression5", regression5._2.getOrElse(buildNumber, Json.toJson(""))))
         });
         Json.prettyPrint(Json.obj(mapName -> detailsWithTests))
       }

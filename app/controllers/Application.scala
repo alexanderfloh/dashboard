@@ -51,7 +51,7 @@ object Application extends Controller {
   def getPhabUser = Action.async {
     val response = PhabricatorFetcher.fetchPhabricatorUser();
     if (response == null)
-      Future("").map { Ok(_) }
+      Future(Json.obj()).map { Ok(_) }
     else
       response.map { Ok(_) }
   }
@@ -59,7 +59,7 @@ object Application extends Controller {
   def getPhabProject = Action.async {
     val response = PhabricatorFetcher.fetchPhabricatorProject(fetcher);
     if (response == null)
-      Future("").map { Ok(_) }
+      Future(Json.obj()).map { Ok(_) }
     else
       response.map { Ok(_) }
   }
@@ -67,7 +67,7 @@ object Application extends Controller {
   def getPhabAudits = Action.async {
     val response = PhabricatorFetcher.fetchOpenAudits();
     if (response == null)
-      Future("").map { Ok(_) }
+      Future(Json.obj()).map { Ok(_) }
     else
       response.map { Ok(_) }
   }

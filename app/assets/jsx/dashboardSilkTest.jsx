@@ -129,7 +129,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
 
         var andOthers = "";
         if (committerNodes.length > 6){
-          andOthers = "+ " + (committerNodes.length - 6) + " other(s)";
+          andOthers = "+ " + (committerNodes.length - 6) + " other" + (committerNodes.length > 1 ? "s" : "");
         }
         return (
             <li className="build-list-item"
@@ -159,7 +159,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         var classesStatus = getStatusClassSet(build, "status");
         var andOthers = "";
         if (committerNodes.length > 6){
-          andOthers = "+ " + (committerNodes.length - 6) + " other(s)";
+          andOthers = "+ " + (committerNodes.length - 6) + " other" + (committerNodes.length > 1 ? "s" : "");
         }
         return (
             <li className="build-list-item">

@@ -19,50 +19,33 @@ object JenkinsFetcherSilkTest extends JenkinsFetcher {
       val details = JenkinsFetcherUtil.getDetails(json, numberOfItems, baseUrl)
       val lastBuild = (json \ "lastBuild" \ "number").as[Int]
 
-      val urlRegression1 = Play.current.configuration.getString(prefix + "urlRegressions1")
-        .getOrElse(throw new RuntimeException(prefix + "urlRegressions1 not configured"))
-      val regressionName1 = Play.current.configuration.getString(prefix + "regressionName1")
-        .getOrElse(throw new RuntimeException(prefix + "regressionName1 not configured"))
+      val regressionKeys = (1 to 5).map(i => (s"urlRegressions${i}", s"regressionName${i}"))
+      val regressionConfig = regressionKeys.map {
+        case (urlKey, nameKey) =>
+          val config = Play.current.configuration
+          val url = config.getString(prefix + urlKey).getOrElse(throw new RuntimeException(s"$urlKey is not configured"))
+          val name = config.getString(prefix + nameKey).getOrElse(throw new RuntimeException(s"$nameKey is not configured"))
+          (url, name)
+      }
 
-      val urlRegression2 = Play.current.configuration.getString(prefix + "urlRegressions2")
-        .getOrElse(throw new RuntimeException(prefix + "urlRegressions2 not configured"))
-      val regressionName2 = Play.current.configuration.getString(prefix + "regressionName2")
-        .getOrElse(throw new RuntimeException(prefix + "regressionName2 not configured"))
-
-      val urlRegression3 = Play.current.configuration.getString(prefix + "urlRegressions3")
-        .getOrElse(throw new RuntimeException(prefix + "urlRegressions3 not configured"))
-      val regressionName3 = Play.current.configuration.getString(prefix + "regressionName3")
-        .getOrElse(throw new RuntimeException(prefix + "regressionName3 not configured"))
-
-      val urlRegression4 = Play.current.configuration.getString(prefix + "urlRegressions4")
-        .getOrElse(throw new RuntimeException(prefix + "urlRegressions4 not configured"))
-      val regressionName4 = Play.current.configuration.getString(prefix + "regressionName4")
-        .getOrElse(throw new RuntimeException(prefix + "regressionName4 not configured"))
-
+      val regressionResults = Future.sequence(regressionConfig.map {
+        case (url, name) => JenkinsFetcherUtil.fetchTests(url, name)
+      })
+      
       for {
-        regression1 <- JenkinsFetcherUtil.fetchTests(urlRegression1, regressionName1)
-        regression2 <- JenkinsFetcherUtil.fetchTests(urlRegression2, regressionName2)
-        regression3 <- JenkinsFetcherUtil.fetchTests(urlRegression3, regressionName3)
-        regression4 <- JenkinsFetcherUtil.fetchTests(urlRegression4, regressionName4)
+        regression <- regressionResults
         lastCompletedDetails <- details
         lastBuildDetails <- JenkinsFetcherUtil.fetchLastBuild(baseUrl, lastBuild)
       } yield {
         val detailsWithTests = lastCompletedDetails.map(jsVal => {
           val buildNumber = (jsVal \ "number").as[Int]
-          val defaultStatus = Json.obj("status" -> "n/a", "name" -> "n/a")
-          val result1 = regression1.getOrElse(buildNumber, defaultStatus)
-          val result2 = regression2.getOrElse(buildNumber, defaultStatus)
-          val result3 = regression3.getOrElse(buildNumber, defaultStatus)
-          val result4 = regression4.getOrElse(buildNumber, defaultStatus)
-          
-          val regressions = Json.arr(
-              result1,
-              result2,
-              result3,
-              result4
-              )
-          jsVal + (("regressions", regressions))
-          
+          val extracted = regression.map { case (name, result) =>
+            val defaultStatus = Json.obj("status" -> "n/a", "name" -> name)
+            result.getOrElse(buildNumber, defaultStatus)
+          }
+
+          jsVal + (("regressions", Json.toJson(extracted)))
+
         });
         Json.prettyPrint(Json.obj(mapName -> detailsWithTests, "lastBuild" -> lastBuildDetails))
       }

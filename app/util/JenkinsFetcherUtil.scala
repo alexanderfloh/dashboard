@@ -27,7 +27,7 @@ object JenkinsFetcherUtil {
       case _          => s
     }).getOrElse("pending")
 
-  def fetchTests(baseUrl: String, testName: String): Future[Map[Int, JsValue]] = {
+  def fetchTests(baseUrl: String, testName: String): Future[(String, Map[Int, JsValue])] = {
     WS.url(baseUrl + "/api/json?tree=builds[number,url]").get.flatMap { response =>
       val json = Json.parse(response.body)
       val buildsJson = (json \ "builds").as[List[JsValue]]
@@ -36,10 +36,10 @@ object JenkinsFetcherUtil {
         fetchTestDetails(baseUrl, build, testName)
       }))
       detailsF.map(details => {
-        details.filter(_ != None)
-          .map(d => d.get) // unwrap optionals
-          .groupBy(_._1) // group by build
-          .map { case (k, v) => (k, v.head._2) }
+        val buildsToJson = details.flatten
+          .groupBy { case (buildNumber, json) => buildNumber }
+          .map { case (buildNumber, List((_, json))) => (buildNumber, json) }
+        (testName, buildsToJson)
       })
     }
   }
@@ -50,7 +50,10 @@ object JenkinsFetcherUtil {
       val json = Json.parse(responseDetails.body)
       val triggeringBuild = (json \\ "upstreamBuild").headOption.map(_.as[Int])
       triggeringBuild.map(build =>
-        (build, Json.obj("status" -> mapBuildStatus((json \ "result").asOpt[String]), "link" -> s"$baseUrl/$buildNumber", "name" -> testName)))
+        (build, Json.obj(
+          "status" -> mapBuildStatus((json \ "result").asOpt[String]),
+          "link" -> s"$baseUrl/$buildNumber",
+          "name" -> testName)))
     }
   }
 
@@ -65,19 +68,19 @@ object JenkinsFetcherUtil {
         "building" -> (json \ "building"))
     }
   }
-  
-    def fetchBuild(baseUrl: String, buildNumber: Int): Future[JsObject] = {
+
+  def fetchBuild(baseUrl: String, buildNumber: Int): Future[JsObject] = {
     val url = s"$baseUrl/$buildNumber/api/json?tree=timestamp,estimatedDuration,result,culprits[fullName],changeSet[items[author[id]]],actions[parameters[value]]"
     WS.url(url).get.map { responseDetails =>
       val json = Json.parse(responseDetails.body)
 
       val authors = (json \ "changeSet" \ "items").asOpt[List[JsValue]].getOrElse(List())
       val ids = authors.map(_ \ "author").distinct
-      var parameter = null : JsValue;
+      var parameter = null: JsValue;
       parameter = Json.toJson(buildNumber)
-      try{
-        parameter = (((json \ "actions").as[Array[JsValue]].take(1).last \ "parameters").as[Array[JsValue]].take(1).last\"value")
-      }catch{case e : Exception => }
+      try {
+        parameter = (((json \ "actions").as[Array[JsValue]].take(1).last \ "parameters").as[Array[JsValue]].take(1).last \ "value")
+      } catch { case e: Exception => }
       Json.obj(
         "status" -> mapBuildStatus((json \ "result").asOpt[String]),
         "number" -> buildNumber,

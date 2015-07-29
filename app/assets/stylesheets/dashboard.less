@@ -93,7 +93,6 @@ article {
 section {
     float: left;
     margin-left: 30em;
-    border: groove;
     padding-bottom: 1em;
     width: 88em;
     background-color: white;
@@ -105,9 +104,8 @@ aside {
     width: 29em;
     height: 100%;
     text-align: center;
-    border: groove;
     z-index: -1;
-    overflow-y: scroll;
+    overflow-y: visible;
 }
 
 h1 {
@@ -290,7 +288,6 @@ a {
             color: white;
             font-size: 2em;
             width: 9.9em;
-            border: groove;
             background: lighten(@grey, 10%);
 
             .build-number {
@@ -302,7 +299,6 @@ a {
             .status, .regression {
                 font-size: 1em;
                 padding: 0.2em 0.2em 0.2em 0em;
-                margin: 5px 0px 5px 0px;
                 text-align: center;
             }
 
@@ -310,6 +306,7 @@ a {
                 font-size: 3em;
                 min-height: 130px;
                 max-height: 130px;
+                margin: 5px 0px 5px 0px;
             }
 
             .stable {
