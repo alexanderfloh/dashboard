@@ -26,6 +26,7 @@ import scala.concurrent.Await
 import models.Location
 import models.MobileDevice
 import util.UserFetcher
+import play.api.cache.Cached
 
 object Application extends Controller {
 
@@ -40,41 +41,51 @@ object Application extends Controller {
     JenkinsFetcherFactory.getFetcher(fetcher).fetchMain("buildCI", 4).map(Ok(_))
   }
 
-  def buildAside = Action.async {
-    JenkinsFetcherFactory.getFetcher(fetcher).fetchAside("buildNightly", 1).map(Ok(_))
+  def buildAside = Cached("build.nightly") {
+    Action.async {
+      JenkinsFetcherFactory.getFetcher(fetcher).fetchAside("buildNightly", 1).map(Ok(_))
+    }
   }
 
   def getConfig = Action.async {
     Future(fetcher).map { Ok(_) }
   }
 
-  def getPhabUser = Action.async {
-    val response = PhabricatorFetcher.fetchPhabricatorUser();
-    if (response == null)
-      Future(Json.obj()).map { Ok(_) }
-    else
-      response.map { Ok(_) }
+  def getPhabUser = Cached("phab.user") {
+    Action.async {
+      val response = PhabricatorFetcher.fetchPhabricatorUser();
+      if (response == null)
+    	  Future(NotFound)
+      else
+        response.map { Ok(_) }
+    }
   }
 
-  def getPhabProject = Action.async {
-    val response = PhabricatorFetcher.fetchPhabricatorProject(fetcher);
-    if (response == null)
-      Future(Json.obj()).map { Ok(_) }
-    else
-      response.map { Ok(_) }
+  def getPhabProject = Cached("phab.project") {
+    Action.async {
+      val response = PhabricatorFetcher.fetchPhabricatorProject(fetcher);
+      if (response == null)
+        Future(NotFound)
+      else
+        response.map { Ok(_) }
+    }
   }
 
-  def getPhabAudits = Action.async {
-    val response = PhabricatorFetcher.fetchOpenAudits();
-    if (response == null)
-      Future(Json.obj()).map { Ok(_) }
-    else
-      response.map { Ok(_) }
+  def getPhabAudits = Cached("phab.audits") {
+    Action.async {
+      val response = PhabricatorFetcher.fetchOpenAudits();
+      if (response == null)
+        Future(NotFound)
+      else
+        response.map { Ok(_) }
+    }
   }
-  
-  def getUsers() = Action.async {
-    val response = UserFetcher.getUsers("http://austria/global/images/employees/");
-    response.map { Ok(_) }
+
+  def getUsers() = Cached("users") {
+    Action.async {
+      val response = UserFetcher.getUsers("http://austria/global/images/employees/");
+      response.map { Ok(_) }
+    }
   }
 
   def setDevice() = Action { implicit request =>
