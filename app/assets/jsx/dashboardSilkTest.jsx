@@ -14,7 +14,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       var empl = this.state.employeesAustria.toLowerCase();
       function getPicture(name){
         name = formatEmplName(name);
-        
+
         if (name == "No.Auditor.jpg"){
           return '/assets/images/avatars/silkTestLogo.png';
         }
@@ -22,10 +22,10 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
           return getDefaultPicture();
         }
         else{
-            return 'http://austria/global/images/employees/' +  name;      
+            return 'http://austria/global/images/employees/' +  name;
         }
       }
-      
+
       function getCommitters(committer){
         var picture = getPicture(committer.fullName, empl);
 
@@ -33,15 +33,15 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
             backgroundImage: 'url(' + picture + ')',
             backgroundSize: '100%',
         };
-        return (    
-            <div className="avatar" 
-                 style={avatarUrlStyle} 
-                 key={committer.fullName} 
+        return (
+            <div className="avatar"
+                 style={avatarUrlStyle}
+                 key={committer.fullName}
                  title={committer.fullName} >
             </div>
         );
       }
-      
+
       function getAvatarClassSet(name){
         var cx = React.addons.classSet;
         return cx({
@@ -49,7 +49,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
           'silkTest': name === 'No Auditor'
         });
       }
-      
+
       function getAuditorPic(auditor){
         var picture = getPicture(auditor.userName, empl);
         var avatarClass = getAvatarClassSet(auditor.userName);
@@ -57,7 +57,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
             background: 'url(' + picture + ')',
             backgroundSize: 'cover'
         };
-        return (    
+        return (
             <div className={avatarClass}
                  style={avatarUrlStyle}
                  key={auditor.userName}
@@ -65,7 +65,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
             </div>
         );
       }
-      
+
       function getStatusClassSet(build, name){
         var cx = React.addons.classSet;
         return cx({
@@ -78,17 +78,17 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
           'pending': build.status === 'pending'
         });
       }
-      
+
    // ----------------------- render functions -----------------------//
       var currentBuild = this.state.lastBuild;
       function buildStatus(build){
         var classesStatus = getStatusClassSet(build, "status");
-        
+
         if (currentBuild.building && currentBuild.buildNumber === build.number){
           return (
               <li className="status pending">
               <a href={build.link}>
-                <BuildProgress lastBuild={currentBuild} /> 
+                <BuildProgress lastBuild={currentBuild} />
               </a>
             </li>
           )
@@ -100,7 +100,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
               </a>
             </li>)
       }
-      
+
       function regressionStatus(regression, name){
         var classesStatus = getStatusClassSet(regression, "regression");
         return (
@@ -111,21 +111,23 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
             </li>
           );
       }
-      
+
       function buildItems(build){
         var committerNodes = build.culprits.map(getCommitters);
-        var regressionName1 = "---";
-        var regressionName2 = "---";
-        var regressionName3 = "---";
-        try{
-          regressionName1 = build.regression1.name.toUpperCase();
-          regressionName2 = build.regression2.name.toUpperCase();
-          regressionName3 = build.regression3.name.toUpperCase();
-        }catch(e){}
-        
-        var classesRegressionResult = getStatusClassSet(build.regression1, "regression");        
-        
-        var andOthers = ""; 
+
+        var resultNodes = build.regressions.map(function(result) {
+          var classesStatus = getStatusClassSet(result, "regression");
+          return (
+            <li className={classesStatus}>
+              <a href={result.link}>
+                {result.name}
+              </a>
+            </li>);
+        });
+
+        var classesRegressionResult = getStatusClassSet(build.regressions[0], "regression");
+
+        var andOthers = "";
         if (committerNodes.length > 6){
           andOthers = "+ " + (committerNodes.length - 6) + " other(s)";
         }
@@ -142,9 +144,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
                   <li>
                     <div>
                       <ul className="regression-list">
-                        {regressionStatus(build.regression1, regressionName1)}
-                        {regressionStatus(build.regression2, regressionName2)}
-                        {regressionStatus(build.regression3, regressionName3)}
+                        {resultNodes}
                       </ul>
                     </div>
                   </li>
@@ -153,11 +153,11 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
             </li>
         );
       };
-      
+
       function buildItemsNightly(build){
         var committerNodes = build.culprits.map(getCommitters);
         var classesStatus = getStatusClassSet(build, "status");
-        var andOthers = ""; 
+        var andOthers = "";
         if (committerNodes.length > 6){
           andOthers = "+ " + (committerNodes.length - 6) + " other(s)";
         }
@@ -179,17 +179,17 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
             </li>
         );
       };
-      
+
       function getNevergreens(nevergreen) {
         var linkText = nevergreen.definitionName;
         // cut off namespaces
         var nameArray = linkText.split(".");
         linkText = nameArray[nameArray.length-1];
         // fix in case of "... cases_None.opt\""," string
-        if (linkText.length < 5){ 
+        if (linkText.length < 5){
           linkText = nevergreen.definitionName;
         }
-        return (        
+        return (
           <li key={nevergreen.id} className="nevergreen">
             <a href={nevergreen.link}>
               {nevergreen.nrOfFailures} &times; {linkText}
@@ -197,14 +197,14 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
           </li>
         );
       };
-      
+
       function renderAudit(audit) {
         return (
           <li className="audit">
-            <div className="audit-name"> 
+            <div className="audit-name">
               {getAuditorPic(audit)}
             </div>
-            <div className="audit-cnt"> 
+            <div className="audit-cnt">
               {audit.numberOfAudits}
             </div>
           </li>
@@ -216,7 +216,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       var buildNightly = this.state.buildNightly.map(buildItemsNightly);
       var nevergreenNodes = this.state.nevergreens.map(getNevergreens);
       var audits = mergeUserAudits(this.state.users, this.state.audits, this.state.project).sort(function(a, b){return b.numberOfAudits-a.numberOfAudits}).map(renderAudit);
-      
+
    // ----------------------- html site structure -----------------------//
       return (
         <div>
@@ -226,33 +226,33 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
                 {buildItems}
               </ul>
             </section>
-            
+
             <section className="audit-section">
               <h1> Open Audits </h1>
               <ul className="audit-list">
                 {audits.slice(0,12)}
               </ul>
             </section>
-            
+
             <section className="deviceSection">
               <Devices pollInterval={15000}/>
             </section>
-            
+
             <aside id="nightly-build" className="nightly-build">
-              {buildNightly} 
+              {buildNightly}
               <h1> Nevergreens </h1>
               <ul className="nevergreen-list">
                 {nevergreenNodes.slice(0,26)}
               </ul>
             </aside>
-            
-          </article> 
+
+          </article>
         </div>
-        
+
       );
     }
   });
-  
+
   var Devices = React.createClass({
     getInitialState: function() {
       return { devices: [],
@@ -342,7 +342,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       );
     }
   });
-  
+
   var BuildProgress = React.createClass({
     render: function() {
       if(this.props.lastBuild.building) {
@@ -380,6 +380,6 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       }
     }
   });
-  
+
   return Dashboard;
 });

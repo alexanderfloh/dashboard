@@ -34,19 +34,35 @@ object JenkinsFetcherSilkTest extends JenkinsFetcher {
       val regressionName3 = Play.current.configuration.getString(prefix + "regressionName3")
         .getOrElse(throw new RuntimeException(prefix + "regressionName3 not configured"))
 
+      val urlRegression4 = Play.current.configuration.getString(prefix + "urlRegressions4")
+        .getOrElse(throw new RuntimeException(prefix + "urlRegressions4 not configured"))
+      val regressionName4 = Play.current.configuration.getString(prefix + "regressionName4")
+        .getOrElse(throw new RuntimeException(prefix + "regressionName4 not configured"))
+
       for {
         regression1 <- JenkinsFetcherUtil.fetchTests(urlRegression1, regressionName1)
         regression2 <- JenkinsFetcherUtil.fetchTests(urlRegression2, regressionName2)
         regression3 <- JenkinsFetcherUtil.fetchTests(urlRegression3, regressionName3)
+        regression4 <- JenkinsFetcherUtil.fetchTests(urlRegression4, regressionName4)
         lastCompletedDetails <- details
         lastBuildDetails <- JenkinsFetcherUtil.fetchLastBuild(baseUrl, lastBuild)
       } yield {
         val detailsWithTests = lastCompletedDetails.map(jsVal => {
           val buildNumber = (jsVal \ "number").as[Int]
-          jsVal +
-            (("regression1", regression1.getOrElse(buildNumber, Json.toJson("")))) +
-            (("regression2", regression2.getOrElse(buildNumber, Json.toJson("")))) +
-            (("regression3", regression3.getOrElse(buildNumber, Json.toJson(""))))
+          val defaultStatus = Json.obj("status" -> "n/a", "name" -> "n/a")
+          val result1 = regression1.getOrElse(buildNumber, defaultStatus)
+          val result2 = regression2.getOrElse(buildNumber, defaultStatus)
+          val result3 = regression3.getOrElse(buildNumber, defaultStatus)
+          val result4 = regression4.getOrElse(buildNumber, defaultStatus)
+          
+          val regressions = Json.arr(
+              result1,
+              result2,
+              result3,
+              result4
+              )
+          jsVal + (("regressions", regressions))
+          
         });
         Json.prettyPrint(Json.obj(mapName -> detailsWithTests, "lastBuild" -> lastBuildDetails))
       }
@@ -56,7 +72,7 @@ object JenkinsFetcherSilkTest extends JenkinsFetcher {
   // fetch aside build with nevergreen list
   def fetchAside(mapName: String, numberOfItems: Integer): Future[String] = {
     val baseUrl = Play.current.configuration.getString(prefix + "urlNightly")
-        .getOrElse(throw new RuntimeException(prefix + "urlBuildAll not configured"))
+      .getOrElse(throw new RuntimeException(prefix + "urlBuildAll not configured"))
     WS.url(baseUrl + "/api/json").get.flatMap { response =>
       val json = Json.parse(response.body)
       val details = JenkinsFetcherUtil.getDetails(json, numberOfItems, baseUrl)

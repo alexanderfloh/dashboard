@@ -17,3 +17,7 @@ dist
 /.target
 /bin
 /.cache
+project/play-fork-run.sbt
+project/.sbtserver.lock
+project/sbt-ui.sbt
+.sbtserver
