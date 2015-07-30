@@ -199,35 +199,36 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
 
    // ----------------------- render functions -----------------------//
       var currentBuild = this.state.lastBuild;
-      function buildStatus(build){
+      function buildStatus(build) {
         var classesStatus = getStatusClassSet(build, "status");
 
         if (currentBuild.building && currentBuild.buildNumber === build.number){
           return (
-              <li className="status pending">
+            <li className="status pending">
               <a href={build.link}>
                 <BuildProgress lastBuild={currentBuild} />
               </a>
             </li>
-          )
+          );
         }
         return (
-            <li className={classesStatus}>
-              <a href={build.link}>
-                {build.number}
-              </a>
-            </li>)
+          <li className={classesStatus}>
+            <a href={build.link}>
+              {build.number}
+            </a>
+          </li>
+        );
       }
 
-      function regressionStatus(regression, name){
+      function regressionStatus(regression, name) {
         var classesStatus = getStatusClassSet(regression, "regression");
         return (
-            <li className={classesStatus}>
-              <a href={regression.link}>
-                {name}
-              </a>
-            </li>
-          );
+          <li className={classesStatus}>
+            <a href={regression.link}>
+              {name}
+            </a>
+          </li>
+        );
       }
 
       function buildItems(build){
@@ -240,7 +241,8 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
               <a href={result.link}>
                 {result.name}
               </a>
-            </li>);
+            </li>
+          );
         });
 
         var classesRegressionResult = getStatusClassSet(build.regressions[0], "regression");
@@ -250,25 +252,24 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
           andOthers = "+ " + (committerNodes.length - 6) + " other" + (committerNodes.length > 1 ? "s" : "");
         }
         return (
-            <li className="build-list-item"
-              key={build.number}>
-              <div className="build-item">
-                <ul>
-                  <li className="avatars">
-                    {committerNodes.slice(0,6)}
-                    <div>{andOthers}</div>
-                  </li>
-                  {buildStatus(build)}
-                  <li>
-                    <div>
-                      <ul className="regression-list">
-                        {resultNodes}
-                      </ul>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-            </li>
+          <li className="build-list-item" key={build.number}>
+            <div className="build-item">
+              <ul>
+                <li className="avatars">
+                  {committerNodes.slice(0,6)}
+                  <div>{andOthers}</div>
+                </li>
+                {buildStatus(build)}
+                <li>
+                  <div>
+                    <ul className="regression-list">
+                      {resultNodes}
+                    </ul>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </li>
         );
       };
 
@@ -276,32 +277,32 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         var committerNodes = build.culprits.map(getCommitters);
         var classesStatus = getStatusClassSet(build, "status");
         var andOthers = "";
-        if (committerNodes.length > 6){
+        if (committerNodes.length > 6) {
           andOthers = "+ " + (committerNodes.length - 6) + " other" + (committerNodes.length > 1 ? "s" : "");
         }
         return (
-            <li className="build-list-item">
-              <div className="build-item">
-                <ul>
-                  <li className="avatars">
-                    {committerNodes.slice(0,6)}
-                    <div>{andOthers}</div>
-                  </li>
-                  <li className={classesStatus}>
-                    <a href={build.link}>
-                      {build.number}
-                    </a>
-                  </li>
-                  <li>
-                  <div>
-                    <ul className="regression-list">
-                      {regressionStatus(build.setup, "Setup")}
-                    </ul>
-                  </div>
-                  </li>
-                </ul>
-              </div>
-            </li>
+          <li className="build-list-item">
+            <div className="build-item">
+              <ul>
+                <li className="avatars">
+                  { committerNodes.slice(0,6) }
+                  <div> {andOthers} </div>
+                </li>
+                <li className={classesStatus}>
+                  <a href={build.link}>
+                    {build.number}
+                  </a>
+                </li>
+                <li>
+                <div>
+                  <ul className="regression-list">
+                    {regressionStatus(build.setup, "Setup")}
+                  </ul>
+                </div>
+                </li>
+              </ul>
+            </div>
+          </li>
         );
       };
 
@@ -380,8 +381,10 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
 
   var Devices = React.createClass({
     getInitialState: function() {
-      return { devices: [],
-        deviceIndex: -1 };
+      return {
+        devices: [],
+        deviceIndex: -1
+      };
     },
 
     loadStatus: function() {
@@ -446,23 +449,25 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         var deviceLocation = that.editDeviceLocation(device.location);
         var classString = " deviceName " + device.osType;
         return (
-            <tr className="deviceLine" key={device.id}>
+          <tr className="deviceLine" key={device.id}>
             <td className={classString}>{device.name}</td>
-              <td className="deviceLocation"><div>{deviceLocation}</div></td>
-            </tr>
-          );
+            <td className="deviceLocation">
+              <div>{deviceLocation}</div>
+            </td>
+          </tr>
+        );
       });
 
       return (
-          <div>
-        <h1 className="deviceSummery">
-          Connected devices ({devices.length}):
-          <a href="/assets/DevicePusher/DevicePusher.UI.application" download="DevicePusher.UI.application">(Download Device Pusher)</a>
-        </h1>
+        <div>
+          <h1 className="deviceSummery">
+            Connected devices ({devices.length}):
+            <a href="/assets/DevicePusher/DevicePusher.UI.application" download="DevicePusher.UI.application">(Download Device Pusher)</a>
+          </h1>
 
-        <table className="deviceTable">
-          {deviceNodes}
-        </table>
+          <table className="deviceTable">
+            {deviceNodes}
+          </table>
         </div>
       );
     }
