@@ -121,6 +121,7 @@ object PhabricatorFetcher {
         .post("")
         .map { req =>
           val json = Json.parse(req.body)
+          
           Json.prettyPrint(Json.obj("audits" -> json \ "result"))
         }
     }

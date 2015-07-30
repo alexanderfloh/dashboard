@@ -9,7 +9,10 @@ function getStatusMixin(){
   function initState(){
     return {
       buildCI: [],
-      buildNightly: [],
+      buildNightly: {
+        culprits: [],
+        setup: { },
+      },
       users:[],
       project:[],
       audits:[],
@@ -18,7 +21,7 @@ function getStatusMixin(){
       employeesAustria:""
     };
   }
-  
+
   function loadStatusFunc(){
     $.ajax({
       url: '/buildMain',
@@ -30,7 +33,7 @@ function getStatusMixin(){
         console.error(this.props.url, status, err.toString());
       }.bind(this)
     });
-    
+
     $.ajax({
         url: '/buildAside',
         dataType: 'json',
@@ -41,7 +44,7 @@ function getStatusMixin(){
           console.error(this.props.url, status, err.toString());
         }.bind(this)
       });
-    
+
     $.ajax({
       url: '/getPhabUser',
       dataType: 'json',
@@ -52,7 +55,7 @@ function getStatusMixin(){
         console.error(this.props.url, status, err.toString());
       }.bind(this)
     });
-    
+
     $.ajax({
       url: '/getPhabProject',
       dataType: 'json',
@@ -63,7 +66,7 @@ function getStatusMixin(){
         console.error(this.props.url, status, err.toString());
       }.bind(this)
     });
-    
+
     $.ajax({
       url: '/getPhabAudits',
       dataType: 'json',
@@ -74,7 +77,7 @@ function getStatusMixin(){
         console.error(this.props.url, status, err.toString());
       }.bind(this)
     });
-    
+
     $.ajax({
       url: '/getUsers',
       dataType: 'json',
@@ -86,7 +89,7 @@ function getStatusMixin(){
       }.bind(this)
     });
   }
-  
+
   function compWillMount() {
     this.loadStatus();
     setInterval(this.loadStatus, this.props.pollInterval);

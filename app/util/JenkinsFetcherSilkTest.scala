@@ -31,7 +31,7 @@ object JenkinsFetcherSilkTest extends JenkinsFetcher {
       val regressionResults = Future.sequence(regressionConfig.map {
         case (url, name) => JenkinsFetcherUtil.fetchTests(url, name)
       })
-      
+
       for {
         regression <- regressionResults
         lastCompletedDetails <- details
@@ -39,9 +39,11 @@ object JenkinsFetcherSilkTest extends JenkinsFetcher {
       } yield {
         val detailsWithTests = lastCompletedDetails.map(jsVal => {
           val buildNumber = (jsVal \ "number").as[Int]
-          val extracted = regression.map { case (name, result) =>
-            val defaultStatus = Json.obj("status" -> "n/a", "name" -> name)
-            result.getOrElse(buildNumber, defaultStatus)
+
+          val extracted = regression.map {
+            case (name, result) =>
+              val defaultStatus = Json.obj("status" -> "n/a", "name" -> name)
+              result.getOrElse(buildNumber, defaultStatus)
           }
 
           jsVal + (("regressions", Json.toJson(extracted)))
@@ -55,17 +57,36 @@ object JenkinsFetcherSilkTest extends JenkinsFetcher {
   // fetch aside build with nevergreen list
   def fetchAside(mapName: String, numberOfItems: Integer): Future[String] = {
     val baseUrl = Play.current.configuration.getString(prefix + "urlNightly")
-      .getOrElse(throw new RuntimeException(prefix + "urlBuildAll not configured"))
+      .getOrElse(throw new RuntimeException(prefix + "urlNightly not configured"))
+
+    val setupUrl = Play.current.configuration.getString(prefix + "urlSetup")
+      .getOrElse(throw new RuntimeException(prefix + "urlSetup not configured"))
+
     WS.url(baseUrl + "/api/json").get.flatMap { response =>
       val json = Json.parse(response.body)
       val details = JenkinsFetcherUtil.getDetails(json, numberOfItems, baseUrl)
+      
       for {
         lastCompletedDetails <- details
+        setupResult <- JenkinsFetcherUtil.fetchTests(setupUrl, "Setup")
         nevergreensXML <- ScFetcher.fetchNevergreens
       } yield {
+        val lastBuildResult = lastCompletedDetails match {
+          case latest :: tail => latest
+        }
+        val latestBuildNumber = (lastBuildResult \ "number").as[Int]
+        
+        val setupJson: JsValue = setupResult match {
+          case (name, result) => result.getOrElse(latestBuildNumber, Json.obj("status" -> "n/a", "name" -> name)) 
+        } 
+        
+        val buildWithSetup = lastBuildResult + ("setup" -> setupJson)
+        
         val nevergreens = NevergreensParser.parse(nevergreensXML)
         implicit val nevergreensWrites = NevergreenResult.writes
-        Json.prettyPrint(Json.obj(mapName -> lastCompletedDetails, "nevergreens" -> nevergreens))
+        Json.prettyPrint(Json.obj(
+            mapName -> buildWithSetup, 
+            "nevergreens" -> nevergreens))
       }
     }
   }

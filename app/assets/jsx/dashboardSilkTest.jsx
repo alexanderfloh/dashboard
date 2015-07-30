@@ -31,7 +31,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
 
         var avatarUrlStyle = {
             backgroundImage: 'url(' + picture + ')',
-            backgroundSize: '100%',
+            backgroundSize: '100%'
         };
         return (
             <div className="avatar"
@@ -55,7 +55,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         var avatarClass = getAvatarClassSet(auditor.userName);
         var avatarUrlStyle = {
             background: 'url(' + picture + ')',
-            backgroundSize: 'cover'
+            backgroundSize: '100%'
         };
         return (
             <div className={avatarClass}
@@ -174,6 +174,13 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
                       {build.number}
                     </a>
                   </li>
+                  <li>
+                  <div>
+                    <ul className="regression-list">
+                      {regressionStatus(build.setup, "Setup")}
+                    </ul>
+                  </div>
+                  </li>
                 </ul>
               </div>
             </li>
@@ -213,7 +220,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
 
    // ----------------------- generate html -----------------------//
       var buildItems = this.state.buildCI.map(buildItems);
-      var buildNightly = this.state.buildNightly.map(buildItemsNightly);
+      var buildNightly = buildItemsNightly(this.state.buildNightly);
       var nevergreenNodes = this.state.nevergreens.map(getNevergreens);
       var audits = mergeUserAudits(this.state.users, this.state.audits, this.state.project).sort(function(a, b){return b.numberOfAudits-a.numberOfAudits}).map(renderAudit);
 
