@@ -87,8 +87,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       };
     },
 
-    // load data from jenkins, austria and phabricator
-    loadStatus: function() {
+    loadData: function(url) {
       $.ajax({
         url: '/buildMain',
         dataType: 'json',
@@ -99,61 +98,19 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
           console.error(this.props.url, status, err.toString());
         }.bind(this)
       });
+    }
 
-      $.ajax({
-          url: '/buildAside',
-          dataType: 'json',
-          success: function(data1) {
-            this.setState(data1);
-          }.bind(this),
-          error: function(xhr, status, err) {
-            console.error(this.props.url, status, err.toString());
-          }.bind(this)
-        });
+    // load data from jenkins, austria and phabricator
+    loadStatus: function() {
+      var urls = [
+        '/buildMain',
+        '/buildAside',
+        '/getPhabUser',
+        '/getPhabProject',
+        '/getPhabAudits',
+        '/getUsers'];
 
-      $.ajax({
-        url: '/getPhabUser',
-        dataType: 'json',
-        success: function(data1) {
-          this.setState(data1);
-        }.bind(this),
-        error: function(xhr, status, err) {
-          console.error(this.props.url, status, err.toString());
-        }.bind(this)
-      });
-
-      $.ajax({
-        url: '/getPhabProject',
-        dataType: 'json',
-        success: function(data1) {
-          this.setState(data1);
-        }.bind(this),
-        error: function(xhr, status, err) {
-          console.error(this.props.url, status, err.toString());
-        }.bind(this)
-      });
-
-      $.ajax({
-        url: '/getPhabAudits',
-        dataType: 'json',
-        success: function(data1) {
-          this.setState(data1);
-        }.bind(this),
-        error: function(xhr, status, err) {
-          console.error(this.props.url, status, err.toString());
-        }.bind(this)
-      });
-
-      $.ajax({
-        url: '/getUsers',
-        dataType: 'json',
-        success: function(data1) {
-          this.setState(data1);
-        }.bind(this),
-        error: function(xhr, status, err) {
-          console.error(this.props.url, status, err.toString());
-        }.bind(this)
-      });
+      urls.forEach(loadData);
     },
 
     componentWillMount: function() {
@@ -173,17 +130,17 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
 
     render: function() {
       var empl = this.state.employeesAustria.toLowerCase();
-      function getPicture(name){
+      function getPicture(name) {
         name = formatEmplName(name);
 
-        if (name == "No.Auditor.jpg"){
+        if (name === "No.Auditor.jpg") {
           return '/assets/images/avatars/silkTestLogo.png';
         }
-        else if (empl.match(name.toLowerCase()) == null){
+        else if (empl.match(name.toLowerCase()) === null) {
           return getDefaultPicture();
         }
-        else{
-            return 'http://austria/global/images/employees/' +  name;
+        else {
+          return 'http://austria/global/images/employees/' +  name;
         }
       }
 
