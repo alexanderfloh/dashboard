@@ -192,7 +192,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
 
         var avatarUrlStyle = {
             backgroundImage: 'url(' + picture + ')',
-            backgroundSize: '100%'
+            backgroundSize: 'cover'
         };
         return (
             <div className="avatar"
@@ -215,8 +215,8 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         var picture = getPicture(auditor.userName, empl);
         var avatarClass = getAvatarClassSet(auditor.userName);
         var avatarUrlStyle = {
-            background: 'url(' + picture + ')',
-            backgroundSize: '100%'
+            backgroundImage: 'url(' + picture + ')',
+            backgroundSize: 'cover'
         };
         return (
             <div className={avatarClass}
