@@ -12,6 +12,7 @@ import java.lang.String
 import scala.concurrent.duration.Duration
 import scala.concurrent.Await
 import java.util.concurrent.TimeoutException
+import play.Logger
 
 object PhabricatorFetcher {
 
@@ -106,7 +107,88 @@ object PhabricatorFetcher {
     }
   }
 
+  def baseUrl = config.getString("dashboard.urlPhabricator")
+    .getOrElse(throw new RuntimeException("dashboard.urlPhabricator not configured"))
+
   def fetchOpenAudits(): Future[String] = {
+
+    val conduit = conduitConnect(baseUrl)
+    conduit.flatMap { conduit =>
+      val params = Json.obj(
+        "__conduit__" -> conduit,
+        "status" -> "audit-status-open")
+
+      WS.url(baseUrl + "api/audit.query")
+        .withQueryString(("params", params.toString()), ("output", "json"))
+        .post("")
+        .map { req =>
+          val json = Json.parse(req.body)
+
+          Json.prettyPrint(Json.obj("audits" -> json \ "result"))
+        }
+    }
+  }
+
+  def fetchAudits = {
+    val allOpenAudits = fetchOpenAuditsJson
+    allOpenAudits.flatMap { allOpenAudits =>
+      val audits = (allOpenAudits \ "result").as[Seq[JsValue]]
+      val auditsWithCommitIds = audits.map(audit => (audit, (audit \ "commitPHID").as[String]))
+      val commitIds = auditsWithCommitIds.map { case (audit, commitId) => commitId }
+
+      val conduit = conduitConnect(baseUrl)
+      val commits = conduit.flatMap { conduit =>
+        val params = Json.obj(
+          "__conduit__" -> conduit,
+          "names" -> commitIds)
+
+        WS.url(baseUrl + "api/phid.lookup")
+          .withQueryString(("params", params.toString()), ("output", "json"))
+          .post("")
+          .map { req => Json.parse(req.body) }
+      }
+
+      val result = commits.flatMap { commits =>
+        val filteredAudits = auditsWithCommitIds.filter {
+          case (audit, commitId) =>
+
+            (commits \ "result" \ commitId \ "name").as[String].startsWith("rST")
+        }.map { case (audit, commitId) => audit }
+
+        val auditsWithAuditorIds = filteredAudits.map { audit => (audit, (audit \ "auditorPHID").as[String]) }
+        val idsWithCount = auditsWithAuditorIds.groupBy { case (audit, auditorId) => auditorId }
+          .map { case (auditorId, audits) => (auditorId, audits.length) }
+
+        val auditorIds = idsWithCount.map { case (auditorId, count) => auditorId }
+
+        val conduit = conduitConnect(baseUrl)
+        val auditors = conduit.flatMap { conduit =>
+          val params = Json.obj(
+            "__conduit__" -> conduit,
+            "phids" -> auditorIds)
+
+          WS.url(baseUrl + "api/user.query")
+            .withQueryString(("params", params.toString()), ("output", "json"))
+            .post("")
+            .map { req =>
+              val auditorsJson = Json.parse(req.body)
+              val auditors = (auditorsJson \ "result").as[Seq[JsValue]]
+              auditors.map { auditor =>
+                val id = (auditor \ "phid").as[String]
+                val count = idsWithCount.getOrElse(id, 0)
+                auditor.as[JsObject] + ("count", Json.toJson(count))
+              }
+            }
+            
+        }
+        auditors
+      }
+
+      result.map { filteredAudits => Json.obj("audits" -> filteredAudits) }
+    }
+  }
+
+  def fetchOpenAuditsJson: Future[JsValue] = {
     val baseUrl = config.getString("dashboard.urlPhabricator")
       .getOrElse(throw new RuntimeException("dashboard.urlPhabricator not configured"))
 
@@ -120,9 +202,7 @@ object PhabricatorFetcher {
         .withQueryString(("params", params.toString()), ("output", "json"))
         .post("")
         .map { req =>
-          val json = Json.parse(req.body)
-          
-          Json.prettyPrint(Json.obj("audits" -> json \ "result"))
+          Json.parse(req.body)
         }
     }
   }

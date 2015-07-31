@@ -134,7 +134,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       });
 
       $.ajax({
-        url: '/getPhabAudits',
+        url: '/getAudits',
         dataType: 'json',
         success: function(data1) {
           this.setState(data1);
@@ -212,8 +212,8 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       }
 
       function getAuditorPic(auditor){
-        var picture = getPicture(auditor.userName, empl);
-        var avatarClass = getAvatarClassSet(auditor.userName);
+        var picture = getPicture(auditor.realName, empl);
+        var avatarClass = getAvatarClassSet(auditor.realName);
         var avatarUrlStyle = {
             backgroundImage: 'url(' + picture + ')',
             backgroundSize: 'cover'
@@ -221,8 +221,8 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         return (
             <div className={avatarClass}
                  style={avatarUrlStyle}
-                 key={auditor.userName}
-                 title={auditor.userName} >
+                 key={auditor.realName}
+                 title={auditor.realName} >
             </div>
         );
       }
@@ -368,12 +368,12 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
 
       function renderAudit(audit) {
         return (
-          <li className="audit">
+          <li className="audit" key={audit.phid}>
             <div className="audit-name">
               {getAuditorPic(audit)}
             </div>
             <div className="audit-cnt">
-              {audit.numberOfAudits}
+              {audit.count}
             </div>
           </li>
         );
@@ -383,7 +383,14 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       var buildItems = this.state.buildCI.map(buildItems);
       var buildNightly = buildItemsNightly(this.state.buildNightly);
       var nevergreenNodes = this.state.nevergreens.map(getNevergreens);
-      var audits = mergeUserAudits(this.state.users, this.state.audits, this.state.project).sort(function(a, b){return b.numberOfAudits-a.numberOfAudits}).map(renderAudit);
+      var audits = this.state.audits.sort(function(a, b){
+        var countDiff = b.count-a.count;
+        if(countDiff !== 0) {
+          return countDiff;
+        }
+        // break ties
+        return a.realName.localeCompare(b.realName); 
+      }).map(renderAudit); //mergeUserAudits(this.state.users, this.state.audits, this.state.project).sort(function(a, b){return b.numberOfAudits-a.numberOfAudits}).map(renderAudit);
 
    // ----------------------- html site structure -----------------------//
       return (

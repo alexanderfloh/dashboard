@@ -87,6 +87,10 @@ object Application extends Controller {
       response.map { Ok(_) }
     }
   }
+  
+  def getAudits() = Action.async {
+    PhabricatorFetcher.fetchAudits.map(Ok(_))
+  }
 
   def setDevice() = Action { implicit request =>
     val userForm = Form(
