@@ -37,13 +37,13 @@ object Application extends Controller {
   def fetcher = Play.current.configuration.getString("dashboard.fetcher")
     .getOrElse(throw new RuntimeException("dashboard.fetcher not configured"))
 
-  def buildMain = Cached("build.ci").default(2, MINUTES) {
+  def buildMain = Cached.everything(req => "build.ci", 60) {
     Action.async {
       JenkinsFetcherFactory.getFetcher(fetcher).fetchMain("buildCI", 4).map(Ok(_))
     }
   }
 
-  def buildAside = Cached("build.nightly").default(20, MINUTES) {
+  def buildAside = Cached.everything(req => "build.nightly", 60 * 20) {
     Action.async {
       JenkinsFetcherFactory.getFetcher(fetcher).fetchAside("buildNightly", 1).map(Ok(_))
     }
@@ -53,7 +53,7 @@ object Application extends Controller {
     Future(fetcher).map { Ok(_) }
   }
 
-  def getPhabUser = Cached("phab.user").default(10, MINUTES) {
+  def getPhabUser = Cached.everything(req => "phab.user", 60 * 10) {
     Action.async {
       val response = PhabricatorFetcher.fetchPhabricatorUser();
       if (response == null)
@@ -63,7 +63,7 @@ object Application extends Controller {
     }
   }
 
-  def getPhabProject = Cached("phab.project").default(10, MINUTES) {
+  def getPhabProject = Cached.everything(req => "phab.project", 60 * 10) {
     Action.async {
       val response = PhabricatorFetcher.fetchPhabricatorProject(fetcher);
       if (response == null)
@@ -73,7 +73,7 @@ object Application extends Controller {
     }
   }
 
-  def getPhabAudits = Cached("phab.audits").default(10, MINUTES) {
+  def getPhabAudits = Cached.everything(req => "phab.audits", 60 * 10) {
     Action.async {
       val response = PhabricatorFetcher.fetchOpenAudits();
       if (response == null)
@@ -83,14 +83,14 @@ object Application extends Controller {
     }
   }
 
-  def getUsers() = Cached("users").default(10, MINUTES) {
+  def getUsers() = Cached.everything(req => "users", 60 * 10) {
     Action.async {
       val response = UserFetcher.getUsers("http://austria/global/images/employees/");
       response.map { Ok(_) }
     }
   }
 
-  def getAudits() = Cached("audits").default(5, MINUTES) {
+  def getAudits() = Cached.everything(req => "audits", 60 * 5) {
     Action.async {
       PhabricatorFetcher.fetchAudits.map(Ok(_))
     }
