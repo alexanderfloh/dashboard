@@ -41,7 +41,7 @@ object Application extends Controller {
     JenkinsFetcherFactory.getFetcher(fetcher).fetchMain("buildCI", 4).map(Ok(_))
   }
 
-  def buildAside = Cached("build.nightly") {
+  def buildAside = Cached("build.nightly").default(20, MINUTES) {
     Action.async {
       JenkinsFetcherFactory.getFetcher(fetcher).fetchAside("buildNightly", 1).map(Ok(_))
     }
@@ -51,7 +51,7 @@ object Application extends Controller {
     Future(fetcher).map { Ok(_) }
   }
 
-  def getPhabUser = Cached("phab.user") {
+  def getPhabUser = Cached("phab.user").default(10, MINUTES) {
     Action.async {
       val response = PhabricatorFetcher.fetchPhabricatorUser();
       if (response == null)
@@ -61,7 +61,7 @@ object Application extends Controller {
     }
   }
 
-  def getPhabProject = Cached("phab.project") {
+  def getPhabProject = Cached("phab.project").default(10, MINUTES) {
     Action.async {
       val response = PhabricatorFetcher.fetchPhabricatorProject(fetcher);
       if (response == null)
@@ -71,7 +71,7 @@ object Application extends Controller {
     }
   }
 
-  def getPhabAudits = Cached("phab.audits") {
+  def getPhabAudits = Cached("phab.audits").default(10, MINUTES) {
     Action.async {
       val response = PhabricatorFetcher.fetchOpenAudits();
       if (response == null)
@@ -81,7 +81,7 @@ object Application extends Controller {
     }
   }
 
-  def getUsers() = Cached("users") {
+  def getUsers() = Cached("users").default(10, MINUTES) {
     Action.async {
       val response = UserFetcher.getUsers("http://austria/global/images/employees/");
       response.map { Ok(_) }
