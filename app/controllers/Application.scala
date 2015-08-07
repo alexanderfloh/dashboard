@@ -37,8 +37,10 @@ object Application extends Controller {
   def fetcher = Play.current.configuration.getString("dashboard.fetcher")
     .getOrElse(throw new RuntimeException("dashboard.fetcher not configured"))
 
-  def buildMain = Action.async {
-    JenkinsFetcherFactory.getFetcher(fetcher).fetchMain("buildCI", 4).map(Ok(_))
+  def buildMain = Cached("build.ci").default(2, MINUTES) {
+    Action.async {
+      JenkinsFetcherFactory.getFetcher(fetcher).fetchMain("buildCI", 4).map(Ok(_))
+    }
   }
 
   def buildAside = Cached("build.nightly").default(20, MINUTES) {
@@ -55,7 +57,7 @@ object Application extends Controller {
     Action.async {
       val response = PhabricatorFetcher.fetchPhabricatorUser();
       if (response == null)
-    	  Future(NotFound)
+        Future(NotFound)
       else
         response.map { Ok(_) }
     }
@@ -87,9 +89,11 @@ object Application extends Controller {
       response.map { Ok(_) }
     }
   }
-  
-  def getAudits() = Action.async {
-    PhabricatorFetcher.fetchAudits.map(Ok(_))
+
+  def getAudits() = Cached("audits").default(5, MINUTES) {
+    Action.async {
+      PhabricatorFetcher.fetchAudits.map(Ok(_))
+    }
   }
 
   def setDevice() = Action { implicit request =>
