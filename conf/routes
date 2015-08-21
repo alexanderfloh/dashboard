@@ -7,14 +7,9 @@ GET   /                 controllers.Application.index
 
 GET   /buildAside       controllers.Application.buildAside()
 GET   /buildMain        controllers.Application.buildMain()
-GET   /getPhabUser      controllers.Application.getPhabUser()
-GET   /getPhabProject   controllers.Application.getPhabProject()
-GET   /getPhabAudits    controllers.Application.getPhabAudits()
-GET   /getPhabProject   controllers.Application.getPhabProject()
 GET   /getDevices/      controllers.Application.getDevices()
 GET   /getUsers         controllers.Application.getUsers()
 GET	  /getAudits        controllers.Application.getAudits()
-GET   /getConfig        controllers.Application.getConfig()
 POST  /setDevice/       controllers.Application.setDevice()
 # Map static resources from the /public folder to the /assets URL path
 GET   /assets/*file     controllers.Assets.at(path="/public", file)

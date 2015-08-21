@@ -58,76 +58,8 @@ object PhabricatorFetcher {
 
   }
 
-  def fetchPhabricatorUser(): Future[String] = {
-    val baseUrl = config.getString("dashboard.urlPhabricator")
-      .getOrElse(throw new RuntimeException("dashboard.urlPhabricator not configured"))
-
-    val conduit = conduitConnect(baseUrl)
-    conduit.flatMap { conduit =>
-      val params = Json.obj(
-        "__conduit__" -> conduit)
-
-      WS.url(baseUrl + "api/user.query")
-        .withQueryString(("params", params.toString()), ("output", "json"))
-        .post("")
-        .map { req =>
-          val json = Json.parse(req.body)
-          val list = (json \ "result").as[List[JsObject]]
-          Json.prettyPrint(Json.obj("users" -> list))
-        }
-    }
-  }
-
-  def fetchPhabricatorProject(fetcher: String): Future[String] = {
-    val baseUrl = config.getString("dashboard.urlPhabricator")
-      .getOrElse(throw new RuntimeException("dashboard.urlPhabricator not configured"))
-
-    val projectId = fetcher match {
-      case "performer" => config.getString("dashboard.performer.phabProject")
-        .getOrElse(throw new RuntimeException("dashboard.performer.phabProject not configured"))
-      case "silktest" => config.getString("dashboard.silktest.phabProject")
-        .getOrElse(throw new RuntimeException("dashboard.silktest.phabProject not configured"))
-    }
-
-    val conduit = conduitConnect(baseUrl)
-    conduit.flatMap { conduit =>
-      val params = Json.obj(
-        "__conduit__" -> conduit,
-        "phids" -> Json.arr(projectId))
-
-      val response = WS.url(baseUrl + "api/project.query")
-        .withQueryString(("params", params.toString()), ("output", "json"))
-        .post("")
-
-      response.map { response =>
-        val json = Json.parse(response.body)
-        val list = (json \ "result").as[JsObject]
-        Json.prettyPrint(Json.obj("project" -> list))
-      }
-    }
-  }
-
   def baseUrl = config.getString("dashboard.urlPhabricator")
     .getOrElse(throw new RuntimeException("dashboard.urlPhabricator not configured"))
-
-  def fetchOpenAudits(): Future[String] = {
-
-    val conduit = conduitConnect(baseUrl)
-    conduit.flatMap { conduit =>
-      val params = Json.obj(
-        "__conduit__" -> conduit,
-        "status" -> "audit-status-open")
-
-      WS.url(baseUrl + "api/audit.query")
-        .withQueryString(("params", params.toString()), ("output", "json"))
-        .post("")
-        .map { req =>
-          val json = Json.parse(req.body)
-
-          Json.prettyPrint(Json.obj("audits" -> json \ "result"))
-        }
-    }
-  }
 
   def fetchAudits = {
     val allOpenAudits = fetchOpenAuditsJson

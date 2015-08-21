@@ -20,13 +20,13 @@ import play.api.Play.current
 import akka.pattern.ask
 import akka.util.Timeout
 import scala.concurrent.duration._
-import util.JenkinsFetcherFactory
 import util.PhabricatorFetcher
 import scala.concurrent.Await
 import models.Location
 import models.MobileDevice
 import util.UserFetcher
 import play.api.cache.Cached
+import util.JenkinsFetcherSilkTest
 
 object Application extends Controller {
 
@@ -34,52 +34,15 @@ object Application extends Controller {
     Ok(views.html.index())
   }
 
-  def fetcher = Play.current.configuration.getString("dashboard.fetcher")
-    .getOrElse(throw new RuntimeException("dashboard.fetcher not configured"))
-
   def buildMain = Cached.everything(req => "build.ci", 60) {
     Action.async {
-      JenkinsFetcherFactory.getFetcher(fetcher).fetchMain("buildCI", 4).map(Ok(_))
+      JenkinsFetcherSilkTest.fetchMain("buildCI", 4).map(Ok(_))
     }
   }
 
   def buildAside = Cached.everything(req => "build.nightly", 60 * 20) {
     Action.async {
-      JenkinsFetcherFactory.getFetcher(fetcher).fetchAside("buildNightly", 1).map(Ok(_))
-    }
-  }
-
-  def getConfig = Action.async {
-    Future(fetcher).map { Ok(_) }
-  }
-
-  def getPhabUser = Cached.everything(req => "phab.user", 60 * 10) {
-    Action.async {
-      val response = PhabricatorFetcher.fetchPhabricatorUser();
-      if (response == null)
-        Future(NotFound)
-      else
-        response.map { Ok(_) }
-    }
-  }
-
-  def getPhabProject = Cached.everything(req => "phab.project", 60 * 10) {
-    Action.async {
-      val response = PhabricatorFetcher.fetchPhabricatorProject(fetcher);
-      if (response == null)
-        Future(NotFound)
-      else
-        response.map { Ok(_) }
-    }
-  }
-
-  def getPhabAudits = Cached.everything(req => "phab.audits", 60 * 10) {
-    Action.async {
-      val response = PhabricatorFetcher.fetchOpenAudits();
-      if (response == null)
-        Future(NotFound)
-      else
-        response.map { Ok(_) }
+      JenkinsFetcherSilkTest.fetchAside("buildNightly", 1).map(Ok(_))
     }
   }
 

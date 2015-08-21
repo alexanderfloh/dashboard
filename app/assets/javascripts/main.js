@@ -10,6 +10,5 @@ requirejs.config({
 require(['jquery', 'react', 'dashboardSilkTest'],
   function($, React, Dashboard) {
     React.renderComponent(Dashboard(), document.getElementById('content'));
-    return function () {};
   }
 );

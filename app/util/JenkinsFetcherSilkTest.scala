@@ -8,7 +8,7 @@ import play.api.libs.json._
 import scala.concurrent.ExecutionContext.Implicits.global
 import models.NevergreenResult
 
-object JenkinsFetcherSilkTest extends JenkinsFetcher {
+object JenkinsFetcherSilkTest {
   def prefix = "dashboard.silktest."
   // fetch main section builds with tests
   def fetchMain(mapName: String, numberOfItems: Integer): Future[String] = {
