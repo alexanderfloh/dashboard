@@ -68,7 +68,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
 
     render: function() {
       var that = this;
-      var auditNodes = this.props.audits.map(function(audit) {
+      var auditNodes = this.props.audits.slice(0, 12).map(function(audit) {
         return (
           <li className="audit" key={audit.phid}>
             <div className="audit-name">
