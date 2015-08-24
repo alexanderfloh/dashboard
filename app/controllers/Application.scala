@@ -27,6 +27,9 @@ import models.MobileDevice
 import util.UserFetcher
 import play.api.cache.Cached
 import util.JenkinsFetcherSilkTest
+import util.ScFetcher
+import util.BvtParser
+import models.BvtResult
 
 object Application extends Controller {
 
@@ -56,6 +59,27 @@ object Application extends Controller {
   def getAudits() = Cached.everything(req => "audits", 60 * 5) {
     Action.async {
       PhabricatorFetcher.fetchAudits.map(Ok(_))
+    }
+  }
+
+  def getBvtResult = Cached.everything(req => "bvtresult", 60 * 20) {
+    Action.async {
+      implicit val bvtResultWrites = BvtResult.writes
+      ScFetcher.fetchWin10BVTs()
+        .map {
+          BvtParser.parse(_)
+            .groupBy(_.name)
+            .toList
+            .map {
+              case (key, values) => {
+                val valuesSorted = values.sortBy(v => v.build)
+                Json.obj("name" -> key, "values" -> Json.toJson(valuesSorted))
+              }
+
+            }
+        }
+        .map { results => Json.obj("bvtResults" -> results) }
+        .map { Ok(_) }
     }
   }
 

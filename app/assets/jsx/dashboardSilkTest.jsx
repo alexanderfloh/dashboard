@@ -1,6 +1,6 @@
 /** @jsx React.DOM */
 
-define(['react', 'jquery', 'moment'], function(React, $, Moment) {
+define(['react', 'jquery', 'moment', 'audits', 'bvtResults'], function(React, $, Moment, Audits, BvtResults) {
   function formatEmplName(name){
     return name.replace(" ", ".")
                .replace(/ä/g,"ae")
@@ -29,6 +29,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         audits:[],
         lastBuild:[],
         nevergreens:[],
+        bvtResults:[],
         employeesAustria:""
       };
     },
@@ -78,6 +79,17 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
           console.error(this.props.url, status, err.toString());
         }.bind(this)
       });
+
+      $.ajax({
+        url: '/getBvtResult',
+        dataType: 'json',
+        success: function(data1) {
+          this.setState(data1);
+        }.bind(this),
+        error: function(xhr, status, err) {
+          console.error(this.props.url, status, err.toString());
+        }.bind(this)
+      });
     },
 
     componentWillMount: function() {
@@ -85,7 +97,6 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       setInterval(this.loadStatus, this.props.pollInterval);
     },
   };
-
 
   var Dashboard = React.createClass({
     mixins: [LoadStatusMixin],
@@ -133,22 +144,6 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
           'avatar': name !== 'No Auditor',
           'silkTest': name === 'No Auditor'
         });
-      }
-
-      function getAuditorPic(auditor){
-        var picture = getPicture(auditor.realName, empl);
-        var avatarClass = getAvatarClassSet(auditor.realName);
-        var avatarUrlStyle = {
-            backgroundImage: 'url(' + picture + ')',
-            backgroundSize: 'cover'
-        };
-        return (
-            <div className={avatarClass}
-                 style={avatarUrlStyle}
-                 key={auditor.realName}
-                 title={auditor.realName} >
-            </div>
-        );
       }
 
       function getStatusClassSet(build, name){
@@ -213,8 +208,8 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         var classesRegressionResult = getStatusClassSet(build.regressions[0], "regression");
 
         var andOthers = "";
-        if (committerNodes.length > 6){
-          andOthers = "+ " + (committerNodes.length - 6) + " other" + (committerNodes.length > 1 ? "s" : "");
+        if (committerNodes.length > 3){
+          andOthers = "+ " + (committerNodes.length - 3) + " other" + (committerNodes.length > 1 ? "s" : "");
         }
         return (
             <li className="build-list-item"
@@ -222,7 +217,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
               <div className="build-item">
                 <ul>
                   <li className="avatars">
-                    {committerNodes.slice(0,6)}
+                    {committerNodes.slice(0,3)}
                     <div>{andOthers}</div>
                   </li>
                   {buildStatus(build)}
@@ -250,7 +245,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
             <li className="build-list-item">
               <div className="build-item">
                 <ul>
-                  <li className="avatars">
+                  <li className="avatars nightly">
                     {committerNodes.slice(0,6)}
                     <div>{andOthers}</div>
                   </li>
@@ -290,19 +285,6 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         );
       };
 
-      function renderAudit(audit) {
-        return (
-          <li className="audit" key={audit.phid}>
-            <div className="audit-name">
-              {getAuditorPic(audit)}
-            </div>
-            <div className="audit-cnt">
-              {audit.count}
-            </div>
-          </li>
-        );
-      }
-
    // ----------------------- generate html -----------------------//
       var buildItems = this.state.buildCI.map(buildItems);
       var buildNightly = buildItemsNightly(this.state.buildNightly);
@@ -314,7 +296,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
         }
         // break ties
         return a.realName.localeCompare(b.realName);
-      }).map(renderAudit);
+      });
 
    // ----------------------- html site structure -----------------------//
       return (
@@ -326,12 +308,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
               </ul>
             </section>
 
-            <section className="audit-section">
-              <h1> Open Audits </h1>
-              <ul className="audit-list">
-                {audits.slice(0,12)}
-              </ul>
-            </section>
+            <BvtResults bvtResults={this.state.bvtResults} />
 
             <section className="deviceSection">
               <Devices pollInterval={15000}/>
@@ -339,6 +316,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
 
             <aside id="nightly-build" className="nightly-build">
               {buildNightly}
+              <Audits audits={audits} employeesAustria={this.state.employeesAustria} />
               <h1> Nevergreens </h1>
               <ul className="nevergreen-list">
                 {nevergreenNodes.slice(0,26)}

@@ -138,18 +138,16 @@ a {
 
     .audit-section {
         text-align: center;
+        margin-left: 0;
+        float: initial;
+        width: 100%;
 
         .audit-list {
-            -webkit-column-count: 5;
-            -moz-column-count: 5;
-            column-count: 5;
-            padding-left: 15em;
 
             .audit {
-                padding-top: 1em;
+                padding: 10px;
                 font-size: 1.5em;
                 display: inline-block;
-                width: 100%;
 
                 .audit-name {
                     .avatar, .silkTest {
@@ -172,20 +170,37 @@ a {
                 .audit-cnt {
                     font-family: Consolas;
                     display: inline;
-                    border-radius: 15%;
                     text-align: center;
                     position: relative;
                     left: 30px;
-                    top: -105px;
+                    bottom: 35px;
                     font-weight: bold;
-                    font-size: 1.5em;
+                    font-size: 1em;
                     color: white;
                     background-color: @red;
-                    padding: 5px;
+                    padding: 0px 5px;
                     min-width: 1.5em;
                 }
             }
         }
+    }
+
+    .bvtResults {
+      padding-top: 3em;
+      padding-bottom: 3em;
+    }
+
+    .bvtResults-container {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-between;
+    }
+
+    .bvtResult {
+      text-align: center;
+      padding-top: 1em;
+      padding-bottom: 1em;
     }
 
     .deviceSection {
@@ -370,9 +385,13 @@ a {
     margin-left: 0.5em;
     margin-right: 0.5em;
     height: auto;
-    min-height: 202px;
-    max-height: 202px;
+    min-height: 116px;
+    max-height: 116px;
     color: black;
+    &.nightly {
+      min-height: 202px;
+      max-height: 202px;
+    }
 
     .avatar {
         width: 70px;
@@ -387,4 +406,8 @@ a {
         transition: all .4s;
         float: inherit;
     }
+}
+
+.domain {
+  display: none;
 }

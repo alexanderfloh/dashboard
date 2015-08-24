@@ -12,8 +12,9 @@ libraryDependencies ++= Seq(
   "org.webjars" % "jquery" % "2.1.1",
   "org.webjars" % "jquery-ui" % "1.11.0",
   "org.webjars" % "jquery-file-upload" % "9.5.7",
-  "org.webjars" % "react" % "0.11.1",
-  "org.webjars" % "momentjs" % "2.8.1-1"
+  "org.webjars" % "react" % "0.13.3",
+  "org.webjars" % "momentjs" % "2.8.1-1",
+  "org.webjars" % "c3" % "0.4.9-1"
 )     
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala).enablePlugins(SbtWeb)
