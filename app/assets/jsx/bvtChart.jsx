@@ -15,7 +15,7 @@ define(['react', 'jquery', 'c3'], function(React, $, c3) {
     transformDataToLog: function(data) {
       function map(value) {
         if(value !==0) {
-          return (Math.log10(value) + 1);
+          return (Math.log10(value) + 0.25);
         }
         else {
           return 0;
@@ -71,7 +71,7 @@ define(['react', 'jquery', 'c3'], function(React, $, c3) {
                 return 0;
               }
               else {
-                return d3.format('f')(Math.pow(10, ((value) - 1)));
+                return d3.format('f')(Math.pow(10, ((value) - 0.25)));
               }
             }
           }
