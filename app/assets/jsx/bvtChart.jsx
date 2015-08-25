@@ -12,7 +12,28 @@ define(['react', 'jquery', 'c3'], function(React, $, c3) {
       return {};
     },
 
+    transformDataToLog: function(data) {
+      function map(value) {
+        if(value !==0) {
+          return (Math.log10(value) + 1);
+        }
+        else {
+          return 0;
+        }
+      }
+      return data.map(function(result) {
+        return {
+          build: result.build,
+          name: result.name,
+          passed: map(result.passed),
+          failed: map(result.failed),
+          notExecuted: map(result.notExecuted),
+        }
+      });
+    },
+
     componentDidMount: function() {
+      var logData = this.transformDataToLog(this.props.result.values);
       var node = React.findDOMNode(this.refs.chart);
       var chart = c3.generate({
         bindto: node,
@@ -21,14 +42,12 @@ define(['react', 'jquery', 'c3'], function(React, $, c3) {
           height: 200,
         },
         data: {
-          json: this.props.result.values,
+          json: logData,
           groups: [['passed', 'failed', 'notExecuted']],
           keys: {
             x: 'build',
             value: ['passed', 'failed', 'notExecuted'],
-            //value: ['failed', 'notExecuted']
           },
-
           type: 'bar',
         },
         axis: {
@@ -37,20 +56,25 @@ define(['react', 'jquery', 'c3'], function(React, $, c3) {
           },
           y: {
             show: false,
-            /*
-            tick: {
-              count: 3,
-              format: d3.format("f")
-            }
-            */
           }
         },
         legend: {
           show: false,
         },
         color: {
-          //pattern: [/*'#458B00',*/ '#c0392b', '#CCCCCC'],
           pattern: ['#458B00', '#c0392b', '#CCCCCC'],
+        },
+        tooltip: {
+          format: {
+            value: function (value, ratio, id, index) {
+              if(value === 0) {
+                return 0;
+              }
+              else {
+                return d3.format('f')(Math.pow(10, ((value) - 1)));
+              }
+            }
+          }
         }
       });
       this.setState({chart: chart});
@@ -58,8 +82,10 @@ define(['react', 'jquery', 'c3'], function(React, $, c3) {
 
     componentWillReceiveProps: function(nextProps) {
       if(this.state.chart) {
+        var logData = this.transformDataToLog(this.props.result.values);
+
         this.state.chart.load({
-          json: nextProps.result.values,
+          json: logData,
           groups: [['passed', 'failed', 'notExecuted']],
           keys: {
             x: 'build',
@@ -73,6 +99,13 @@ define(['react', 'jquery', 'c3'], function(React, $, c3) {
     render: function() {
       return (<div ref="chart"></div>);
     },
+
+    componentWillUnmount: function() {
+      if(this.state.chart) {
+        this.state.chart.destroy();
+        this.setState({});
+      }
+    }
 
   });
 
