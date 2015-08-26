@@ -42,13 +42,14 @@ define(['react', 'jquery', 'c3'], function(React, $, c3) {
           height: 200,
         },
         data: {
-          json: logData,
-          groups: [['passed', 'failed', 'notExecuted']],
+          json: this.props.result.values,
+          groups: [['failed']],
           keys: {
             x: 'build',
-            value: ['passed', 'failed', 'notExecuted'],
+            value: ['failed'],
           },
           type: 'bar',
+          labels: true,
         },
         axis: {
           x: {
@@ -62,18 +63,19 @@ define(['react', 'jquery', 'c3'], function(React, $, c3) {
           show: false,
         },
         color: {
-          pattern: ['#458B00', '#c0392b', '#CCCCCC'],
+          //pattern: ['#458B00', '#c0392b', '#CCCCCC'],
+          pattern: ['#34495e'],
         },
         tooltip: {
           format: {
-            value: function (value, ratio, id, index) {
-              if(value === 0) {
-                return 0;
-              }
-              else {
-                return d3.format('f')(Math.pow(10, ((value) - 0.25)));
-              }
-            }
+            // value: function (value, ratio, id, index) {
+            //   if(value === 0) {
+            //     return 0;
+            //   }
+            //   else {
+            //     return d3.format('f')(Math.pow(10, ((value) - 0.25)));
+            //   }
+            // }
           }
         }
       });
@@ -85,13 +87,14 @@ define(['react', 'jquery', 'c3'], function(React, $, c3) {
         var logData = this.transformDataToLog(this.props.result.values);
 
         this.state.chart.load({
-          json: logData,
-          groups: [['passed', 'failed', 'notExecuted']],
+          json: this.props.result.values,
+          groups: [['failed']],
           keys: {
             x: 'build',
-            value: ['passed', 'failed', 'notExecuted'],
+            value: ['failed'],
             //value: ['failed', 'notExecuted']
           },
+          //unload: true,
         });
       }
     },
