@@ -4,7 +4,20 @@ define(['react', 'jquery', 'bvtChart'], function(React, $, BvtChart) {
   var BvtResults = React.createClass({
 
     render: function() {
+
+
       var bvtNodes = this.props.bvtResults.map(function(result) {
+        /*
+        if(result.values.length > 0) {
+          var latest = result.values[result.values.length-1];
+          if(latest.failed === 0) {
+            return (<li className="bvtResult successful" key={result.name + result.build}>
+              Success!
+            </li>
+            );
+          }
+        }
+        */
         return (
           <li className="bvtResult" key={result.name + result.build}>
             {result.name}
@@ -15,7 +28,6 @@ define(['react', 'jquery', 'bvtChart'], function(React, $, BvtChart) {
 
       return (
         <section className="bvtResults">
-          <h1>BVT Results</h1>
           <ul className="bvtResults-container">
             {bvtNodes}
           </ul>
