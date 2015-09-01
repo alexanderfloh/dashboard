@@ -14,8 +14,7 @@ define(['react', 'jquery'], function(React, $) {
         audits:[],
         lastBuild:[],
         nevergreens:[],
-        bvtResults:[],
-        employeesAustria:""
+        bvtResults:[]
       };
     },
 
@@ -45,17 +44,6 @@ define(['react', 'jquery'], function(React, $) {
 
       $.ajax({
         url: '/getAudits',
-        dataType: 'json',
-        success: function(data1) {
-          this.setState(data1);
-        }.bind(this),
-        error: function(xhr, status, err) {
-          console.error(this.props.url, status, err.toString());
-        }.bind(this)
-      });
-
-      $.ajax({
-        url: '/getUsers',
         dataType: 'json',
         success: function(data1) {
           this.setState(data1);

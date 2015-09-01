@@ -3,7 +3,6 @@
 define(['react', 'jquery', 'moment'], function(React, $, Moment) {
   var Audits = React.createClass({
     propTypes: {
-      employeesAustria: React.PropTypes.string.isRequired,
       audits: React.PropTypes.arrayOf(
         React.PropTypes.shape({
           phid: React.PropTypes.string.isRequired,
@@ -23,23 +22,6 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
                  .replace(/ß/g,"ss") + '.jpg';
     },
 
-    getDefaultPicture: function(){
-      return '/assets/images/avatars/default.jpg';
-    },
-
-    getPicture: function(name, empl){
-      name = this.formatEmplName(name);
-      if (name == "No.Auditor.jpg"){
-        return '/assets/images/avatars/silkTestLogo.png';
-      }
-      else if (empl.match(name.toLowerCase()) == null){
-        return this.getDefaultPicture();
-      }
-      else{
-        return 'http://austria/global/images/employees/' +  name;
-      }
-    },
-
     getAvatarClassSet: function(name){
       var cx = React.addons.classSet;
       return cx({
@@ -49,7 +31,6 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
     },
 
     getAuditorPic: function(auditor){
-      var empl = this.props.employeesAustria.toLowerCase();
       var picture = '/user/' + this.formatEmplName(auditor.realName);
       var avatarClass = this.getAvatarClassSet(auditor.realName);
       var avatarUrlStyle = {

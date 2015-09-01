@@ -44,13 +44,6 @@ object Application extends Controller {
     }
   }
 
-  def getUsers() = Cached.everything(req => "users", 60 * 10) {
-    Action.async {
-      val response = UserFetcher.getUsers("http://austria/global/images/employees/");
-      response.map { Ok(_) }
-    }
-  }
-
   def getAudits() = Cached.everything(req => "audits", 60 * 5) {
     Action.async {
       PhabricatorFetcher.fetchAudits.map(Ok(_))

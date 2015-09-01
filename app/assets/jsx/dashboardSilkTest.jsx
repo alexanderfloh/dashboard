@@ -162,66 +162,29 @@ define(['react', 'jquery', 'moment', 'audits', 'bvtResults', 'devices', 'loaderM
           </li>)
     },
 
+    getNevergreens: function(nevergreen) {
+      var linkText = nevergreen.definitionName;
+      // cut off namespaces
+      var nameArray = linkText.split(".");
+      linkText = nameArray[nameArray.length-1];
+      // fix in case of "... cases_None.opt\""," string
+      if (linkText.length < 5){
+        linkText = nevergreen.definitionName;
+      }
+      return (
+        <li key={nevergreen.id} className="nevergreen">
+          <a href={nevergreen.link}>
+            {nevergreen.nrOfFailures} &times; {linkText}
+          </a>
+        </li>
+      );
+    },
+
     render: function() {
-      var empl = this.state.employeesAustria.toLowerCase();
-      function getPicture(name){
-        name = formatEmplName(name);
-
-        if (name == "No.Auditor.jpg"){
-          return '/assets/images/avatars/silkTestLogo.png';
-        }
-        else if (empl.match(name.toLowerCase()) == null){
-          return getDefaultPicture();
-        }
-        else{
-            return 'http://austria/global/images/employees/' +  name;
-        }
-      }
-
-
-
-      function getAvatarClassSet(name){
-        var cx = React.addons.classSet;
-        return cx({
-          'avatar': name !== 'No Auditor',
-          'silkTest': name === 'No Auditor'
-        });
-      }
-
-
-
-   // ----------------------- render functions -----------------------//
-
-
-
-
-
-
-
-
-
-      function getNevergreens(nevergreen) {
-        var linkText = nevergreen.definitionName;
-        // cut off namespaces
-        var nameArray = linkText.split(".");
-        linkText = nameArray[nameArray.length-1];
-        // fix in case of "... cases_None.opt\""," string
-        if (linkText.length < 5){
-          linkText = nevergreen.definitionName;
-        }
-        return (
-          <li key={nevergreen.id} className="nevergreen">
-            <a href={nevergreen.link}>
-              {nevergreen.nrOfFailures} &times; {linkText}
-            </a>
-          </li>
-        );
-      };
-
    // ----------------------- generate html -----------------------//
       var buildItems = this.state.buildCI.map(this.buildItems);
       var buildNightly = this.buildItemsNightly(this.state.buildNightly);
-      var nevergreenNodes = this.state.nevergreens.map(getNevergreens);
+      var nevergreenNodes = this.state.nevergreens.map(this.getNevergreens);
       var audits = this.state.audits.sort(function(a, b){
         var countDiff = b.count-a.count;
         if(countDiff !== 0) {
@@ -249,10 +212,10 @@ define(['react', 'jquery', 'moment', 'audits', 'bvtResults', 'devices', 'loaderM
 
             <aside id="nightly-build" className="nightly-build">
               {buildNightly}
-              <Audits audits={audits} employeesAustria={this.state.employeesAustria} />
+              <Audits audits={audits} />
               <h1> Nevergreens </h1>
               <ul className="nevergreen-list">
-                {nevergreenNodes.slice(0,26)}
+                {nevergreenNodes}
               </ul>
             </aside>
 

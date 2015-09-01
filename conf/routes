@@ -8,7 +8,6 @@ GET   /                 controllers.Application.index
 GET   /buildAside       controllers.Application.buildAside()
 GET   /buildMain        controllers.Application.buildMain()
 GET   /getDevices/      controllers.Application.getDevices()
-GET   /getUsers         controllers.Application.getUsers()
 GET	  /getAudits        controllers.Application.getAudits()
 GET   /getBvtResult     controllers.Application.getBvtResult()
 POST  /setDevice/       controllers.Application.setDevice()
