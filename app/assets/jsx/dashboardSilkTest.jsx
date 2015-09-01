@@ -1,93 +1,10 @@
 /** @jsx React.DOM */
 
-define(['react', 'jquery', 'moment', 'audits', 'bvtResults'], function(React, $, Moment, Audits, BvtResults) {
-
+define(['react', 'jquery', 'moment', 'audits', 'bvtResults', 'devices', 'loaderMixin'], function(React, $, Moment, Audits, BvtResults, Devices, LoadStatusMixin) {
 
   function getDefaultPicture(){
     return '/assets/images/avatars/default.jpg';
   }
-
-  var LoadStatusMixin = {
-    getInitialState: function() {
-      return {
-        buildCI: [],
-        buildNightly: {
-          culprits: [],
-          setup: { },
-        },
-        users:[],
-        project:[],
-        audits:[],
-        lastBuild:[],
-        nevergreens:[],
-        bvtResults:[],
-        employeesAustria:""
-      };
-    },
-
-    // load data from jenkins, austria and phabricator
-    loadStatus: function() {
-      $.ajax({
-        url: '/buildMain',
-        dataType: 'json',
-        success: function(data1) {
-          this.setState(data1);
-        }.bind(this),
-        error: function(xhr, status, err) {
-          console.error(this.props.url, status, err.toString());
-        }.bind(this)
-      });
-
-      $.ajax({
-          url: '/buildAside',
-          dataType: 'json',
-          success: function(data1) {
-            this.setState(data1);
-          }.bind(this),
-          error: function(xhr, status, err) {
-            console.error(this.props.url, status, err.toString());
-          }.bind(this)
-        });
-
-      $.ajax({
-        url: '/getAudits',
-        dataType: 'json',
-        success: function(data1) {
-          this.setState(data1);
-        }.bind(this),
-        error: function(xhr, status, err) {
-          console.error(this.props.url, status, err.toString());
-        }.bind(this)
-      });
-
-      $.ajax({
-        url: '/getUsers',
-        dataType: 'json',
-        success: function(data1) {
-          this.setState(data1);
-        }.bind(this),
-        error: function(xhr, status, err) {
-          console.error(this.props.url, status, err.toString());
-        }.bind(this)
-      });
-
-      $.ajax({
-        url: '/getBvtResult',
-        dataType: 'json',
-        success: function(data1) {
-          this.setState(data1);
-        }.bind(this),
-        error: function(xhr, status, err) {
-          console.error(this.props.url, status, err.toString());
-        }.bind(this)
-      });
-    },
-
-    componentWillMount: function() {
-      this.loadStatus();
-      setInterval(this.loadStatus, this.props.pollInterval);
-    },
-  };
 
   var Dashboard = React.createClass({
     mixins: [LoadStatusMixin],
@@ -188,7 +105,7 @@ define(['react', 'jquery', 'moment', 'audits', 'bvtResults'], function(React, $,
       var resultNodes = build.regressions.map(function(result) {
         var classesStatus = that.getStatusClassSet(result, "regression");
         return (
-          <li className={classesStatus}>
+          <li className={classesStatus} key={result.link}>
             <a href={result.link}>
               {result.name}
             </a>
@@ -274,7 +191,7 @@ define(['react', 'jquery', 'moment', 'audits', 'bvtResults'], function(React, $,
 
 
    // ----------------------- render functions -----------------------//
-      
+
 
 
 
@@ -342,96 +259,6 @@ define(['react', 'jquery', 'moment', 'audits', 'bvtResults'], function(React, $,
           </article>
         </div>
 
-      );
-    }
-  });
-
-  var Devices = React.createClass({
-    getInitialState: function() {
-      return { devices: [],
-        deviceIndex: -1 };
-    },
-
-    loadStatus: function() {
-      $.ajax({
-        url: '/getDevices/',
-        dataType: 'json',
-        success: function(data) {
-          var newDeviceIndex = (this.state.deviceIndex + 1) % (data && data.length > 0 ? data.length : 1);
-          this.setState({
-            devices: data,
-            deviceIndex: newDeviceIndex});
-        }.bind(this),
-        error: function(xhr, status, err) {
-          console.error(status, err.toString());
-        }.bind(this)
-      });
-    },
-
-    componentWillMount: function() {
-      this.loadStatus();
-      setInterval(this.loadStatus, this.props.pollInterval);
-    },
-
-    editDeviceLocation: function(deviceLocation) {
-      var result = '';
-      if (deviceLocation) {
-        result = deviceLocation;
-        var dashIndex = result.indexOf("-");
-        if (dashIndex > -1) {
-          result = result.substring(dashIndex + 1, result.length);
-        }
-        result = result.toLowerCase();
-      }
-
-      return result;
-    },
-
-    isOffscreen: function(elem$) {
-      var offset = elem$.offset();
-      return offset.top > $(window).height();
-    },
-
-    wrapAround: function(originalDevices, deviceIndex) {
-      var result = originalDevices.slice(0);
-      var len = $("tr.deviceLine").length;
-      if (len > 0) {
-        var lastElem$ = $("tr.deviceLine:last");
-        if (this.isOffscreen(lastElem$)) {
-          var first = result.splice(0, deviceIndex);
-          for (var i = 0; i < first.length; i++) {
-            result.push(first[i]);
-          }
-        }
-      }
-      return result;
-    },
-
-    render: function() {
-      var that = this;
-      var devices = this.wrapAround(this.state.devices, this.state.deviceIndex);
-      var deviceNodes = devices.map(function(device) {
-        var deviceLocation = that.editDeviceLocation(device.location);
-        var classString = " deviceName " + device.osType;
-        return (
-            <tr className="deviceLine" key={device.id}>
-            <td className={classString}>{device.name}</td>
-              <td className="deviceLocation"><div>{deviceLocation}</div></td>
-            </tr>
-          );
-      });
-
-      return (
-          <div>
-        <h1 className="deviceSummery">
-          Connected devices ({devices.length}):
-          <a href="/assets/DevicePusher/DevicePusher.UI.application" download="DevicePusher.UI.application">(Download Device Pusher)</a>
-        </h1>
-
-        <table className="deviceTable">
-          {deviceNodes}
-        </table>
-        </div>
       );
     }
   });

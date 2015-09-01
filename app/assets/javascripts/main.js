@@ -8,6 +8,8 @@ requirejs.config({
     'audits': '../jsx/audits',
     'bvtResults': '../jsx/bvtResults',
     'bvtChart': '../jsx/bvtChart',
+    'devices': '../jsx/devices',
+    'loaderMixin': '../jsx/loaderMixin',
     'dashboardSilkTest' : '../jsx/dashboardSilkTest'
   }
 });
