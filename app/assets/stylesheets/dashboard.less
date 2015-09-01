@@ -53,11 +53,10 @@ table {
 }
 
 @grey: #CCCCCC;
-@blue: #3498DB;
+@blue: #22A7F0;
 @green: #458B00;
 @red: #c0392b;
 @orange: #fbc02d;
-@blue: #455ede;
 
 @midnight-blue: #2c3e50;
 @primary: @midnight-blue;
@@ -170,7 +169,7 @@ a {
                     font-weight: bold;
                     font-size: 1em;
                     color: white;
-                    background-color: #22A7F0;
+                    background-color: @blue;
                     padding: 0px 5px;
                     min-width: 1.5em;
                 }
@@ -309,7 +308,7 @@ a {
 
             .status, .regression {
                 font-size: 1em;
-                padding: 0.2em 0.2em 0.2em 0em;
+                padding: 0.2em 0;
                 text-align: center;
             }
 
@@ -337,7 +336,7 @@ a {
             }
 
             .pending {
-                background: darkblue;
+                background: @blue;
 
                 .buildProgress {
                     text-align: center;

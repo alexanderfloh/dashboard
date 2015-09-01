@@ -1,6 +1,7 @@
 /** @jsx React.DOM */
 
-define(['react', 'jquery', 'moment', 'audits', 'bvtResults', 'devices', 'loaderMixin', 'avatar'], function(React, $, Moment, Audits, BvtResults, Devices, LoadStatusMixin, Avatar) {
+define(['react', 'audits', 'bvtResults', 'devices', 'loaderMixin', 'avatar', 'ciBuild'],
+  function(React, Audits, BvtResults, Devices, LoadStatusMixin, Avatar, CIBuild) {
 
   var Dashboard = React.createClass({
     mixins: [LoadStatusMixin],
@@ -70,72 +71,6 @@ define(['react', 'jquery', 'moment', 'audits', 'bvtResults', 'devices', 'loaderM
         );
     },
 
-    buildItems: function(build){
-      var committerNodes = build.culprits.slice(0, 3).map(function(culprit) {
-        return <Avatar name={culprit.fullName} />
-      });
-      var that = this;
-
-      var resultNodes = build.regressions.map(function(result) {
-        var classesStatus = that.getStatusClassSet(result, "regression");
-        return (
-          <li className={classesStatus} key={result.link}>
-            <a href={result.link}>
-              {result.name}
-            </a>
-          </li>);
-      });
-
-      var classesRegressionResult = this.getStatusClassSet(build.regressions[0], "regression");
-
-      var andOthers = "";
-      if (build.culprits.length > 3){
-        andOthers = "+ " + (build.culprits.length - 3) + " other" + (build.culprits.length > 1 ? "s" : "");
-      }
-      return (
-          <li className="build-list-item"
-            key={build.number}>
-            <div className="build-item">
-              <ul>
-                <li className="avatars">
-                  {committerNodes}
-                  <div>{andOthers}</div>
-                </li>
-                {this.buildStatus(build)}
-                <li>
-                  <div>
-                    <ul className="regression-list">
-                      {resultNodes}
-                    </ul>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          </li>
-      );
-    },
-
-    buildStatus: function(build){
-      var classesStatus = this.getStatusClassSet(build, "status");
-      var currentBuild = this.state.lastBuild;
-
-      if (currentBuild.building && currentBuild.buildNumber === build.number){
-        return (
-            <li className="status pending">
-            <a href={build.link}>
-              <BuildProgress lastBuild={currentBuild} />
-            </a>
-          </li>
-        )
-      }
-      return (
-          <li className={classesStatus}>
-            <a href={build.link}>
-              {build.number}
-            </a>
-          </li>)
-    },
-
     getNevergreens: function(nevergreen) {
       var linkText = nevergreen.definitionName;
       // cut off namespaces
@@ -156,7 +91,10 @@ define(['react', 'jquery', 'moment', 'audits', 'bvtResults', 'devices', 'loaderM
 
     render: function() {
    // ----------------------- generate html -----------------------//
-      var buildItems = this.state.buildCI.map(this.buildItems);
+      var lastBuild = this.state.lastBuild;
+      var buildItems = this.state.buildCI.map(function(build) {
+        return <CIBuild build={build} lastBuild={lastBuild} />
+      });
       var buildNightly = this.buildItemsNightly(this.state.buildNightly);
       var nevergreenNodes = this.state.nevergreens.map(this.getNevergreens);
       var audits = this.state.audits.sort(function(a, b){
@@ -199,44 +137,5 @@ define(['react', 'jquery', 'moment', 'audits', 'bvtResults', 'devices', 'loaderM
       );
     }
   });
-
-  var BuildProgress = React.createClass({
-    render: function() {
-      if(this.props.lastBuild.building) {
-        var timeSpent = Date.now() - this.props.lastBuild.timestamp;
-        var timeLeft = (this.props.lastBuild.timestamp + this.props.lastBuild.estimatedDuration) - Date.now();
-        var progress = parseInt((timeSpent / this.props.lastBuild.estimatedDuration) * 100, 10);
-        var formatTime = function(d) {
-          if(timeLeft > 0) {
-            return Moment(d).from(Moment(0), true) + ' remaining';
-          } else {
-            return 'any moment now...';
-          }
-        };
-        var widthStyle = {
-          width: Math.min(progress, 95) + '%'
-        }
-        return (
-          <div className="buildProgress">
-            <div className="progress-bar-background">
-              <span className="bar" style={widthStyle}> </span>
-            </div>
-            <div className="label">
-              <div className="buildNumber">
-                {this.props.lastBuild.buildNumber}
-              </div>
-              <div className="timeLeft">
-                {formatTime(timeLeft)}
-              </div>
-            </div>
-          </div>
-        );
-      }
-      else {
-        return (<div className="buildProgress" />);
-      }
-    }
-  });
-
   return Dashboard;
 });

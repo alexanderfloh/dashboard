@@ -11,6 +11,8 @@ requirejs.config({
     'devices': '../jsx/devices',
     'loaderMixin': '../jsx/loaderMixin',
     'avatar': '../jsx/avatar',
+    'ciBuild': '../jsx/ciBuild',
+    'buildProgress': '../jsx/buildProgress',
     'dashboardSilkTest' : '../jsx/dashboardSilkTest'
   }
 });
