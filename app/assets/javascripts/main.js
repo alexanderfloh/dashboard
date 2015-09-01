@@ -10,6 +10,7 @@ requirejs.config({
     'bvtChart': '../jsx/bvtChart',
     'devices': '../jsx/devices',
     'loaderMixin': '../jsx/loaderMixin',
+    'avatar': '../jsx/avatar',
     'dashboardSilkTest' : '../jsx/dashboardSilkTest'
   }
 });

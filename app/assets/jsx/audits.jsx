@@ -1,7 +1,7 @@
 /** @jsx React.DOM */
 
-define(['react', 'jquery', 'moment'], function(React, $, Moment) {
-  var Audits = React.createClass({
+define(['react', 'avatar'], function(React, Avatar) {
+  return React.createClass({
     propTypes: {
       audits: React.PropTypes.arrayOf(
         React.PropTypes.shape({
@@ -11,60 +11,18 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       }))
     },
 
-    formatEmplName: function(name){
-      return name.replace(" ", ".")
-                 .replace(/ä/g,"ae")
-                 .replace(/ö/g,"oe")
-                 .replace(/ü/g,"ue")
-                 .replace(/Ä/g,"Ae")
-                 .replace(/Ü/g,"Ue")
-                 .replace(/Ö/g,"Oe")
-                 .replace(/ß/g,"ss") + '.jpg';
-    },
-
-    getAvatarClassSet: function(name){
-      var cx = React.addons.classSet;
-      return cx({
-        'avatar': name !== 'No Auditor',
-        'silkTest': name === 'No Auditor'
-      });
-    },
-
-    getAuditorPic: function(auditor){
-      var picture = '/user/' + this.formatEmplName(auditor.realName);
-      var avatarClass = this.getAvatarClassSet(auditor.realName);
-      var avatarUrlStyle = {
-          backgroundImage: 'url(' + picture + ')',
-          backgroundSize: 'cover'
-      };
-
-      return (
-          <div className={avatarClass}
-               style={avatarUrlStyle}
-               key={auditor.realName}
-               title={auditor.realName} >
-          </div>
-      );
-    },
-
     render: function() {
-      var that = this;
       var auditNodes = this.props.audits.slice(0, 12).map(function(audit) {
         return (
           <li className="audit" key={audit.phid}>
-            <div className="audit-name">
-              {that.getAuditorPic(audit)}
-            </div>
-            <div className="audit-cnt">
-              {audit.count}
-            </div>
+            <Avatar name={audit.realName} badge={audit.count} />
           </li>
         )}
       );
 
       return (
         <section className="audit-section">
-          <h1> Open Audits </h1>
+          <h1>Open Audits</h1>
           <ul className="audit-list">
             {auditNodes}
           </ul>
@@ -72,6 +30,4 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
       );
     }
   });
-
-  return Audits;
 });

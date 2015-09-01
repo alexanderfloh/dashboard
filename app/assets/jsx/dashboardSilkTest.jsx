@@ -1,10 +1,6 @@
 /** @jsx React.DOM */
 
-define(['react', 'jquery', 'moment', 'audits', 'bvtResults', 'devices', 'loaderMixin'], function(React, $, Moment, Audits, BvtResults, Devices, LoadStatusMixin) {
-
-  function getDefaultPicture(){
-    return '/assets/images/avatars/default.jpg';
-  }
+define(['react', 'jquery', 'moment', 'audits', 'bvtResults', 'devices', 'loaderMixin', 'avatar'], function(React, $, Moment, Audits, BvtResults, Devices, LoadStatusMixin, Avatar) {
 
   var Dashboard = React.createClass({
     mixins: [LoadStatusMixin],
@@ -14,46 +10,22 @@ define(['react', 'jquery', 'moment', 'audits', 'bvtResults', 'devices', 'loaderM
       };
     },
 
-    formatEmplName: function(name){
-      return name.replace(" ", ".")
-                 .replace(/ä/g,"ae")
-                 .replace(/ö/g,"oe")
-                 .replace(/ü/g,"ue")
-                 .replace(/Ä/g,"Ae")
-                 .replace(/Ö/g,"Oe")
-                 .replace(/Ü/g,"Ue")
-                 .replace(/ß/g,"ss") + '.jpg';
-    },
-
-    getCommitters: function(committer){
-      var picture = '/user/' + this.formatEmplName(committer.fullName);
-
-      var avatarUrlStyle = {
-          backgroundImage: 'url(' + picture + ')',
-          backgroundSize: 'cover'
-      };
-      return (
-          <div className="avatar"
-               style={avatarUrlStyle}
-               key={committer.fullName}
-               title={committer.fullName} >
-          </div>
-      );
-    },
-
     buildItemsNightly: function(build){
-      var committerNodes = build.culprits.map(this.getCommitters);
+      var committerNodes = build.culprits.slice(0, 6).map(function(culprit) {
+        return <Avatar name={culprit.fullName} />
+      });
+
       var classesStatus = this.getStatusClassSet(build, "status");
       var andOthers = "";
-      if (committerNodes.length > 6){
-        andOthers = "+ " + (committerNodes.length - 6) + " other" + (committerNodes.length > 1 ? "s" : "");
+      if (build.culprits.length > 6){
+        andOthers = "+ " + (build.culprits.length - 6) + " other" + (build.culprits.length > 1 ? "s" : "");
       }
       return (
           <li className="build-list-item">
             <div className="build-item">
               <ul>
                 <li className="avatars nightly">
-                  {committerNodes.slice(0,6)}
+                  {committerNodes}
                   <div>{andOthers}</div>
                 </li>
                 <li className={classesStatus}>
@@ -99,7 +71,9 @@ define(['react', 'jquery', 'moment', 'audits', 'bvtResults', 'devices', 'loaderM
     },
 
     buildItems: function(build){
-      var committerNodes = build.culprits.map(this.getCommitters);
+      var committerNodes = build.culprits.slice(0, 3).map(function(culprit) {
+        return <Avatar name={culprit.fullName} />
+      });
       var that = this;
 
       var resultNodes = build.regressions.map(function(result) {
@@ -115,8 +89,8 @@ define(['react', 'jquery', 'moment', 'audits', 'bvtResults', 'devices', 'loaderM
       var classesRegressionResult = this.getStatusClassSet(build.regressions[0], "regression");
 
       var andOthers = "";
-      if (committerNodes.length > 3){
-        andOthers = "+ " + (committerNodes.length - 3) + " other" + (committerNodes.length > 1 ? "s" : "");
+      if (build.culprits.length > 3){
+        andOthers = "+ " + (build.culprits.length - 3) + " other" + (build.culprits.length > 1 ? "s" : "");
       }
       return (
           <li className="build-list-item"
@@ -124,7 +98,7 @@ define(['react', 'jquery', 'moment', 'audits', 'bvtResults', 'devices', 'loaderM
             <div className="build-item">
               <ul>
                 <li className="avatars">
-                  {committerNodes.slice(0,3)}
+                  {committerNodes}
                   <div>{andOthers}</div>
                 </li>
                 {this.buildStatus(build)}
