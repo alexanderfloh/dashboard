@@ -64,7 +64,7 @@ define(['react', 'jquery', 'c3'], function(React, $, c3) {
         },
         color: {
           //pattern: ['#458B00', '#c0392b', '#CCCCCC'],
-          pattern: ['#34495e'],
+          pattern: ['#F9BF3B'],
         },
         tooltip: {
           format: {

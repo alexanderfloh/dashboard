@@ -15,13 +15,8 @@ import play.api.mvc.Controller
 import play.api.libs.json.JsArray
 import play.api.libs.json.JsValue
 import play.api.libs.json.JsObject
-import play.api.libs.concurrent.Akka
 import play.api.Play.current
-import akka.pattern.ask
-import akka.util.Timeout
-import scala.concurrent.duration._
 import util.PhabricatorFetcher
-import scala.concurrent.Await
 import models.Location
 import models.MobileDevice
 import util.UserFetcher

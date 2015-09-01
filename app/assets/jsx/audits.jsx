@@ -50,7 +50,7 @@ define(['react', 'jquery', 'moment'], function(React, $, Moment) {
 
     getAuditorPic: function(auditor){
       var empl = this.props.employeesAustria.toLowerCase();
-      var picture = this.getPicture(auditor.realName, empl);
+      var picture = '/user/' + this.formatEmplName(auditor.realName);
       var avatarClass = this.getAvatarClassSet(auditor.realName);
       var avatarUrlStyle = {
           backgroundImage: 'url(' + picture + ')',

@@ -1,16 +1,7 @@
 /** @jsx React.DOM */
 
 define(['react', 'jquery', 'moment', 'audits', 'bvtResults'], function(React, $, Moment, Audits, BvtResults) {
-  function formatEmplName(name){
-    return name.replace(" ", ".")
-               .replace(/ä/g,"ae")
-               .replace(/ö/g,"oe")
-               .replace(/ü/g,"ue")
-               .replace(/Ä/g,"Ae")
-               .replace(/Ö/g,"Oe")
-               .replace(/Ü/g,"Ue")
-               .replace(/ß/g,"ss") + '.jpg';
-  }
+
 
   function getDefaultPicture(){
     return '/assets/images/avatars/default.jpg';
@@ -106,6 +97,154 @@ define(['react', 'jquery', 'moment', 'audits', 'bvtResults'], function(React, $,
       };
     },
 
+    formatEmplName: function(name){
+      return name.replace(" ", ".")
+                 .replace(/ä/g,"ae")
+                 .replace(/ö/g,"oe")
+                 .replace(/ü/g,"ue")
+                 .replace(/Ä/g,"Ae")
+                 .replace(/Ö/g,"Oe")
+                 .replace(/Ü/g,"Ue")
+                 .replace(/ß/g,"ss") + '.jpg';
+    },
+
+    getCommitters: function(committer){
+      var picture = '/user/' + this.formatEmplName(committer.fullName);
+
+      var avatarUrlStyle = {
+          backgroundImage: 'url(' + picture + ')',
+          backgroundSize: 'cover'
+      };
+      return (
+          <div className="avatar"
+               style={avatarUrlStyle}
+               key={committer.fullName}
+               title={committer.fullName} >
+          </div>
+      );
+    },
+
+    buildItemsNightly: function(build){
+      var committerNodes = build.culprits.map(this.getCommitters);
+      var classesStatus = this.getStatusClassSet(build, "status");
+      var andOthers = "";
+      if (committerNodes.length > 6){
+        andOthers = "+ " + (committerNodes.length - 6) + " other" + (committerNodes.length > 1 ? "s" : "");
+      }
+      return (
+          <li className="build-list-item">
+            <div className="build-item">
+              <ul>
+                <li className="avatars nightly">
+                  {committerNodes.slice(0,6)}
+                  <div>{andOthers}</div>
+                </li>
+                <li className={classesStatus}>
+                  <a href={build.link}>
+                    {build.number}
+                  </a>
+                </li>
+                <li>
+                <div>
+                  <ul className="regression-list">
+                    {this.regressionStatus(build.setup, "Setup")}
+                  </ul>
+                </div>
+                </li>
+              </ul>
+            </div>
+          </li>
+      );
+    },
+
+    getStatusClassSet: function(build, name){
+      var cx = React.addons.classSet;
+      return cx({
+        'status': name === 'status',
+        'regression': name === 'regression',
+        'stable': build.status === 'stable',
+        'cancelled': build.status === 'cancelled',
+        'unstable': build.status === 'unstable',
+        'failed': build.status === 'failed',
+        'pending': build.status === 'pending'
+      });
+    },
+
+    regressionStatus: function(regression, name){
+      var classesStatus = this.getStatusClassSet(regression, "regression");
+      return (
+          <li className={classesStatus}>
+            <a href={regression.link}>
+              {name}
+            </a>
+          </li>
+        );
+    },
+
+    buildItems: function(build){
+      var committerNodes = build.culprits.map(this.getCommitters);
+      var that = this;
+
+      var resultNodes = build.regressions.map(function(result) {
+        var classesStatus = that.getStatusClassSet(result, "regression");
+        return (
+          <li className={classesStatus}>
+            <a href={result.link}>
+              {result.name}
+            </a>
+          </li>);
+      });
+
+      var classesRegressionResult = this.getStatusClassSet(build.regressions[0], "regression");
+
+      var andOthers = "";
+      if (committerNodes.length > 3){
+        andOthers = "+ " + (committerNodes.length - 3) + " other" + (committerNodes.length > 1 ? "s" : "");
+      }
+      return (
+          <li className="build-list-item"
+            key={build.number}>
+            <div className="build-item">
+              <ul>
+                <li className="avatars">
+                  {committerNodes.slice(0,3)}
+                  <div>{andOthers}</div>
+                </li>
+                {this.buildStatus(build)}
+                <li>
+                  <div>
+                    <ul className="regression-list">
+                      {resultNodes}
+                    </ul>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </li>
+      );
+    },
+
+    buildStatus: function(build){
+      var classesStatus = this.getStatusClassSet(build, "status");
+      var currentBuild = this.state.lastBuild;
+
+      if (currentBuild.building && currentBuild.buildNumber === build.number){
+        return (
+            <li className="status pending">
+            <a href={build.link}>
+              <BuildProgress lastBuild={currentBuild} />
+            </a>
+          </li>
+        )
+      }
+      return (
+          <li className={classesStatus}>
+            <a href={build.link}>
+              {build.number}
+            </a>
+          </li>)
+    },
+
     render: function() {
       var empl = this.state.employeesAustria.toLowerCase();
       function getPicture(name){
@@ -122,21 +261,7 @@ define(['react', 'jquery', 'moment', 'audits', 'bvtResults'], function(React, $,
         }
       }
 
-      function getCommitters(committer){
-        var picture = getPicture(committer.fullName, empl);
 
-        var avatarUrlStyle = {
-            backgroundImage: 'url(' + picture + ')',
-            backgroundSize: 'cover'
-        };
-        return (
-            <div className="avatar"
-                 style={avatarUrlStyle}
-                 key={committer.fullName}
-                 title={committer.fullName} >
-            </div>
-        );
-      }
 
       function getAvatarClassSet(name){
         var cx = React.addons.classSet;
@@ -146,126 +271,17 @@ define(['react', 'jquery', 'moment', 'audits', 'bvtResults'], function(React, $,
         });
       }
 
-      function getStatusClassSet(build, name){
-        var cx = React.addons.classSet;
-        return cx({
-          'status': name === 'status',
-          'regression': name === 'regression',
-          'stable': build.status === 'stable',
-          'cancelled': build.status === 'cancelled',
-          'unstable': build.status === 'unstable',
-          'failed': build.status === 'failed',
-          'pending': build.status === 'pending'
-        });
-      }
+
 
    // ----------------------- render functions -----------------------//
-      var currentBuild = this.state.lastBuild;
-      function buildStatus(build){
-        var classesStatus = getStatusClassSet(build, "status");
+      
 
-        if (currentBuild.building && currentBuild.buildNumber === build.number){
-          return (
-              <li className="status pending">
-              <a href={build.link}>
-                <BuildProgress lastBuild={currentBuild} />
-              </a>
-            </li>
-          )
-        }
-        return (
-            <li className={classesStatus}>
-              <a href={build.link}>
-                {build.number}
-              </a>
-            </li>)
-      }
 
-      function regressionStatus(regression, name){
-        var classesStatus = getStatusClassSet(regression, "regression");
-        return (
-            <li className={classesStatus}>
-              <a href={regression.link}>
-                {name}
-              </a>
-            </li>
-          );
-      }
 
-      function buildItems(build){
-        var committerNodes = build.culprits.map(getCommitters);
 
-        var resultNodes = build.regressions.map(function(result) {
-          var classesStatus = getStatusClassSet(result, "regression");
-          return (
-            <li className={classesStatus}>
-              <a href={result.link}>
-                {result.name}
-              </a>
-            </li>);
-        });
 
-        var classesRegressionResult = getStatusClassSet(build.regressions[0], "regression");
 
-        var andOthers = "";
-        if (committerNodes.length > 3){
-          andOthers = "+ " + (committerNodes.length - 3) + " other" + (committerNodes.length > 1 ? "s" : "");
-        }
-        return (
-            <li className="build-list-item"
-              key={build.number}>
-              <div className="build-item">
-                <ul>
-                  <li className="avatars">
-                    {committerNodes.slice(0,3)}
-                    <div>{andOthers}</div>
-                  </li>
-                  {buildStatus(build)}
-                  <li>
-                    <div>
-                      <ul className="regression-list">
-                        {resultNodes}
-                      </ul>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-            </li>
-        );
-      };
 
-      function buildItemsNightly(build){
-        var committerNodes = build.culprits.map(getCommitters);
-        var classesStatus = getStatusClassSet(build, "status");
-        var andOthers = "";
-        if (committerNodes.length > 6){
-          andOthers = "+ " + (committerNodes.length - 6) + " other" + (committerNodes.length > 1 ? "s" : "");
-        }
-        return (
-            <li className="build-list-item">
-              <div className="build-item">
-                <ul>
-                  <li className="avatars nightly">
-                    {committerNodes.slice(0,6)}
-                    <div>{andOthers}</div>
-                  </li>
-                  <li className={classesStatus}>
-                    <a href={build.link}>
-                      {build.number}
-                    </a>
-                  </li>
-                  <li>
-                  <div>
-                    <ul className="regression-list">
-                      {regressionStatus(build.setup, "Setup")}
-                    </ul>
-                  </div>
-                  </li>
-                </ul>
-              </div>
-            </li>
-        );
-      };
 
       function getNevergreens(nevergreen) {
         var linkText = nevergreen.definitionName;
@@ -286,8 +302,8 @@ define(['react', 'jquery', 'moment', 'audits', 'bvtResults'], function(React, $,
       };
 
    // ----------------------- generate html -----------------------//
-      var buildItems = this.state.buildCI.map(buildItems);
-      var buildNightly = buildItemsNightly(this.state.buildNightly);
+      var buildItems = this.state.buildCI.map(this.buildItems);
+      var buildNightly = this.buildItemsNightly(this.state.buildNightly);
       var nevergreenNodes = this.state.nevergreens.map(getNevergreens);
       var audits = this.state.audits.sort(function(a, b){
         var countDiff = b.count-a.count;
