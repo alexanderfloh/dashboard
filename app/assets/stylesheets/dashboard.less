@@ -54,7 +54,7 @@ table {
 
 @grey: #CCCCCC;
 @blue: #22A7F0;
-@green: #458B00;
+@green: #26A65B;
 @red: #c0392b;
 @orange: #fbc02d;
 
@@ -335,9 +335,13 @@ a {
         background: @grey;
       }
 
-      .pending {
-        background: @blue;
+      .pending-ci {
         padding: 0;
+      }
+      
+      .pending, .pending-ci {
+        background: @blue;
+
 
         .buildProgress {
           text-align: center;

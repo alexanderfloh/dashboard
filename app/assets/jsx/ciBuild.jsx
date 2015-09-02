@@ -48,7 +48,7 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
 
       if (currentBuild.building && currentBuild.buildNumber === build.number){
         return (
-            <li className="status pending">
+            <li className="status pending-ci">
             <a href={build.link}>
               <BuildProgress lastBuild={currentBuild} />
             </a>
