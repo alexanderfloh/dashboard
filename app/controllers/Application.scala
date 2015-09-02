@@ -19,7 +19,6 @@ import play.api.Play.current
 import util.PhabricatorFetcher
 import models.Location
 import models.MobileDevice
-import util.UserFetcher
 import play.api.cache.Cached
 import util.JenkinsFetcherSilkTest
 import util.ScFetcher
