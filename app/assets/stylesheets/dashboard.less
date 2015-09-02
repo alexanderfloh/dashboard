@@ -290,6 +290,17 @@ a {
     display: inline;
 
     .build-item {
+      .build-number {
+        font-size: 2em;
+      }
+    }
+    .ci-build-item {
+      .build-number {
+        font-size: 0.5em;
+      }
+    }
+
+    .build-item, .ci-build-item {
       margin-top: 0.5em;
       display: inline-block;
       margin-left: 0.5em;
@@ -302,21 +313,56 @@ a {
 
       .build-number {
         text-align: center;
-        font-size: 2em;
-        color: black;
       }
 
+      .downstream-jobs-nightly {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-content: center;
+      }
+
+      .regression-list {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        align-content: space-around;
+      }
       .status, .regression {
         font-size: 1em;
         padding: 0.2em 0;
         text-align: center;
       }
 
-      .status {
+      .nightly-setup {
+        flex-grow: 1;
+      }
+
+      .regression {
+        display: inline-block;
+        padding: 10px;
+        margin: 5px;
+      }
+
+      .status, .status-nightly {
         font-size: 3em;
-        min-height: 130px;
-        max-height: 130px;
         margin: 5px 0px 5px 0px;
+      }
+
+      .status {
+        max-height: 80px;
+      }
+
+      .status-nightly {
+        max-height: 130px;
+      }
+
+      .regression-icon {
+        width: 64px;
+        height: 64px;
+        filter: invert(100%) brightness(25%);
+        -webkit-filter: invert(100%) brightness(25%);
+        padding: 6px;
       }
 
       .stable {
@@ -336,9 +382,9 @@ a {
       }
 
       .pending-ci {
-        padding: 0;
+        //padding: 0;
       }
-      
+
       .pending, .pending-ci {
         background: @blue;
 

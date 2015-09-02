@@ -13,6 +13,7 @@ GET   /getBvtResult     controllers.Application.getBvtResult()
 POST  /setDevice/       controllers.Application.setDevice()
 
 GET	  /user/:name		controllers.PictureFetcher.getPicture(name)
+GET	  /icon/:name		controllers.PictureFetcher.getIcon(name)
 
 # Map static resources from the /public folder to the /assets URL path
 GET   /assets/*file     controllers.Assets.at(path="/public", file)

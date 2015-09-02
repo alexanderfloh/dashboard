@@ -1,6 +1,33 @@
 /** @jsx React.DOM */
 
 define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgress) {
+  var DownstreamJob = React.createClass({
+    getStatusClassSet: function(build, name){
+      var cx = React.addons.classSet;
+      return cx({
+        'status': name === 'status',
+        'regression': name === 'regression',
+        'stable': build.status === 'stable',
+        'cancelled': build.status === 'cancelled',
+        'unstable': build.status === 'unstable',
+        'failed': build.status === 'failed',
+        'pending': build.status === 'pending'
+      });
+    },
+
+    render: function() {
+      var classesStatus = this.getStatusClassSet(this.props.result, "regression");
+      var name = '/icon/' + this.props.result.name;
+      return (
+        <li className={classesStatus} key={this.props.result.link}>
+          <a href={this.props.result.link}>
+            <img src={name} className="regression-icon" title={this.props.result.name}/>
+          </a>
+        </li>);
+    },
+
+  });
+
   return React.createClass({
     propTypes: {
       build: React.PropTypes.shape({
@@ -48,19 +75,19 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
 
       if (currentBuild.building && currentBuild.buildNumber === build.number){
         return (
-            <li className="status pending-ci">
-            <a href={build.link}>
+            <div className="status pending-ci">
+            <a href={build.link} className="build-number">
               <BuildProgress lastBuild={currentBuild} />
             </a>
-          </li>
+          </div>
         )
       }
       return (
-          <li className={classesStatus}>
-            <a href={build.link}>
+          <div className={classesStatus}>
+            <a href={build.link} className="build-number">
               {build.number}
             </a>
-          </li>)
+          </div>)
     },
 
     render: function(){
@@ -70,13 +97,7 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
       var that = this;
 
       var resultNodes = this.props.build.regressions.map(function(result) {
-        var classesStatus = that.getStatusClassSet(result, "regression");
-        return (
-          <li className={classesStatus} key={result.link}>
-            <a href={result.link}>
-              {result.name}
-            </a>
-          </li>);
+        return <DownstreamJob result={result} />;
       });
 
       var classesRegressionResult = this.getStatusClassSet(this.props.build.regressions[0], "regression");
@@ -87,21 +108,17 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
       }
       return (
           <li className="build-list-item" key={this.props.build.number}>
-            <div className="build-item">
-              <ul>
-                <li className="avatars">
-                  {committerNodes}
-                  <div>{andOthers}</div>
-                </li>
-                {this.buildStatus(this.props.build)}
-                <li>
-                  <div>
-                    <ul className="regression-list">
-                      {resultNodes}
-                    </ul>
-                  </div>
-                </li>
-              </ul>
+            <div className="ci-build-item">
+              <div className="avatars">
+                {committerNodes}
+                <div>{andOthers}</div>
+              </div>
+              {this.buildStatus(this.props.build)}
+              <div>
+                <ul className="regression-list">
+                  {resultNodes}
+                </ul>
+              </div>
             </div>
           </li>
       );

@@ -6,6 +6,7 @@ import play.api.libs.ws.WS
 import play.api.Play.current
 import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.Play
+import java.io.File
 
 object PictureFetcher extends Controller {
   def getPicture(name: String) = Action.async {
@@ -25,5 +26,18 @@ object PictureFetcher extends Controller {
     }
     
     
+  }
+  
+  def getIcon(name: String) = Action {
+    Play.current.configuration.getObject("dashboard.icons").map {
+      iconConfig =>
+        if(iconConfig.toConfig().hasPath(name)) {
+          val fileName = iconConfig.toConfig().getString(name)
+          val file = new File("public/images/icons", fileName)
+          if(file.exists) Ok.sendFile(file)
+          else NotFound(file.getCanonicalPath)
+        }
+        else NotFound(name)
+    }.getOrElse(throw new RuntimeException("dashboard.icons not configured"))
   }
 }

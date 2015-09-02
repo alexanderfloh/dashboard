@@ -16,7 +16,7 @@ define(['react', 'audits', 'bvtResults', 'devices', 'loaderMixin', 'avatar', 'ci
         return <Avatar name={culprit.fullName} />
       });
 
-      var classesStatus = this.getStatusClassSet(build, "status");
+      var classesStatus = this.getStatusClassSet(build, 'status-nightly');
       var andOthers = "";
       if (build.culprits.length > 6){
         andOthers = "+ " + (build.culprits.length - 6) + " other" + (build.culprits.length > 1 ? "s" : "");
@@ -36,7 +36,7 @@ define(['react', 'audits', 'bvtResults', 'devices', 'loaderMixin', 'avatar', 'ci
                 </li>
                 <li>
                 <div>
-                  <ul className="regression-list">
+                  <ul className="downstream-jobs-nightly">
                     {this.regressionStatus(build.setup, "Setup")}
                   </ul>
                 </div>
@@ -47,11 +47,11 @@ define(['react', 'audits', 'bvtResults', 'devices', 'loaderMixin', 'avatar', 'ci
       );
     },
 
-    getStatusClassSet: function(build, name){
+    getStatusClassSet: function(build, additional){
       var cx = React.addons.classSet;
       return cx({
-        'status': name === 'status',
-        'regression': name === 'regression',
+        'nightly-setup': additional === 'nightly-setup',
+        'status-nightly': additional === 'status-nightly',
         'stable': build.status === 'stable',
         'cancelled': build.status === 'cancelled',
         'unstable': build.status === 'unstable',
@@ -61,7 +61,7 @@ define(['react', 'audits', 'bvtResults', 'devices', 'loaderMixin', 'avatar', 'ci
     },
 
     regressionStatus: function(regression, name){
-      var classesStatus = this.getStatusClassSet(regression, "regression");
+      var classesStatus = this.getStatusClassSet(regression, 'nightly-setup');
       return (
           <li className={classesStatus}>
             <a href={regression.link}>
