@@ -28,9 +28,6 @@ define(['react', 'moment'], function(React, Moment) {
         }
         return (
           <div className="buildProgress">
-            <div className="progress-bar-background">
-              <span className="bar" style={widthStyle}> </span>
-            </div>
             <div className="label">
               <div className="buildNumber">
                 {this.props.lastBuild.buildNumber}
@@ -38,6 +35,9 @@ define(['react', 'moment'], function(React, Moment) {
               <div className="timeLeft">
                 {formatTime(timeLeft)}
               </div>
+            </div>
+            <div className="progress-bar-background">
+              <span className="bar" style={widthStyle}> </span>
             </div>
           </div>
         );
