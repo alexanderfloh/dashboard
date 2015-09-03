@@ -39,7 +39,7 @@ define(['react', 'jquery', 'c3'], function(React, $, c3) {
         bindto: node,
         size: {
          width: 360,
-          height: 200,
+          height: 150,
         },
         data: {
           json: this.props.result.values,

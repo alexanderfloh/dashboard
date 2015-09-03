@@ -53,6 +53,7 @@ table {
 }
 
 @grey: #CCCCCC;
+@dark-grey: #666;
 @blue: #22A7F0;
 @green: #26A65B;
 @red: #c0392b;
@@ -137,6 +138,7 @@ a {
 
   .audit-section {
     padding-top: 2em;
+    height: 700px;
     text-align: center;
     margin-left: 0;
     float: initial;
@@ -179,7 +181,7 @@ a {
 
   .bvtResults {
     padding-top: 1em;
-    padding-bottom: 3em;
+    padding-bottom: 6em;
   }
 
   .bvtResults-container {
@@ -194,14 +196,32 @@ a {
     padding-top: 1em;
     padding-bottom: 1em;
     font-weight: bold;
+    
     &.successful {
       background-color: @green;
+      margin: 2em;
     }
+
+    tspan {
+      fill: @dark-grey;
+    }
+  }
+
+  .bvt-icon {
+    width: 40px;
+    height: 40px;
+
+  }
+
+  .bvt-icon-success {
+    width: 72px;
+    height: 72px;
+    margin: 1em 10em;
   }
 
   .deviceSection {
     .deviceSummery {
-      .font-serif;
+      //.font-serif;
 
       a {
         .font-sans;
@@ -288,6 +308,8 @@ a {
 
   .build-list-item {
     display: inline;
+    vertical-align: bottom;
+
 
     .build-item {
       .build-number {
@@ -360,8 +382,8 @@ a {
       .regression-icon {
         width: 64px;
         height: 64px;
-        filter: invert(100%) brightness(25%);
-        -webkit-filter: invert(100%) brightness(25%);
+        //filter: invert(100%) brightness(25%);
+        //-webkit-filter: invert(100%) brightness(25%);
         padding: 6px;
       }
 
@@ -394,9 +416,8 @@ a {
 
           .progress-bar-background {
             position: relative;
-            top: -75px;
+            top: -28px;
             text-align: left;
-            //height: 0.2em;
 
             .bar {
               background-color: white;
@@ -406,15 +427,14 @@ a {
           }
 
           .label {
-            font-size: 0.2em;
             color: white;
 
             .buildNumber {
-              text-align: center;
-              font-size: 5.2em;
+              font-size: 0.6em;
             }
 
             .timeLeft {
+              font-size: 0.4em;
             }
           }
         }
