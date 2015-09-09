@@ -1,6 +1,6 @@
 /** @jsx React.DOM */
 
-define(['react', 'jquery', 'c3', 'chartist-react', 'chartist'], function(React, $, c3, ChartistReact, Chartist) {
+define(['react', 'jquery', 'chartist-react', 'chartist'], function(React, $, ChartistReact, Chartist) {
   var BvtChart = React.createClass({
     propTypes: {
       result: React.PropTypes.shape({
