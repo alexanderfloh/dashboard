@@ -58,12 +58,13 @@ define(['react', 'chartist'], function(React, Chartist) {
     },
 
     updateChart: function(config) {
-      let Chartist = require('chartist');
+      var Chartist = require('chartist');
 
-      let { type, data } = config;
-      let options = config.options || {};
-      let responsiveOptions = config.responsiveOptions || [];
-      let event;
+      var type = config.type;
+      var data = config.data;
+      var options = config.options || {};
+      var responsiveOptions = config.responsiveOptions || [];
+      var event;
 
       if (this.chartist) {
         this.chartist.update(data, options, responsiveOptions);
