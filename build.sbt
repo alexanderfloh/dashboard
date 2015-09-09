@@ -14,11 +14,14 @@ libraryDependencies ++= Seq(
   "org.webjars" % "jquery-file-upload" % "9.5.7",
   "org.webjars" % "react" % "0.13.3",
   "org.webjars" % "momentjs" % "2.8.1-1",
-  "org.webjars" % "d3js" % "3.4.13",
-  "org.webjars.bower" % "c3" % "0.4.11-rc4"
+  "org.webjars.npm" % "chartist" % "0.9.4"
 )     
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala).enablePlugins(SbtWeb)
+
+ReactJsKeys.harmony := true
+
+ReactJsKeys.es6module := true
 
 includeFilter in (Assets, LessKeys.less) := "*.less"
 

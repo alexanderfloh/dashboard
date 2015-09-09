@@ -19,7 +19,7 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
       var classesStatus = this.getStatusClassSet(this.props.result, "regression");
       var name = '/icon/' + this.props.result.name;
       return (
-        <li className={classesStatus} key={this.props.result.link}>
+        <li className={classesStatus}>
           <a href={this.props.result.link}>
             <img src={name} className="regression-icon" title={this.props.result.name}/>
           </a>
@@ -28,7 +28,7 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
 
   });
 
-  return React.createClass({
+  var CiBuild = React.createClass({
     propTypes: {
       build: React.PropTypes.shape({
         culprits: React.PropTypes.arrayOf(
@@ -39,7 +39,7 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
 
         regressions: React.PropTypes.arrayOf(
           React.PropTypes.shape({
-            link: React.PropTypes.string.isRequired,
+            link: React.PropTypes.string,
             name: React.PropTypes.string.isRequired,
           }).isRequired
         ).isRequired,
@@ -92,12 +92,12 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
 
     render: function(){
       var committerNodes = this.props.build.culprits.slice(0, 3).map(function(culprit) {
-        return <Avatar name={culprit.fullName} />
+        return <Avatar name={culprit.fullName} key={culprit.fullName} />
       });
       var that = this;
 
       var resultNodes = this.props.build.regressions.map(function(result) {
-        return <DownstreamJob result={result} />;
+        return <DownstreamJob result={result} key={result.name} />;
       });
 
       var classesRegressionResult = this.getStatusClassSet(this.props.build.regressions[0], "regression");
@@ -107,7 +107,7 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
         andOthers = "+ " + (this.props.build.culprits.length - 3) + " other" + (this.props.build.culprits.length > 1 ? "s" : "");
       }
       return (
-          <li className="build-list-item" key={this.props.build.number}>
+          <li className="build-list-item">
             <div className="ci-build-item">
               <div className="avatars">
                 {committerNodes}
@@ -124,4 +124,5 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
       );
     },
   });
+  return CiBuild;
 });

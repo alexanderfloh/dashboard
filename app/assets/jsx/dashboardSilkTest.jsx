@@ -13,7 +13,7 @@ define(['react', 'audits', 'bvtResults', 'devices', 'loaderMixin', 'avatar', 'ci
 
     buildItemsNightly: function(build){
       var committerNodes = build.culprits.slice(0, 6).map(function(culprit) {
-        return <Avatar name={culprit.fullName} />
+        return <Avatar name={culprit.fullName} key={culprit.fullName} />
       });
 
       var classesStatus = this.getStatusClassSet(build, 'status-nightly');
@@ -93,7 +93,7 @@ define(['react', 'audits', 'bvtResults', 'devices', 'loaderMixin', 'avatar', 'ci
    // ----------------------- generate html -----------------------//
       var lastBuild = this.state.lastBuild;
       var buildItems = this.state.buildCI.map(function(build) {
-        return <CIBuild build={build} lastBuild={lastBuild} />
+        return <CIBuild build={build} lastBuild={lastBuild} key={build.number} />
       });
       var buildNightly = this.buildItemsNightly(this.state.buildNightly);
       var nevergreenNodes = this.state.nevergreens.map(this.getNevergreens);

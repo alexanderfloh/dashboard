@@ -1,7 +1,7 @@
 /** @jsx React.DOM */
 
 define(['react'], function(React) {
-  return React.createClass({
+  var Avatar = React.createClass({
     propTypes: {
       name: React.PropTypes.string.isRequired,
       badge: React.PropTypes.any,
@@ -44,11 +44,11 @@ define(['react'], function(React) {
           <div
                className={avatarClass}
                style={avatarUrlStyle}
-               key={this.props.name}
                title={this.props.name} >
                {badge}
           </div>
       );
     },
   });
+  return Avatar;
 });

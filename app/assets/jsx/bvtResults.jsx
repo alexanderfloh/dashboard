@@ -3,6 +3,24 @@
 define(['react', 'jquery', 'bvtChart'], function(React, $, BvtChart) {
   var BvtResults = React.createClass({
 
+    propTypes: {
+      bvtResults: React.PropTypes.arrayOf(
+        React.PropTypes.shape({
+          name: React.PropTypes.string.isRequired,
+          values: React.PropTypes.arrayOf(
+            React.PropTypes.shape({
+              build: React.PropTypes.string.isRequired,
+              name: React.PropTypes.string.isRequired,
+              passed: React.PropTypes.number.isRequired,
+              failed: React.PropTypes.number.isRequired,
+              notExecuted: React.PropTypes.number.isRequired,
+            })
+          )
+
+        }).isRequired
+      ).isRequired,
+    },
+
     render: function() {
 
 

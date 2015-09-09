@@ -196,15 +196,31 @@ a {
     padding-top: 1em;
     padding-bottom: 1em;
     font-weight: bold;
-    
+
     &.successful {
       background-color: @green;
       margin: 2em;
     }
 
-    tspan {
-      fill: @dark-grey;
+    .ct-chart {
+      width: 360px;
+      height: 150px;
+
+      .ct-label {
+        fill: @dark-grey;
+      }
+
+      .ct-series-a .ct-bar {
+        /* Set the colour of this series line */
+        stroke: #F9BF3B;
+        /* Control the thikness of your lines */
+        stroke-width: 75px;
+      }
+      .ct-series-a .ct-label {
+        fill: #F9BF3B;
+      }
     }
+
   }
 
   .bvt-icon {
