@@ -1,7 +1,7 @@
 /** @jsx React.DOM */
 
-define(['react', 'audits', 'bvtResults', 'devices', 'loaderMixin', 'avatar', 'ciBuild'],
-  function(React, Audits, BvtResults, Devices, LoadStatusMixin, Avatar, CIBuild) {
+define(['react', 'audits', 'bvtResults', 'devices', 'loaderMixin', 'avatar', 'ciBuild', 'nightlyBuild'],
+  function(React, Audits, BvtResults, Devices, LoadStatusMixin, Avatar, CIBuild, NightlyBuild) {
 
   var Dashboard = React.createClass({
     mixins: [LoadStatusMixin],
@@ -9,66 +9,6 @@ define(['react', 'audits', 'bvtResults', 'devices', 'loaderMixin', 'avatar', 'ci
       return {
         pollInterval: 10000
       };
-    },
-
-    buildItemsNightly: function(build){
-      var committerNodes = build.culprits.slice(0, 6).map(function(culprit) {
-        return <Avatar name={culprit.fullName} key={culprit.fullName} />
-      });
-
-      var classesStatus = this.getStatusClassSet(build, 'status-nightly');
-      var andOthers = "";
-      if (build.culprits.length > 6){
-        andOthers = "+ " + (build.culprits.length - 6) + " other" + (build.culprits.length > 1 ? "s" : "");
-      }
-      return (
-          <li className="build-list-item">
-            <div className="build-item">
-              <ul>
-                <li className="avatars nightly">
-                  {committerNodes}
-                  <div>{andOthers}</div>
-                </li>
-                <li className={classesStatus}>
-                  <a href={build.link}>
-                    {build.number}
-                  </a>
-                </li>
-                <li>
-                <div>
-                  <ul className="downstream-jobs-nightly">
-                    {this.regressionStatus(build.setup, "Setup")}
-                  </ul>
-                </div>
-                </li>
-              </ul>
-            </div>
-          </li>
-      );
-    },
-
-    getStatusClassSet: function(build, additional){
-      var cx = React.addons.classSet;
-      return cx({
-        'nightly-setup': additional === 'nightly-setup',
-        'status-nightly': additional === 'status-nightly',
-        'stable': build.status === 'stable',
-        'cancelled': build.status === 'cancelled',
-        'unstable': build.status === 'unstable',
-        'failed': build.status === 'failed',
-        'pending': build.status === 'pending'
-      });
-    },
-
-    regressionStatus: function(regression, name){
-      var classesStatus = this.getStatusClassSet(regression, 'nightly-setup');
-      return (
-          <li className={classesStatus}>
-            <a href={regression.link}>
-              {name}
-            </a>
-          </li>
-        );
     },
 
     getNevergreens: function(nevergreen) {
@@ -95,7 +35,6 @@ define(['react', 'audits', 'bvtResults', 'devices', 'loaderMixin', 'avatar', 'ci
       var buildItems = this.state.buildCI.map(function(build) {
         return <CIBuild build={build} lastBuild={lastBuild} key={build.number} />
       });
-      var buildNightly = this.buildItemsNightly(this.state.buildNightly);
       var nevergreenNodes = this.state.nevergreens.map(this.getNevergreens);
       var audits = this.state.audits.sort(function(a, b){
         var countDiff = b.count-a.count;
@@ -108,32 +47,29 @@ define(['react', 'audits', 'bvtResults', 'devices', 'loaderMixin', 'avatar', 'ci
 
    // ----------------------- html site structure -----------------------//
       return (
-        <div>
-          <article className="dashboard">
-            <section className="build-section">
-              <ul className="ci-build-list">
-                {buildItems}
-              </ul>
-            </section>
+        <article className="dashboard">
+          <section className="build-section">
+            <ul className="ci-build-list">
+              {buildItems}
+            </ul>
+          </section>
 
-            <BvtResults bvtResults={this.state.bvtResults} />
+          <BvtResults bvtResults={this.state.bvtResults} />
 
-            <section className="deviceSection">
-              <Devices pollInterval={15000}/>
-            </section>
+          <section className="deviceSection">
+            <Devices pollInterval={15000}/>
+          </section>
 
-            <aside id="nightly-build" className="nightly-build">
-              {buildNightly}
-              <Audits audits={audits} />
-              <h1> Nevergreens </h1>
-              <ul className="nevergreen-list">
-                {nevergreenNodes}
-              </ul>
-            </aside>
+          <aside id="nightly-build" className="nightly-build">
+            <NightlyBuild build={this.state.buildNightly} />
+            <Audits audits={audits} />
+            <h1>Nevergreens</h1>
+            <ul className="nevergreen-list">
+              {nevergreenNodes}
+            </ul>
+          </aside>
 
-          </article>
-        </div>
-
+        </article>
       );
     }
   });

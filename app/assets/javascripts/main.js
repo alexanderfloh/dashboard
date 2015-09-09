@@ -14,6 +14,7 @@ requirejs.config({
     'loaderMixin': '../jsx/loaderMixin',
     'avatar': '../jsx/avatar',
     'ciBuild': '../jsx/ciBuild',
+    'nightlyBuild': '../jsx/nightlyBuild',
     'buildProgress': '../jsx/buildProgress',
     'dashboardSilkTest' : '../jsx/dashboardSilkTest'
   }
