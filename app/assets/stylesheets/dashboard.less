@@ -63,7 +63,10 @@ table {
 @primary: @midnight-blue;
 @secondary: @orange;
 
+//@background: #424242;
 @background: white;
+//@section: #888;
+@section: lighten(@grey, 10%);
 @labels: @secondary;
 @icons: @primary;
 
@@ -87,25 +90,16 @@ body {
 }
 
 article {
-  display: block;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 
 section {
-  float: left;
-  margin-left: 30em;
   padding-bottom: 1em;
-  width: 88em;
-  background-color: white;
-}
-
-aside {
-  float: left;
-  position: fixed;
-  width: 29em;
-  height: 100%;
-  text-align: center;
-  z-index: -1;
-  overflow-y: visible;
+  //width: 88em;
+  //background-color: white;
+  display: inline-block;
 }
 
 h1 {
@@ -138,11 +132,11 @@ a {
 
   .audit-section {
     padding-top: 2em;
-    height: 700px;
+    //height: 700px;
     text-align: center;
     margin-left: 0;
     float: initial;
-    width: 100%;
+    width: 25%;
 
     .audit-list {
 
@@ -179,9 +173,17 @@ a {
     }
   }
 
+  .nightly-build-and-bvts {
+    display: flex;
+    background: @section;
+    margin-bottom: 6em;
+  }
+
   .bvtResults {
     padding-top: 1em;
-    padding-bottom: 6em;
+    //padding-bottom: 6em;
+    //width: 75%;
+    flex-basis: 75%;
   }
 
   .bvtResults-container {
@@ -286,8 +288,6 @@ a {
   }
 
   .nightly-build {
-    background-color: transparent;
-
     .nevergreen-list {
       text-align: left;
       margin-left: 1em;
@@ -301,7 +301,6 @@ a {
         font-size: 1.2em;
         padding: 0.2em;
         display: inline-block;
-        background-color: transparent;
         width: 100%;
 
         a {
@@ -347,7 +346,7 @@ a {
       color: white;
       font-size: 2em;
       width: 9.9em;
-      background: lighten(@grey, 10%);
+      background: @section;
 
       .build-number {
         text-align: center;
@@ -398,8 +397,8 @@ a {
       .regression-icon {
         width: 64px;
         height: 64px;
-        //filter: invert(100%) brightness(25%);
-        //-webkit-filter: invert(100%) brightness(25%);
+        //filter: brightness(200%);
+        //-webkit-filter: brightness(200%);
         padding: 6px;
       }
 
