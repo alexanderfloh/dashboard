@@ -52,29 +52,30 @@ define(['react', 'avatar' ], function(React, Avatar) {
       if (this.props.build.culprits.length > 6){
         andOthers = "+ " + (this.props.build.culprits.length - 6) + " other" + (this.props.build.culprits.length > 1 ? "s" : "");
       }
+
+      var c = 'build-item ' + this.props.build.status;
       return (
-          <li className="build-list-item">
-            <div className="build-item">
-              <ul>
-                <li className="avatars nightly">
-                  {committerNodes}
-                  <div>{andOthers}</div>
-                </li>
-                <li className={classesStatus}>
-                  <a href={this.props.build.link}>
-                    {this.props.build.number}
-                  </a>
-                </li>
-                <li>
-                <div>
-                  <ul className="downstream-jobs-nightly">
-                    {this.regressionStatus(this.props.build.setup, "Setup")}
-                  </ul>
-                </div>
-                </li>
+        <div className="build-list-item">
+          <ul className={c}>
+            <li className="avatars nightly">
+              {committerNodes}
+              <div>{andOthers}</div>
+            </li>
+            <li className={classesStatus}>
+              <a href={this.props.build.link}>
+                {this.props.build.number}
+              </a>
+            </li>
+            <li>
+            <div>
+              <ul className="downstream-jobs-nightly">
+                {this.regressionStatus(this.props.build.setup, "Setup")}
               </ul>
             </div>
-          </li>
+            </li>
+          </ul>
+          <div className="arrow-right" />
+        </div>
       );
     },
 

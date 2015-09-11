@@ -8,7 +8,7 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
         'status': name === 'status',
         'regression': name === 'regression',
         'stable': build.status === 'stable',
-        'cancelled': build.status === 'cancelled',
+        'cancelled': build.status === 'cancelled' || build.status ==='n/a',
         'unstable': build.status === 'unstable',
         'failed': build.status === 'failed',
         'pending': build.status === 'pending'
@@ -62,7 +62,7 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
         'status': name === 'status',
         'regression': name === 'regression',
         'stable': build.status === 'stable',
-        'cancelled': build.status === 'cancelled',
+        'cancelled': build.status === 'cancelled' || build.status ==='n/a',
         'unstable': build.status === 'unstable',
         'failed': build.status === 'failed',
         'pending': build.status === 'pending'
@@ -106,9 +106,11 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
       if (this.props.build.culprits.length > 3){
         andOthers = "+ " + (this.props.build.culprits.length - 3) + " other" + (this.props.build.culprits.length > 1 ? "s" : "");
       }
+      var pending = this.props.lastBuild.building && this.props.lastBuild.buildNumber === this.props.build.number;
+      var c = 'ci-build-item ' + (pending ? 'pending' : this.props.build.status);
       return (
           <li className="build-list-item">
-            <div className="ci-build-item">
+            <div className={c}>
               <div className="avatars">
                 {committerNodes}
                 <div>{andOthers}</div>

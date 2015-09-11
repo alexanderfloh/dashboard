@@ -32,15 +32,19 @@ define(['react', 'jquery', 'bvtChart'], function(React, $, BvtChart) {
           if(latest.failed === 0 && latest.notExecuted === 0) {
             return (
               <li className="bvtResult successful" key={result.name + result.build}>
-                <img src={imgSrc} title={result.name} className="bvt-icon-success" />
+                <div className="image-container">
+                  <img src={imgSrc} title={result.name} className="bvt-icon-success" />
+                </div>
               </li>
             );
           }
         }
 
         return (
-          <li className="bvtResult" key={result.name + result.build}>
-            <img src={imgSrc} title={result.name} className="bvt-icon" />
+          <li className="bvtResult unstable" key={result.name + result.build}>
+            <div className="image-container">
+              <img src={imgSrc} title={result.name} className="bvt-icon" />
+            </div>
             <BvtChart key={result.name} result={result}></BvtChart>
           </li>
         );

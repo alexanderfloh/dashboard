@@ -93,12 +93,10 @@ article {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  justify-content: space-between;
 }
 
 section {
-  padding-bottom: 1em;
-  //width: 88em;
-  //background-color: white;
   display: inline-block;
 }
 
@@ -117,22 +115,43 @@ a {
 }
 
 // ---------------------------- classes ---------------------------- //
+
+.stable {
+  background: @green;
+}
+
+.unstable {
+  background: @orange;
+}
+
+.failed {
+  background: @red;
+}
+
+.cancelled {
+  background: @grey;
+}
+
+.pending, .pending-ci {
+  background: @blue;
+}
+
+
 .dashboard {
-  padding-top: 1em;
-  padding-left: 0.5em;
-  padding-right: 0.5em;
+  padding: 1em;
 
   .build-section {
+    flex-grow: 1;
     .ci-build-list {
-      .build-list-item:last-child {
-        //font-weight: bold;
-      }
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-between;
+
     }
   }
 
   .audit-section {
-    padding-top: 2em;
-    //height: 700px;
     text-align: center;
     margin-left: 0;
     float: initial;
@@ -175,15 +194,12 @@ a {
 
   .nightly-build-and-bvts {
     display: flex;
-    background: @section;
     margin-bottom: 6em;
+    margin-top: 5em;
   }
 
   .bvtResults {
-    padding-top: 1em;
-    //padding-bottom: 6em;
-    //width: 75%;
-    flex-basis: 75%;
+    flex-basis: 100%;
   }
 
   .bvtResults-container {
@@ -198,28 +214,41 @@ a {
     padding-top: 1em;
     padding-bottom: 1em;
     font-weight: bold;
+    flex-grow: 1;
+    flex-basis: 33%;
+
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    align-items: center;
 
     &.successful {
       background-color: @green;
-      margin: 2em;
+    }
+
+    .image-container {
+      flex-basis: 100%;
+      flex-grow: 1;
     }
 
     .ct-chart {
-      width: 360px;
+      width: 400px;
       height: 150px;
+      margin: 0 5px;
+
+      flex-grow: 1;
+      flex-basis: 100%;
 
       .ct-label {
         fill: @dark-grey;
       }
 
       .ct-series-a .ct-bar {
-        /* Set the colour of this series line */
-        stroke: #F9BF3B;
-        /* Control the thikness of your lines */
+        stroke: @dark-grey;
         stroke-width: 75px;
       }
       .ct-series-a .ct-label {
-        fill: #F9BF3B;
+        fill: @dark-grey;
       }
     }
 
@@ -234,12 +263,10 @@ a {
   .bvt-icon-success {
     width: 72px;
     height: 72px;
-    margin: 1em 10em;
   }
 
   .deviceSection {
     .deviceSummery {
-      //.font-serif;
 
       a {
         .font-sans;
@@ -288,6 +315,41 @@ a {
   }
 
   .nightly-build {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    align-items: stretch;
+
+    .arrow-right {
+      width: 0;
+    	height: 0;
+    	border-top: 30px solid transparent;
+    	border-bottom: 30px solid transparent;
+    	border-left: 30px solid @green;
+      display: inline-block;
+      align-self: center;
+      .stable {
+        border-left-color: @green;
+      }
+
+      .unstable {
+        border-left-color: @orange;
+      }
+
+      .failed {
+        border-left-color: @red;
+      }
+
+      .cancelled {
+        border-left-color: @grey;
+      }
+
+      .pending, .pending-ci {
+        border-left-color: @blue;
+      }
+
+    }
     .nevergreen-list {
       text-align: left;
       margin-left: 1em;
@@ -322,31 +384,36 @@ a {
 
 
   .build-list-item {
-    display: inline;
     vertical-align: bottom;
-
+    display: flex;
+    vertical-align: bottom;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: stretch;
 
     .build-item {
+
       .build-number {
         font-size: 2em;
       }
+      width: 9.9em;
+      flex-basis: 100%;
+      flex-grow: 1;
+
     }
     .ci-build-item {
       .build-number {
         font-size: 0.5em;
       }
+      margin: 0;
+      width: 10em;
+      flex-grow: 1;
+
     }
 
     .build-item, .ci-build-item {
-      margin-top: 0.5em;
       display: inline-block;
-      margin-left: 0.5em;
-      margin-right: 0.5em;
-      height: auto;
-      color: white;
       font-size: 2em;
-      width: 9.9em;
-      background: @section;
 
       .build-number {
         text-align: center;
@@ -373,17 +440,18 @@ a {
 
       .nightly-setup {
         flex-grow: 1;
+        text-align: center;
       }
 
       .regression {
         display: inline-block;
-        padding: 10px;
-        margin: 5px;
+        padding: 10px 0px;
+        width: 33.3333%;
       }
 
       .status, .status-nightly {
         font-size: 3em;
-        margin: 5px 0px 5px 0px;
+        text-align: center;
       }
 
       .status {
@@ -392,40 +460,16 @@ a {
 
       .status-nightly {
         max-height: 130px;
+        margin: 5px 0px 5px 0px;
       }
 
       .regression-icon {
         width: 64px;
         height: 64px;
-        //filter: brightness(200%);
-        //-webkit-filter: brightness(200%);
         padding: 6px;
       }
 
-      .stable {
-        background: @green;
-      }
-
-      .unstable {
-        background: @orange;
-      }
-
-      .failed {
-        background: @red;
-      }
-
-      .cancelled {
-        background: @grey;
-      }
-
-      .pending-ci {
-        //padding: 0;
-      }
-
       .pending, .pending-ci {
-        background: @blue;
-
-
         .buildProgress {
           text-align: center;
 
@@ -460,9 +504,6 @@ a {
 
 .avatars {
   text-align: center;
-  border: medium;
-  margin-left: 0.5em;
-  margin-right: 0.5em;
   height: auto;
   min-height: 116px;
   max-height: 116px;

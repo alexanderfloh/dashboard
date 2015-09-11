@@ -22,7 +22,6 @@ define(['react', 'avatar'], function(React, Avatar) {
 
       return (
         <section className="audit-section">
-          <h1>Open Audits</h1>
           <ul className="audit-list">
             {auditNodes}
           </ul>

@@ -65,7 +65,7 @@ define(['react', 'jquery'], function(React, $) {
       });
     },
 
-    componentWillMount: function() {
+    componentDidMount: function() {
       this.loadStatus();
       setInterval(this.loadStatus, this.props.pollInterval);
     },
