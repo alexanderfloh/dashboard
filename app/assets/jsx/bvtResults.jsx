@@ -31,7 +31,16 @@ define(['react', 'jquery', 'bvtChart'], function(React, $, BvtChart) {
           var latest = result.values[result.values.length-1];
           if(latest.failed === 0 && latest.notExecuted === 0) {
             return (
-              <li className="bvtResult successful" key={result.name + result.build}>
+              <li className="bvtResult stable" key={result.name + result.build}>
+                <div className="image-container">
+                  <img src={imgSrc} title={result.name} className="bvt-icon-success" />
+                </div>
+              </li>
+            );
+          }
+          else if(latest.failed === -1 || latest.notExecuted > 0) {
+            return (
+              <li className="bvtResult failed" key={result.name + result.build}>
                 <div className="image-container">
                   <img src={imgSrc} title={result.name} className="bvt-icon-success" />
                 </div>

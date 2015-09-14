@@ -225,6 +225,11 @@ a {
     &.successful {
       background-color: @green;
     }
+    &.successful, &.failed {
+      .image-container {
+        margin: 4em 5em;
+      }
+    }
 
     .image-container {
       flex-basis: 100%;
@@ -349,30 +354,6 @@ a {
         border-left-color: @blue;
       }
 
-    }
-    .nevergreen-list {
-      text-align: left;
-      margin-left: 1em;
-      margin-right: 1em;
-
-      .nevergreen {
-        font-family: monospace;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        font-size: 1.2em;
-        padding: 0.2em;
-        display: inline-block;
-        width: 100%;
-
-        a {
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          text-decoration: underline;
-          color: black;
-        }
-      }
     }
 
     .failureSummary {
@@ -526,8 +507,4 @@ a {
     transition: all .4s;
     float: inherit;
   }
-}
-
-.domain {
-  display: none;
 }

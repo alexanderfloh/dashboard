@@ -6,7 +6,6 @@ import play.api.libs.ws.WS
 import play.api.Play.current
 import play.api.libs.json._
 import scala.concurrent.ExecutionContext.Implicits.global
-import models.NevergreenResult
 
 object JenkinsFetcherSilkTest {
   def prefix = "dashboard.silktest."
@@ -16,7 +15,7 @@ object JenkinsFetcherSilkTest {
       .getOrElse(throw new RuntimeException(prefix + "urlTrunk not configured"))
     val nrOfRegressions = Play.current.configuration.getInt("dashboard.silktest.nrOfRegressions")
       .getOrElse(throw new RuntimeException("dashboard.silktest.nrOfRegressions not configured"))
-      
+
     WS.url(baseUrl + "/api/json").get.flatMap { response =>
       val json = Json.parse(response.body)
       val details = JenkinsFetcherUtil.getDetails(json, numberOfItems, baseUrl)
@@ -24,7 +23,7 @@ object JenkinsFetcherSilkTest {
 
       val regressionKeys = (1 to nrOfRegressions)
         .map(i => (s"urlRegressions${i}", s"regressionName${i}"))
-        
+
       val regressionConfig = regressionKeys.map {
         case (urlKey, nameKey) =>
           val config = Play.current.configuration
@@ -74,7 +73,6 @@ object JenkinsFetcherSilkTest {
       for {
         lastCompletedDetails <- details
         setupResult <- JenkinsFetcherUtil.fetchTests(setupUrl, "Setup")
-        nevergreensXML <- ScFetcher.fetchNevergreens
       } yield {
         val lastBuildResult = lastCompletedDetails match {
           case latest :: tail => latest
@@ -87,11 +85,7 @@ object JenkinsFetcherSilkTest {
 
         val buildWithSetup = lastBuildResult + ("setup" -> setupJson)
 
-        val nevergreens = NevergreensParser.parse(nevergreensXML)
-        implicit val nevergreensWrites = NevergreenResult.writes
-        Json.prettyPrint(Json.obj(
-          mapName -> buildWithSetup,
-          "nevergreens" -> nevergreens))
+        Json.stringify(Json.obj(mapName -> buildWithSetup))
       }
     }
   }
