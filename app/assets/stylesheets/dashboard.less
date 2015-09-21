@@ -334,24 +334,29 @@ a {
     	border-left: 30px solid @green;
       display: inline-block;
       align-self: center;
-      .stable {
+      &.stable {
         border-left-color: @green;
+        background-color: transparent;
       }
 
-      .unstable {
+      &.unstable {
         border-left-color: @orange;
+        background-color: transparent;
       }
 
-      .failed {
+      &.failed {
         border-left-color: @red;
+        background-color: transparent;
       }
 
-      .cancelled {
+      &.cancelled {
         border-left-color: @grey;
+        background-color: transparent;
       }
 
-      .pending, .pending-ci {
+      &.pending, .pending-ci {
         border-left-color: @blue;
+        background-color: transparent;
       }
 
     }

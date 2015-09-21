@@ -9,14 +9,15 @@ object BvtParser {
     val xml = XML.loadString(nevergreens)
     val rows = xml \ "data" \ "row"
     rows.map(row => row.child match {
-      case Seq(name, build, passed, failed, notExecuted) => {
+      case Seq(name, build, passed, failed, notExecuted, nodeId) => {
         BvtResult(
           name.text,
           //s"Build ${build.text}",
           build.text,
           passed.text.toInt,
           failed.text.toInt,
-          notExecuted.text.toInt)
+          notExecuted.text.toInt,
+          nodeId.text)
       }
     })
   }

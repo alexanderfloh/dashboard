@@ -8,7 +8,8 @@ case class BvtResult(
     build: String,
     passed: Int,
     failed: Int,
-    notExecuted: Int) {
+    notExecuted: Int,
+    nodeId: String) {
 }
 
 object BvtResult {
@@ -17,6 +18,7 @@ object BvtResult {
       (JsPath \ "build").write[String] and
       (JsPath \ "passed").write[Int] and
       (JsPath \ "failed").write[Int] and
-      (JsPath \ "notExecuted").write[Int]
+      (JsPath \ "notExecuted").write[Int] and
+      (JsPath \ "nodeId").write[String]
   )(unlift(BvtResult.unapply))
 }

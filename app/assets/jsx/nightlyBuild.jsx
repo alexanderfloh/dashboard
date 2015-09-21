@@ -53,6 +53,7 @@ define(['react', 'avatar' ], function(React, Avatar) {
         andOthers = "+ " + (this.props.build.culprits.length - 6) + " other" + (this.props.build.culprits.length > 1 ? "s" : "");
       }
 
+      var arrowClass = 'arrow-right ' + this.props.build.status;
       var c = 'build-item ' + this.props.build.status;
       return (
         <div className="build-list-item">
@@ -74,7 +75,7 @@ define(['react', 'avatar' ], function(React, Avatar) {
             </div>
             </li>
           </ul>
-          <div className="arrow-right" />
+          <div className={arrowClass} />
         </div>
       );
     },
