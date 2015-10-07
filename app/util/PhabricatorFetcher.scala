@@ -38,11 +38,6 @@ object PhabricatorFetcher {
       "authToken" -> token,
       "authSignature" -> signature)
 
-    val data = Json.obj(
-      "params" -> connect_params,
-      "output" -> "json",
-      "__conduit__" -> true)
-
     WS.url(baseUrl + "api/conduit.connect")
       .withQueryString(
         ("params", connect_params.toString()),
@@ -51,9 +46,21 @@ object PhabricatorFetcher {
       .post("")
       .map { response =>
         val json = Json.parse(response.body);
-        Json.obj(
-          "sessionKey" -> (json \\ "sessionKey").last,
-          "connectionID" -> (json \\ "connectionID").last)
+        val result = (json \ "result").asOpt[JsValue].flatMap{ Option(_) }
+        result.map { result =>
+          Json.obj(
+          "sessionKey" -> (result \\ "sessionKey").last,
+          "connectionID" -> (result \\ "connectionID").last)
+        }.getOrElse{
+          val errorInfo = (json \ "error_info").asOpt[String].flatMap { Option(_) }
+          errorInfo match {
+            case Some(error) => throw new RuntimeException(error)
+            case None => throw new RuntimeException("unkown error occurred when trying to connect to phabricator")
+          }
+        }
+        
+        
+        
       }
 
   }

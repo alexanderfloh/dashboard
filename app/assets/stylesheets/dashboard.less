@@ -84,6 +84,27 @@ table {
   box-sizing: border-box;
 }
 
+@media screen
+  and (min-device-width: 1009px)
+  and (max-device-width: 1599px) {
+    .ci-build-list {
+      .build-list-item:first-child {
+        display: none;
+      }
+    }
+}
+
+@media screen
+  and (min-device-width: 1600px) {
+    .ci-build-list {
+      .build-list-item:first-child {
+        display: inline-block;
+      }
+    }
+}
+
+
+
 body {
   background-color: @background;
   .font-sans;
@@ -387,6 +408,7 @@ a {
       flex-grow: 1;
 
     }
+
     .ci-build-item {
       .build-number {
         font-size: 0.5em;
@@ -432,7 +454,8 @@ a {
       .regression {
         display: inline-block;
         padding: 10px 0px;
-        width: 33.3333%;
+        width: 30%;
+        flex-grow: 1;
       }
 
       .status, .status-nightly {
