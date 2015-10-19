@@ -78,9 +78,11 @@ define(['react'], function(React) {
 
       return (
           <div>
-        <h1 className="deviceSummery">
-          Connected devices ({devices.length}):
-          <a href="/assets/DevicePusher/DevicePusher.UI.application" download="DevicePusher.UI.application">(Download Device Pusher)</a>
+        <h1 className="deviceSummary">
+          Connected devices ({devices.length})
+          <a href="/assets/DevicePusher/DevicePusher.UI.application" download="DevicePusher.UI.application">
+            Download Device Pusher
+          </a>
         </h1>
 
         <table className="deviceTable">

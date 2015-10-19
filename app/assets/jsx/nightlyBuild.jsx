@@ -43,14 +43,18 @@ define(['react', 'avatar' ], function(React, Avatar) {
     },
 
     render: function(){
-      var committerNodes = this.props.build.culprits.slice(0, 6).map(function(culprit) {
+      var culpritCount = 9;
+      var committerNodes = this.props.build.culprits.slice(0, culpritCount).map(function(culprit) {
         return <Avatar name={culprit.fullName} key={culprit.fullName} />
       });
 
       var classesStatus = this.getStatusClassSet(this.props.build, 'status-nightly');
       var andOthers = "";
-      if (this.props.build.culprits.length > 6){
-        andOthers = "+ " + (this.props.build.culprits.length - 6) + " other" + (this.props.build.culprits.length > 1 ? "s" : "");
+      if (this.props.build.culprits.length > culpritCount){
+        andOthers = ("+ "
+          + (this.props.build.culprits.length - culpritCount)
+          + " other"
+          + (this.props.build.culprits.length - culpritCount > 1 ? "s" : ""));
       }
 
       var arrowClass = 'arrow-right ' + this.props.build.status;

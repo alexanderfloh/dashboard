@@ -177,6 +177,7 @@ a {
     margin-left: 0;
     float: initial;
     width: 25%;
+    flex-grow: 1;
 
     .audit-list {
 
@@ -292,14 +293,14 @@ a {
   }
 
   .deviceSection {
-    .deviceSummery {
+    flex-grow: 1;
+    .deviceSummary {
 
       a {
-        .font-sans;
         font-size: 0.5em;
         color: initial;
         text-align: center;
-        position: sticky;
+        text-decoration: underline;
       }
     }
 
@@ -312,14 +313,12 @@ a {
       }
 
       .deviceName {
-        padding-right: 1em;
-        text-align: right;
+        padding-left: 1.1em;
         font-size: 2em;
         color: @primary;
         width: 65%;
-        .font-serif;
         background-repeat: no-repeat;
-        background-position: right;
+        background-position: left;
 
         &.android {
           background-image: url('../images/android-logo.png');
@@ -332,7 +331,6 @@ a {
 
       .deviceLocation {
         color: @orange;
-        .font-cursive;
         text-align: left;
         font-size: 1.5em;
         width: 35%;
@@ -516,10 +514,10 @@ a {
   height: auto;
   min-height: 116px;
   max-height: 116px;
-  color: black;
+  color: white;
   &.nightly {
     min-height: 202px;
-    max-height: 202px;
+    max-height: 280px;
   }
 
   .avatar {

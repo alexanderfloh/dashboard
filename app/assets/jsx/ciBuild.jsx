@@ -91,7 +91,8 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
     },
 
     render: function(){
-      var committerNodes = this.props.build.culprits.slice(0, 3).map(function(culprit) {
+      var culpritCount = 3;
+      var committerNodes = this.props.build.culprits.slice(0, culpritCount).map(function(culprit) {
         return <Avatar name={culprit.fullName} key={culprit.fullName} />
       });
       var that = this;
@@ -103,8 +104,11 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
       var classesRegressionResult = this.getStatusClassSet(this.props.build.regressions[0], "regression");
 
       var andOthers = "";
-      if (this.props.build.culprits.length > 3){
-        andOthers = "+ " + (this.props.build.culprits.length - 3) + " other" + (this.props.build.culprits.length > 1 ? "s" : "");
+      if (this.props.build.culprits.length > culpritCount){
+        andOthers = ("+ "
+          + (this.props.build.culprits.length - culpritCount)
+          + " other"
+          + (this.props.build.culprits.length - culpritCount > 1 ? "s" : ""));
       }
       var pending = this.props.lastBuild.building && this.props.lastBuild.buildNumber === this.props.build.number;
       var c = 'ci-build-item ' + (pending ? 'pending' : this.props.build.status);
