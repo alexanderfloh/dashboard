@@ -22,7 +22,7 @@ define(['react', 'jquery', 'chartist-react', 'chartist'], function(React, $, Cha
       var options = {
         axisX: {
           showGrid: false,
-          offset: 10,
+          showLabel: true,
         },
 
         axisY: {
@@ -33,9 +33,9 @@ define(['react', 'jquery', 'chartist-react', 'chartist'], function(React, $, Cha
 
         chartPadding: {
           top: 15,
-          right: 10,
+          right: 50,
           bottom: 0,
-          left: 0,
+          left: 40,
         },
       };
 
