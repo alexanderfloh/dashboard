@@ -244,8 +244,12 @@ a {
     align-content: center;
     align-items: center;
 
-    &.successful {
-      background-color: @green;
+    &.stable {
+      .build-number {
+        font-size: 6em;
+        font-weight: normal;
+        color: #555;
+      }
     }
     &.successful, &.failed {
       .image-container {

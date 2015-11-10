@@ -27,20 +27,22 @@ define(['react', 'jquery', 'bvtChart'], function(React, $, BvtChart) {
       var bvtNodes = this.props.bvtResults.map(function(result) {
         var imgSrc = '/icon/' + encodeURIComponent(result.name);
 
+
         if(result.values.length > 0) {
           var latest = result.values[result.values.length-1];
           if(latest.failed === 0 && latest.notExecuted === 0) {
             return (
-              <li className="bvtResult stable" key={result.name + result.build}>
+              <li className="bvtResult stable" key={result.name + latest.build}>
                 <div className="image-container">
                   <img src={imgSrc} title={result.name} className="bvt-icon-success" />
+                  <div className="build-number">{latest.build}</div>
                 </div>
               </li>
             );
           }
           else if(latest.failed === -1 || latest.notExecuted > 0) {
             return (
-              <li className="bvtResult failed" key={result.name + result.build}>
+              <li className="bvtResult failed" key={result.name + latest.build}>
                 <div className="image-container">
                   <img src={imgSrc} title={result.name} className="bvt-icon-success" />
                 </div>
@@ -50,7 +52,7 @@ define(['react', 'jquery', 'bvtChart'], function(React, $, BvtChart) {
         }
 
         return (
-          <li className="bvtResult unstable" key={result.name + result.build}>
+          <li className="bvtResult unstable" key={result.name + latest.build}>
             <div className="image-container">
               <img src={imgSrc} title={result.name} className="bvt-icon" />
             </div>
