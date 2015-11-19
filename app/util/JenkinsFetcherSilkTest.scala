@@ -6,6 +6,7 @@ import play.api.libs.ws.WS
 import play.api.Play.current
 import play.api.libs.json._
 import scala.concurrent.ExecutionContext.Implicits.global
+import models._
 
 object JenkinsFetcherSilkTest {
   def prefix = "dashboard.silktest."
@@ -40,8 +41,8 @@ object JenkinsFetcherSilkTest {
         regression <- regressionResults
         lastCompletedDetails <- details
       } yield {
-        val detailsWithTests = lastCompletedDetails.map(jsVal => {
-          val buildNumber = (jsVal \ "buildNumber").as[Int]
+        val detailsWithTests = lastCompletedDetails.map(ciBuild => {
+          val buildNumber = ciBuild.buildNumber
 
           val extracted = regression.map {
             case (name, result) =>
@@ -49,8 +50,9 @@ object JenkinsFetcherSilkTest {
               result.getOrElse(buildNumber, defaultStatus)
           }
 
-          jsVal + (("regressions", Json.toJson(extracted)))
-
+          implicit val writes = CiBuild.writes
+          val ciBuildJson = Json.toJson(ciBuild).asInstanceOf[JsObject]
+          ciBuildJson ++ Json.obj(("regressions", Json.toJson(extracted))) 
         });
         Json.stringify(Json.obj(mapName -> detailsWithTests))
       }
@@ -77,13 +79,14 @@ object JenkinsFetcherSilkTest {
           case Nil => None
         }
         lastBuildResultOpt.map{ lastBuildResult => 
-          val latestBuildNumber = (lastBuildResult \ "buildNumber").as[Int]
+          val latestBuildNumber = lastBuildResult.buildNumber
   
           val setupJson: JsValue = setupResult match {
             case (name, result) => result.getOrElse(latestBuildNumber, Json.obj("status" -> "n/a", "name" -> name))
           }
   
-          val buildWithSetup = lastBuildResult + ("setup" -> setupJson)
+          implicit val writes = CiBuild.writes
+          val buildWithSetup = Json.obj("setup" -> setupJson) ++ Json.toJson(lastBuildResult).asInstanceOf[JsObject] 
   
           Json.stringify(Json.obj(mapName -> buildWithSetup))
         }.getOrElse(throw new RuntimeException("failed to fetch results"))

@@ -5,10 +5,11 @@ import play.api.libs.ws.WS
 import play.api.Play.current
 import play.api.libs.json._
 import scala.concurrent.ExecutionContext.Implicits.global
+import models.CiBuild
 
 object JenkinsFetcherUtil {
 
-  def getDetails(json: JsValue, numberOfItems: Integer, baseUrl: String): Future[List[JsObject]] = {
+  def getDetails(json: JsValue, numberOfItems: Integer, baseUrl: String): Future[List[CiBuild]] = {
 
     val buildsJson = (json \ "builds").as[List[JsValue]]
 
@@ -62,22 +63,25 @@ object JenkinsFetcherUtil {
     }
   }
 
-  def fetchBuild(baseUrl: String, buildNumber: Int): Future[JsObject] = {
-    val url = s"$baseUrl/$buildNumber/api/json?tree=timestamp,estimatedDuration,building,result,culprits[fullName],changeSet[items[author[id]]],actions[parameters[value]]"
+  def fetchBuild(baseUrl: String, buildNumber: Int): Future[CiBuild] = {
+    val url = s"$baseUrl/$buildNumber/api/json?tree=timestamp,estimatedDuration,building,result,culprits[fullName],actions[parameters[value]]"
     WS.url(url).get.map { responseDetails =>
       val json = Json.parse(responseDetails.body)
-
-      val authors = (json \ "changeSet" \ "items").asOpt[List[JsValue]].getOrElse(List())
-      val ids = authors.map(_ \ "author").distinct
-      Json.obj(
-        "status" -> mapBuildStatus((json \ "result").asOpt[String]),
-        "buildNumber" -> buildNumber,
-        "culprits" -> (json \ "culprits"),
-        "authors" -> ids,
-        "link" -> s"$baseUrl/$buildNumber",
-        "building" -> (json \ "building"),
-        "timestamp" -> (json \ "timestamp"),
-        "estimatedDuration" -> (json \ "estimatedDuration"))
+      
+      val status = mapBuildStatus((json \ "result").asOpt[String])
+      val culprits = ((json \ "culprits").as[List[JsValue]]).map { value =>
+        (value \ "fullName").as[String]  
+      }
+      
+      CiBuild(
+          buildNumber,
+          status,
+          culprits,
+          s"$baseUrl/$buildNumber",
+          (json \ "building").as[Boolean],
+          (json \ "timestamp").as[Long],
+          (json \ "estimatedDuration").as[Long]
+      )
     }
   }
 }

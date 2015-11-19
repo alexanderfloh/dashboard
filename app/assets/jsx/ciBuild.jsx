@@ -38,9 +38,7 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
         building: React.PropTypes.bool.isRequired,
 
         culprits: React.PropTypes.arrayOf(
-          React.PropTypes.shape({
-            fullName: React.PropTypes.string.isRequired,
-          }).isRequired
+          React.PropTypes.string.isRequired
         ).isRequired,
 
         regressions: React.PropTypes.arrayOf(
@@ -92,7 +90,7 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
     render: function(){
       var culpritCount = 3;
       var committerNodes = this.props.build.culprits.slice(0, culpritCount).map(function(culprit) {
-        return <Avatar name={culprit.fullName} key={culprit.fullName} />
+        return <Avatar name={culprit} key={culprit} />
       });
       var that = this;
 

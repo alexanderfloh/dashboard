@@ -4,9 +4,7 @@ define(['react', 'avatar' ], function(React, Avatar) {
     propTypes: {
       build: React.PropTypes.shape({
         culprits: React.PropTypes.arrayOf(
-          React.PropTypes.shape({
-            fullName: React.PropTypes.string.isRequired,
-          }).isRequired
+          React.PropTypes.string.isRequired
         ).isRequired,
 
         setup: React.PropTypes.shape({
@@ -45,7 +43,7 @@ define(['react', 'avatar' ], function(React, Avatar) {
     render: function(){
       var culpritCount = 9;
       var committerNodes = this.props.build.culprits.slice(0, culpritCount).map(function(culprit) {
-        return <Avatar name={culprit.fullName} key={culprit.fullName} />
+        return <Avatar name={culprit} key={culprit} />
       });
 
       var classesStatus = this.getStatusClassSet(this.props.build, 'status-nightly');
