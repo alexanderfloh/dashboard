@@ -11,13 +11,16 @@ object JenkinsFetcherUtil {
   def getDetails(json: JsValue, numberOfItems: Integer, baseUrl: String): Future[List[JsObject]] = {
 
     val buildsJson = (json \ "builds").as[List[JsValue]]
-    val builds = buildsJson.map(build => (build \ "number").as[Int]).reverse.takeRight(numberOfItems)
-    Future.sequence(builds.map(build => {
+
+    val builds = buildsJson.map {
+      build => (build \ "number").as[Int]
+    }.reverse.takeRight(numberOfItems)
+
+    Future.sequence(builds.map { build =>
       fetchBuild(baseUrl, build)
-    }))
+    })
   }
 
-  // helper
   def mapBuildStatus(status: Option[String]): String =
     status.map(s => s match {
       case "SUCCESS"  => "stable"
@@ -32,9 +35,11 @@ object JenkinsFetcherUtil {
       val json = Json.parse(response.body)
       val buildsJson = (json \ "builds").as[List[JsValue]]
       val builds = buildsJson.map(build => (build \ "number").as[Int])
-      val detailsF = Future.sequence(builds.map(build => {
+
+      val detailsF = Future.sequence(builds.map { build =>
         fetchTestDetails(baseUrl, build, testName)
-      }))
+      })
+
       detailsF.map(details => {
         val buildsToJson = details.flatten
           .groupBy { case (buildNumber, json) => buildNumber }
@@ -57,37 +62,22 @@ object JenkinsFetcherUtil {
     }
   }
 
-  def fetchLastBuild(baseUrl: String, buildNumber: Int): Future[JsObject] = {
-    val url = s"$baseUrl/$buildNumber/api/json"
-    WS.url(url).get.map { response =>
-      val json = Json.parse(response.body)
-      Json.obj(
-        "buildNumber" -> buildNumber,
-        "estimatedDuration" -> (json \ "estimatedDuration"),
-        "timestamp" -> (json \ "timestamp"),
-        "building" -> (json \ "building"))
-    }
-  }
-
   def fetchBuild(baseUrl: String, buildNumber: Int): Future[JsObject] = {
-    val url = s"$baseUrl/$buildNumber/api/json?tree=timestamp,estimatedDuration,result,culprits[fullName],changeSet[items[author[id]]],actions[parameters[value]]"
+    val url = s"$baseUrl/$buildNumber/api/json?tree=timestamp,estimatedDuration,building,result,culprits[fullName],changeSet[items[author[id]]],actions[parameters[value]]"
     WS.url(url).get.map { responseDetails =>
       val json = Json.parse(responseDetails.body)
 
       val authors = (json \ "changeSet" \ "items").asOpt[List[JsValue]].getOrElse(List())
       val ids = authors.map(_ \ "author").distinct
-      var parameter = null: JsValue;
-      parameter = Json.toJson(buildNumber)
-      try {
-        parameter = (((json \ "actions").as[Array[JsValue]].take(1).last \ "parameters").as[Array[JsValue]].take(1).last \ "value")
-      } catch { case e: Exception => }
       Json.obj(
         "status" -> mapBuildStatus((json \ "result").asOpt[String]),
-        "number" -> buildNumber,
+        "buildNumber" -> buildNumber,
         "culprits" -> (json \ "culprits"),
         "authors" -> ids,
         "link" -> s"$baseUrl/$buildNumber",
-        "DAILY_NUMBER" -> parameter)
+        "building" -> (json \ "building"),
+        "timestamp" -> (json \ "timestamp"),
+        "estimatedDuration" -> (json \ "estimatedDuration"))
     }
   }
 }

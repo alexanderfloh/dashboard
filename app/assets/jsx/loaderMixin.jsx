@@ -5,15 +5,7 @@ define(['react', 'jquery'], function(React, $) {
     getInitialState: function() {
       return {
         buildCI: [],
-        buildNightly: {
-          culprits: [],
-          setup: { },
-        },
-        users:[],
-        project:[],
         audits:[],
-        lastBuild:[],
-        nevergreens:[],
         bvtResults:[]
       };
     },

@@ -9,8 +9,8 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object JenkinsFetcherSilkTest {
   def prefix = "dashboard.silktest."
-  // fetch main section builds with tests
-  def fetchMain(mapName: String, numberOfItems: Integer): Future[String] = {
+
+  def fetchCiBuilds(mapName: String, numberOfItems: Integer): Future[String] = {
     val baseUrl = Play.current.configuration.getString(prefix + "urlCi")
       .getOrElse(throw new RuntimeException(prefix + "urlTrunk not configured"))
     val nrOfRegressions = Play.current.configuration.getInt("dashboard.silktest.nrOfRegressions")
@@ -39,10 +39,9 @@ object JenkinsFetcherSilkTest {
       for {
         regression <- regressionResults
         lastCompletedDetails <- details
-        lastBuildDetails <- JenkinsFetcherUtil.fetchLastBuild(baseUrl, lastBuild)
       } yield {
         val detailsWithTests = lastCompletedDetails.map(jsVal => {
-          val buildNumber = (jsVal \ "number").as[Int]
+          val buildNumber = (jsVal \ "buildNumber").as[Int]
 
           val extracted = regression.map {
             case (name, result) =>
@@ -53,13 +52,12 @@ object JenkinsFetcherSilkTest {
           jsVal + (("regressions", Json.toJson(extracted)))
 
         });
-        Json.prettyPrint(Json.obj(mapName -> detailsWithTests, "lastBuild" -> lastBuildDetails))
+        Json.stringify(Json.obj(mapName -> detailsWithTests))
       }
     }
   }
 
-  // fetch aside build with nevergreen list
-  def fetchAside(mapName: String, numberOfItems: Integer): Future[String] = {
+  def fetchNightlyBuild(mapName: String, numberOfItems: Integer): Future[String] = {
     val baseUrl = Play.current.configuration.getString(prefix + "urlNightly")
       .getOrElse(throw new RuntimeException(prefix + "urlNightly not configured"))
 
@@ -74,18 +72,21 @@ object JenkinsFetcherSilkTest {
         lastCompletedDetails <- details
         setupResult <- JenkinsFetcherUtil.fetchTests(setupUrl, "Setup")
       } yield {
-        val lastBuildResult = lastCompletedDetails match {
-          case latest :: tail => latest
+        val lastBuildResultOpt = lastCompletedDetails match {
+          case latest :: tail => Some(latest)
+          case Nil => None
         }
-        val latestBuildNumber = (lastBuildResult \ "number").as[Int]
-
-        val setupJson: JsValue = setupResult match {
-          case (name, result) => result.getOrElse(latestBuildNumber, Json.obj("status" -> "n/a", "name" -> name))
-        }
-
-        val buildWithSetup = lastBuildResult + ("setup" -> setupJson)
-
-        Json.stringify(Json.obj(mapName -> buildWithSetup))
+        lastBuildResultOpt.map{ lastBuildResult => 
+          val latestBuildNumber = (lastBuildResult \ "buildNumber").as[Int]
+  
+          val setupJson: JsValue = setupResult match {
+            case (name, result) => result.getOrElse(latestBuildNumber, Json.obj("status" -> "n/a", "name" -> name))
+          }
+  
+          val buildWithSetup = lastBuildResult + ("setup" -> setupJson)
+  
+          Json.stringify(Json.obj(mapName -> buildWithSetup))
+        }.getOrElse(throw new RuntimeException("failed to fetch results"))
       }
     }
   }

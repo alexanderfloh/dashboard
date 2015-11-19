@@ -33,13 +33,13 @@ object Application extends Controller {
 
   def buildMain = Cached.everything(req => "build.ci", 60) {
     Action.async {
-      JenkinsFetcherSilkTest.fetchMain("buildCI", 4).map(Ok(_))
+      JenkinsFetcherSilkTest.fetchCiBuilds("buildCI", 4).map(Ok(_))
     }
   }
 
   def buildAside = Cached.everything(req => "build.nightly", 60 * 20) {
     Action.async {
-      JenkinsFetcherSilkTest.fetchAside("buildNightly", 1).map(Ok(_))
+      JenkinsFetcherSilkTest.fetchNightlyBuild("buildNightly", 1).map(Ok(_))
     }
   }
 
@@ -49,22 +49,21 @@ object Application extends Controller {
     }
   }
 
-  def getBvtResult = Cached.everything(req => "bvtresult", 60 * 20) {
+  def getBvtResult = Cached.everything(req => "bvtresult", 60 * 5) {
     Action.async {
       implicit val bvtResultWrites = BvtResult.writes
-      ScFetcher.fetchWin10BVTs()
-        .map {
-          BvtParser.parse(_)
-            .groupBy(_.name)
-            .toList
-            .map {
-              case (key, values) => {
-                val valuesSorted = values.sortBy(v => v.build)
-                Json.obj("name" -> key, "values" -> Json.toJson(valuesSorted))
-              }
-
+      ScFetcher.fetchWin10BVTs().map {
+        BvtParser.parse(_)
+          .groupBy(_.name)
+          .toList
+          .map {
+            case (key, values) => {
+              val valuesSorted = values.sortBy(v => v.build)
+              Json.obj("name" -> key, "values" -> Json.toJson(valuesSorted))
             }
-        }
+
+          }
+      }
         .map { results => Json.obj("bvtResults" -> results) }
         .map { Ok(_) }
     }

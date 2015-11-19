@@ -17,11 +17,7 @@ define(['react', 'moment'], function(React, Moment) {
         var timeLeft = (this.props.lastBuild.timestamp + this.props.lastBuild.estimatedDuration) - Date.now();
         var progress = parseInt((timeSpent / this.props.lastBuild.estimatedDuration) * 100, 10);
         var formatTime = function(d) {
-          if(timeLeft > 0) {
-            return Moment(d).from(Moment(0), true) + ' remaining';
-          } else {
-            return 'any moment now...';
-          }
+          return 'ETA ' + Moment(d).from(Moment(0));
         };
         var widthStyle = {
           width: Math.min(progress, 95) + '%'

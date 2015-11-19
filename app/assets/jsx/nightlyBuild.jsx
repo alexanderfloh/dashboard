@@ -13,7 +13,7 @@ define(['react', 'avatar' ], function(React, Avatar) {
           link: React.PropTypes.string,
         }).isRequired,
 
-        number: React.PropTypes.any.isRequired,
+        buildNumber: React.PropTypes.any.isRequired,
 
       }).isRequired,
     },
@@ -68,7 +68,7 @@ define(['react', 'avatar' ], function(React, Avatar) {
             </li>
             <li className={classesStatus}>
               <a href={this.props.build.link}>
-                {this.props.build.number}
+                {this.props.build.buildNumber}
               </a>
             </li>
             <li>

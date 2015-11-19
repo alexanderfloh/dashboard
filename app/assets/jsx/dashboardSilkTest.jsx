@@ -13,7 +13,7 @@ define(['react', 'audits', 'bvtResults', 'devices', 'loaderMixin', 'avatar', 'ci
 
     render: function() {
       var lastBuild = this.state.lastBuild;
-      var cuiBuilds = this.state.buildCI.map(function(build) {
+      var ciBuilds = this.state.buildCI.map(function(build) {
         return <CIBuild build={build} lastBuild={lastBuild} key={build.number} />
       });
 
@@ -26,12 +26,14 @@ define(['react', 'audits', 'bvtResults', 'devices', 'loaderMixin', 'avatar', 'ci
         return a.realName.localeCompare(b.realName);
       });
 
+      var nightlyNode = this.state.buildNightly ? <NightlyBuild build={this.state.buildNightly} /> : null;
+
    // ----------------------- html site structure -----------------------//
       return (
         <article className="dashboard">
           <section className="build-section">
             <ul className="ci-build-list">
-              {cuiBuilds}
+              {ciBuilds}
             </ul>
           </section>
 
@@ -39,7 +41,7 @@ define(['react', 'audits', 'bvtResults', 'devices', 'loaderMixin', 'avatar', 'ci
 
           <section className="nightly-build-and-bvts">
             <section className="nightly-build">
-              <NightlyBuild build={this.state.buildNightly} />
+              {nightlyNode}
             </section>
 
             <BvtResults bvtResults={this.state.bvtResults} />

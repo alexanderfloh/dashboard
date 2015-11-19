@@ -31,6 +31,12 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
   var CiBuild = React.createClass({
     propTypes: {
       build: React.PropTypes.shape({
+
+        buildNumber: React.PropTypes.any.isRequired,
+        timestamp: React.PropTypes.number.isRequired,
+        estimatedDuration: React.PropTypes.number.isRequired,
+        building: React.PropTypes.bool.isRequired,
+
         culprits: React.PropTypes.arrayOf(
           React.PropTypes.shape({
             fullName: React.PropTypes.string.isRequired,
@@ -44,15 +50,6 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
           }).isRequired
         ).isRequired,
 
-        number: React.PropTypes.any.isRequired,
-
-      }).isRequired,
-
-      lastBuild: React.PropTypes.shape({
-        building: React.PropTypes.bool.isRequired,
-        buildNumber: React.PropTypes.number.isRequired,
-        timestamp: React.PropTypes.number.isRequired,
-        estimatedDuration: React.PropTypes.number.isRequired,
       }).isRequired,
     },
 
@@ -71,23 +68,25 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
 
     buildStatus: function(build){
       var classesStatus = this.getStatusClassSet(build, "status");
-      var currentBuild = this.props.lastBuild;
 
-      if (currentBuild.building && currentBuild.buildNumber === build.number){
+      if (build.building) {
         return (
             <div className="status pending-ci">
             <a href={build.link} className="build-number">
-              <BuildProgress lastBuild={currentBuild} />
+              <BuildProgress lastBuild={build} />
             </a>
           </div>
-        )
+        );
       }
-      return (
+      else {
+        return (
           <div className={classesStatus}>
             <a href={build.link} className="build-number">
-              {build.number}
+              {build.buildNumber}
             </a>
-          </div>)
+          </div>
+        );
+      }
     },
 
     render: function(){
@@ -110,7 +109,7 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
           + " other"
           + (this.props.build.culprits.length - culpritCount > 1 ? "s" : ""));
       }
-      var pending = this.props.lastBuild.building && this.props.lastBuild.buildNumber === this.props.build.number;
+      var pending = this.props.build.building;
       var c = 'ci-build-item ' + (pending ? 'pending' : this.props.build.status);
       return (
           <li className="build-list-item">
