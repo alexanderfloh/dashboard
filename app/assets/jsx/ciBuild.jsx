@@ -109,6 +109,7 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
       }
       var pending = this.props.build.building;
       var c = 'ci-build-item ' + (pending ? 'pending' : this.props.build.status);
+      var arrowClass = 'arrow-down ' + this.props.build.status;
       return (
           <li className="build-list-item">
             <div className={c}>
@@ -117,6 +118,9 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
                 <div>{andOthers}</div>
               </div>
               {this.buildStatus(this.props.build)}
+              <div className="arrow-container">
+              <div className={arrowClass} />
+              </div>
               <div>
                 <ul className="regression-list">
                   {resultNodes}

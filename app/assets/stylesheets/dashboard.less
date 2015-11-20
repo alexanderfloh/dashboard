@@ -63,9 +63,8 @@ table {
 @primary: @midnight-blue;
 @secondary: @orange;
 
-//@background: #424242;
+
 @background: white;
-//@section: #888;
 @section: lighten(@grey, 10%);
 @labels: @secondary;
 @icons: @primary;
@@ -98,7 +97,7 @@ table {
   and (min-device-width: 1600px) {
     .ci-build-list {
       .build-list-item:first-child {
-        display: inline-block;
+        display: flex;
       }
     }
 }
@@ -218,6 +217,7 @@ a {
     display: flex;
     margin-bottom: 6em;
     margin-top: 5em;
+    width: 100%;
   }
 
   .bvtResults {
@@ -237,7 +237,7 @@ a {
     padding-bottom: 1em;
     font-weight: bold;
     flex-grow: 1;
-    flex-basis: 25%;
+    flex-basis: 20%;
 
     display: flex;
     flex-wrap: wrap;
@@ -263,7 +263,6 @@ a {
     }
 
     .ct-chart {
-      width: 400px;
       height: 150px;
       margin: 0 5px;
 
@@ -276,7 +275,7 @@ a {
 
       .ct-series-a .ct-bar {
         stroke: @dark-grey;
-        stroke-width: 75px;
+        stroke-width: 50px;
       }
       .ct-series-a .ct-label {
         fill: @dark-grey;
@@ -393,7 +392,6 @@ a {
 
 
   .build-list-item {
-    vertical-align: bottom;
     display: flex;
     vertical-align: bottom;
     flex-direction: row;
@@ -420,9 +418,47 @@ a {
       flex-grow: 1;
 
     }
+    .arrow-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: stretch;
+      background-color: white;
+    }
+    .arrow-down {
+      width: 0;
+    	height: 0;
+    	border-right: 30px solid white;
+    	border-left: 30px solid white;
+    	border-top: 30px solid @green;
+      display: inline-block;
+      align-self: center;
+      background-color: white;
+      &.stable {
+        border-top-color: @green;
+      }
+
+      &.unstable {
+        border-top-color: @orange;
+      }
+
+      &.failed {
+        border-top-color: @red;
+      }
+
+      &.cancelled {
+        border-top-color: @grey;
+      }
+
+      &.pending, .pending-ci {
+        border-top-color: @blue;
+      }
+
+    }
 
     .build-item, .ci-build-item {
-      display: inline-block;
+      display: flex;
+      flex-direction: column;
       font-size: 2em;
 
       .build-number {
@@ -441,6 +477,7 @@ a {
         flex-wrap: wrap;
         justify-content: space-around;
         align-content: space-around;
+        align-self: flex-end;
       }
       .status, .regression {
         font-size: 1em;
@@ -456,7 +493,7 @@ a {
       .regression {
         display: inline-block;
         padding: 10px 0px;
-        width: 30%;
+        width: 25%;
         flex-grow: 1;
       }
 
@@ -466,7 +503,7 @@ a {
       }
 
       .status {
-        max-height: 80px;
+        flex-grow: 1;
       }
 
       .status-nightly {
@@ -485,10 +522,8 @@ a {
           text-align: center;
 
           .progress-bar-background {
-            position: relative;
-            top: -28px;
             text-align: left;
-
+            line-height: 3px;
             .bar {
               background-color: white;
               display: inline-block;
@@ -500,7 +535,6 @@ a {
             color: white;
 
             .buildNumber {
-              font-size: 0.6em;
             }
 
             .timeLeft {
