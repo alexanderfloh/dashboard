@@ -251,13 +251,13 @@ a {
       .build-number {
         font-size: 6em;
         font-weight: normal;
-        color: @grey;
+        color: @dark-grey;
       }
     }
 
     &.latest-build {
       .build-number {
-        color: @dark-grey;
+        color: @grey;
       }
     }
 
@@ -284,10 +284,10 @@ a {
       }
 
       .ct-series-a .ct-bar {
-        stroke: @grey;
+        stroke: @dark-grey;
         stroke-width: 50px;
         &.latest-build {
-          stroke: @dark-grey;
+          stroke: @grey;
         }
       }
       .ct-series-a .ct-label {
@@ -414,7 +414,7 @@ a {
     .build-item {
 
       .build-number {
-        font-size: 2em;
+        color: @grey;
       }
       width: 9.9em;
       flex-basis: 100%;
@@ -423,13 +423,12 @@ a {
     }
 
     .ci-build-item {
-      .build-number {
-        font-size: 0.5em;
-      }
       margin: 0;
       width: 10em;
       flex-grow: 1;
-
+      .build-number {
+        color: @grey;
+      }
     }
     .arrow-container {
       display: flex;
@@ -563,17 +562,11 @@ a {
 .avatars {
   text-align: center;
   height: auto;
-  min-height: 116px;
-  max-height: 116px;
   color: white;
-  &.nightly {
-    min-height: 202px;
-    max-height: 280px;
-  }
 
   .avatar {
-    width: 70px;
-    height: 70px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     display: inline-block;
     margin: 5px;

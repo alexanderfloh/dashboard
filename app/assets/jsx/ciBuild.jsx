@@ -88,8 +88,7 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
     },
 
     render: function(){
-      var culpritCount = 3;
-      var committerNodes = this.props.build.culprits.slice(0, culpritCount).map(function(culprit) {
+      var committerNodes = this.props.build.culprits.map(function(culprit) {
         return <Avatar name={culprit} key={culprit} />
       });
       var that = this;
@@ -100,22 +99,13 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
 
       var classesRegressionResult = this.getStatusClassSet(this.props.build.regressions[0], "regression");
 
-      var andOthers = "";
-      if (this.props.build.culprits.length > culpritCount){
-        andOthers = ("+ "
-          + (this.props.build.culprits.length - culpritCount)
-          + " other"
-          + (this.props.build.culprits.length - culpritCount > 1 ? "s" : ""));
-      }
-      var pending = this.props.build.building;
-      var c = 'ci-build-item ' + (pending ? 'pending' : this.props.build.status);
+      var c = 'ci-build-item ' + this.props.build.status;
       var arrowClass = 'arrow-down ' + this.props.build.status;
       return (
           <li className="build-list-item">
             <div className={c}>
               <div className="avatars">
                 {committerNodes}
-                <div>{andOthers}</div>
               </div>
               {this.buildStatus(this.props.build)}
               <div className="arrow-container">

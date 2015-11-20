@@ -41,42 +41,33 @@ define(['react', 'avatar' ], function(React, Avatar) {
     },
 
     render: function(){
-      var culpritCount = 9;
-      var committerNodes = this.props.build.culprits.slice(0, culpritCount).map(function(culprit) {
+      var committerNodes = this.props.build.culprits.map(function(culprit) {
         return <Avatar name={culprit} key={culprit} />
       });
 
       var classesStatus = this.getStatusClassSet(this.props.build, 'status-nightly');
-      var andOthers = "";
-      if (this.props.build.culprits.length > culpritCount){
-        andOthers = ("+ "
-          + (this.props.build.culprits.length - culpritCount)
-          + " other"
-          + (this.props.build.culprits.length - culpritCount > 1 ? "s" : ""));
-      }
 
       var arrowClass = 'arrow-right ' + this.props.build.status;
       var c = 'build-item ' + this.props.build.status;
       return (
         <div className="build-list-item">
-          <ul className={c}>
-            <li className="avatars nightly">
+          <div className={c}>
+            <div className="avatars nightly">
               {committerNodes}
-              <div>{andOthers}</div>
-            </li>
-            <li className={classesStatus}>
-              <a href={this.props.build.link}>
+            </div>
+            <div className={classesStatus}>
+              <a className="build-number" href={this.props.build.link}>
                 {this.props.build.buildNumber}
               </a>
-            </li>
-            <li>
+            </div>
+            <div>
             <div>
               <ul className="downstream-jobs-nightly">
                 {this.regressionStatus(this.props.build.setup, "Setup")}
               </ul>
             </div>
-            </li>
-          </ul>
+            </div>
+          </div>
           <div className={arrowClass} />
         </div>
       );
