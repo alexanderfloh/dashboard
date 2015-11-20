@@ -27,6 +27,7 @@ define(['react', 'audits', 'bvtResults', 'devices', 'loaderMixin', 'avatar', 'ci
       });
 
       var nightlyNode = this.state.buildNightly ? <NightlyBuild build={this.state.buildNightly} /> : null;
+      var latestBuild = '' + (this.state.buildNightly ? this.state.buildNightly.buildNumber : 0);
 
    // ----------------------- html site structure -----------------------//
       return (
@@ -44,7 +45,7 @@ define(['react', 'audits', 'bvtResults', 'devices', 'loaderMixin', 'avatar', 'ci
               {nightlyNode}
             </section>
 
-            <BvtResults bvtResults={this.state.bvtResults} />
+            <BvtResults bvtResults={this.state.bvtResults} latestBuild={latestBuild}/>
           </section>
 
           <section className="deviceSection">
