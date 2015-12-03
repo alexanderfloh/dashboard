@@ -27,6 +27,8 @@ includeFilter in (Assets, LessKeys.less) := "*.less"
 
 pipelineStages := Seq(rjs, digest, gzip)
 
+RjsKeys.webJarCdns := Map.empty
+
 //RjsKeys.modules := Seq(
 //    WebJs.JS.Object("name" -> "mainIndex"),
 //    WebJs.JS.Object("name" -> "mainDetails"),

@@ -20,7 +20,7 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
       var name = '/icon/' + this.props.result.name;
       return (
         <li className={classesStatus}>
-          <a href={this.props.result.link}>
+          <a href={this.props.result.link} target="_blank">
             <img src={name} className="regression-icon" title={this.props.result.name}/>
           </a>
         </li>);
@@ -70,7 +70,7 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
       if (build.building) {
         return (
             <div className="status pending-ci">
-            <a href={build.link} className="build-number">
+            <a href={build.link} className="build-number" target="_blank">
               <BuildProgress lastBuild={build} />
             </a>
           </div>
@@ -79,7 +79,7 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
       else {
         return (
           <div className={classesStatus}>
-            <a href={build.link} className="build-number">
+            <a href={build.link} className="build-number" target="_blank">
               {build.buildNumber}
             </a>
           </div>

@@ -14,6 +14,7 @@ define(['react', 'jquery', 'bvtChart'], function(React, $, BvtChart) {
               passed: React.PropTypes.number.isRequired,
               failed: React.PropTypes.number.isRequired,
               notExecuted: React.PropTypes.number.isRequired,
+              nodeId: React.PropTypes.string.isRequired,
             })
           )
 
@@ -29,37 +30,48 @@ define(['react', 'jquery', 'bvtChart'], function(React, $, BvtChart) {
 
         if(result.values.length > 0) {
           var latest = result.values[result.values.length-1];
+          
           if(latest.failed === 0 && latest.notExecuted === 0) {
             var classes = "bvtResult stable" + (latest.build === latestBuild ? ' latest-build' : '');
+            var link = 'http://lnz-sc/silk/DEF/TM/Execution?nEx=' + latest.nodeId;
             return (
               <li className={classes} key={result.name + latest.build}>
-                <div className="image-container">
-                  <img src={imgSrc} title={result.name} className="bvt-icon-success" />
-                  <div className="build-number">{latest.build}</div>
-                </div>
+                <a href={link} target="_blank">
+                  <div className="image-container">
+                    <img src={imgSrc} title={result.name} className="bvt-icon-success" />
+                    <div className="build-number">{latest.build}</div>
+                  </div>
+                </a>
               </li>
             );
           }
+
           else if(latest.failed === -1 || latest.notExecuted > 0) {
             var classes = "bvtResult failed" + (latest.build === latestBuild ? ' latest-build' : '');
+            var link = 'http://lnz-sc/silk/DEF/TM/Execution?nEx=' + latest.nodeId;
             return (
               <li className="bvtResult failed" key={result.name + latest.build}>
-                <div className="image-container">
-                  <img src={imgSrc} title={result.name} className="bvt-icon-success" />
-                </div>
+                <a href={link} target="_blank">
+                  <div className="image-container">
+                    <img src={imgSrc} title={result.name} className="bvt-icon-success" />
+                  </div>
+                </a>
               </li>
             );
           }
-        }
 
-        return (
-          <li className="bvtResult unstable" key={result.name + latest.build}>
-            <div className="image-container">
-              <img src={imgSrc} title={result.name} className="bvt-icon" />
-            </div>
-            <BvtChart key={result.name} result={result} latestBuild={latestBuild}></BvtChart>
-          </li>
-        );
+          var link = 'http://lnz-sc/silk/DEF/TM/Execution?nEx=' + latest.nodeId;
+          return (
+            <li className="bvtResult unstable" key={result.name + latest.build}>
+              <a href={link} target="_blank">
+                <div className="image-container">
+                  <img src={imgSrc} title={result.name} className="bvt-icon" />
+                </div>
+                <BvtChart key={result.name} result={result} latestBuild={latestBuild}></BvtChart>
+              </a>
+            </li>
+          );
+        }
       });
 
       return (

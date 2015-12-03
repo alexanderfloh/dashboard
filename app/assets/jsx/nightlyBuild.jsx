@@ -33,7 +33,7 @@ define(['react', 'avatar' ], function(React, Avatar) {
       var classesStatus = this.getStatusClassSet(regression, 'nightly-setup');
       return (
           <li className={classesStatus}>
-            <a href={regression.link}>
+            <a href={regression.link} target="_blank">
               {name}
             </a>
           </li>
@@ -56,7 +56,7 @@ define(['react', 'avatar' ], function(React, Avatar) {
               {committerNodes}
             </div>
             <div className={classesStatus}>
-              <a className="build-number" href={this.props.build.link}>
+              <a className="build-number" href={this.props.build.link} target="_blank">
                 {this.props.build.buildNumber}
               </a>
             </div>
