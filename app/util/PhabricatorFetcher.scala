@@ -13,10 +13,12 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.Await
 import java.util.concurrent.TimeoutException
 import play.Logger
+import models.Audit
+import models.Phabricator
 
 object PhabricatorFetcher {
 
-  val config = Play.current.configuration
+  def config = Play.current.configuration
 
   def conduitConnect(baseUrl: String): Future[JsObject] = {
     val phabUser = config.getString("dashboard.phabUser")
@@ -46,21 +48,19 @@ object PhabricatorFetcher {
       .post("")
       .map { response =>
         val json = Json.parse(response.body);
-        val result = (json \ "result").asOpt[JsValue].flatMap{ Option(_) }
+        val result = (json \ "result").asOpt[JsValue].flatMap { Option(_) }
         result.map { result =>
           Json.obj(
-          "sessionKey" -> (result \\ "sessionKey").last,
-          "connectionID" -> (result \\ "connectionID").last)
-        }.getOrElse{
+            "sessionKey" -> (result \\ "sessionKey").last,
+            "connectionID" -> (result \\ "connectionID").last)
+        }.getOrElse {
           val errorInfo = (json \ "error_info").asOpt[String].flatMap { Option(_) }
           errorInfo match {
             case Some(error) => throw new RuntimeException(error)
-            case None => throw new RuntimeException("unkown error occurred when trying to connect to phabricator")
+            case None        => throw new RuntimeException("unkown error occurred when trying to connect to phabricator")
           }
         }
-        
-        
-        
+
       }
 
   }
@@ -68,81 +68,107 @@ object PhabricatorFetcher {
   def baseUrl = config.getString("dashboard.urlPhabricator")
     .getOrElse(throw new RuntimeException("dashboard.urlPhabricator not configured"))
 
-  def fetchAudits = {
-    val allOpenAudits = fetchOpenAuditsJson
-    allOpenAudits.flatMap { allOpenAudits =>
-      val audits = (allOpenAudits \ "result").as[Seq[JsValue]]
-      val auditsWithCommitIds = audits.map(audit => (audit, (audit \ "commitPHID").as[String]))
-      val commitIds = auditsWithCommitIds.map { case (audit, commitId) => commitId }
+  def fetchCommits(commitIds: Seq[String]) = {
+    val conduit = conduitConnect(baseUrl)
+    conduit.flatMap { conduit =>
+      val params = Json.obj(
+        "__conduit__" -> conduit,
+        "names" -> commitIds)
 
-      val conduit = conduitConnect(baseUrl)
-      val commits = conduit.flatMap { conduit =>
+      WS.url(baseUrl + "api/phid.lookup")
+        .withQueryString(("params", params.toString()), ("output", "json"))
+        .post("")
+        .map { req => Json.parse(req.body) }
+    }
+  }
+
+  def fetchCommitsForAuthors(commitIds: Seq[String]) = {
+    val conduit = conduitConnect(baseUrl)
+    conduit.flatMap { conduit =>
+      val params = Json.obj(
+        "__conduit__" -> conduit,
+        "phids" -> commitIds)
+
+      WS.url(baseUrl + "api/diffusion.querycommits")
+        .withQueryString(("params", params.toString()), ("output", "json"))
+        .post("")
+        .map { req => Json.parse(req.body) }
+    }
+  }
+
+  def fetchUsersForConcerned(commitIds: Seq[String]) = {
+    val commitsWithConcerns = fetchCommitsForAuthors(commitIds)
+    for {
+      commitsWithConcerns <- commitsWithConcerns
+    } yield {
+      val userIds = (commitsWithConcerns \ "result" \\ "authorPHID").map(_.as[Phabricator.PHID])
+      val idsWithCounts = userIds.groupBy { _.toString() }.map { case (id, ids) => (id, ids.length) }
+      idsWithCounts
+    }
+  }
+
+  def fetchAuditors(auditorIds: Iterable[String]) = {
+    val conduit = conduitConnect(baseUrl)
+    conduit.flatMap {
+      conduit =>
         val params = Json.obj(
           "__conduit__" -> conduit,
-          "names" -> commitIds)
+          "phids" -> auditorIds)
 
-        WS.url(baseUrl + "api/phid.lookup")
+        WS.url(baseUrl + "api/user.query")
           .withQueryString(("params", params.toString()), ("output", "json"))
           .post("")
-          .map { req => Json.parse(req.body) }
-      }
+          .map { req =>
+            val auditorsJson = Json.parse(req.body)
+            val auditors = (auditorsJson \ "result").as[Seq[JsValue]]
+            auditors
+          }
+    }
+  }
+
+  def fetchAudits = {
+    val allOpenAudits = Audit.fetchOpenAudits
+    allOpenAudits.flatMap { audits =>
+
+      val commitIds = audits.map(_.commit)
+      val commits = fetchCommits(commitIds)
 
       val result = commits.flatMap { commits =>
-        val filteredAudits = auditsWithCommitIds.filter {
-          case (audit, commitId) =>
+        val filteredAudits = audits.filter { audit =>
+          (commits \ "result" \ audit.commit \ "name").as[String].startsWith("rST")
+        }
 
-            (commits \ "result" \ commitId \ "name").as[String].startsWith("rST")
-        }.map { case (audit, commitId) => audit }
-
-        val auditsWithAuditorIds = filteredAudits.map { audit => (audit, (audit \ "auditorPHID").as[String]) }
-        val idsWithCount = auditsWithAuditorIds.groupBy { case (audit, auditorId) => auditorId }
+        val idsWithCount = filteredAudits.groupBy(_.auditor)
           .map { case (auditorId, audits) => (auditorId, audits.length) }
 
-        val auditorIds = idsWithCount.map { case (auditorId, count) => auditorId }
+        val auditorIds = idsWithCount.map { case (auditorId, _) => auditorId }.toSeq
 
-        val conduit = conduitConnect(baseUrl)
-        val auditors = conduit.flatMap { conduit =>
-          val params = Json.obj(
-            "__conduit__" -> conduit,
-            "phids" -> auditorIds)
+        val concerned = filteredAudits.filter(_.status == "concerned")
+        val openConcerns = fetchUsersForConcerned(concerned.map(_.commit))
 
-          WS.url(baseUrl + "api/user.query")
-            .withQueryString(("params", params.toString()), ("output", "json"))
-            .post("")
-            .map { req =>
-              val auditorsJson = Json.parse(req.body)
-              val auditors = (auditorsJson \ "result").as[Seq[JsValue]]
-              auditors.map { auditor =>
-                val id = (auditor \ "phid").as[String]
-                val count = idsWithCount.getOrElse(id, 0)
-                auditor.as[JsObject] + ("count", Json.toJson(count))
-              }
+        val openAudits = for {
+          openConcerns <- openConcerns
+        } yield {
+          val allIds = idsWithCount.map(_._1) ++ openConcerns.map(_._1)
+          val auditors = fetchAuditors(allIds)
+          for {
+            auditors <- auditors
+          } yield {
+            auditors.map { auditor =>
+              val id = (auditor \ "phid").as[String]
+              val count = idsWithCount.getOrElse(id, 0)
+              val concernCount = openConcerns.getOrElse(id, 0)
+              auditor.as[JsObject] + 
+                ("auditCount", Json.toJson(count)) +
+                ("concernCount", Json.toJson(concernCount))
             }
-            
+          }
         }
-        auditors
+        openAudits.flatMap(x => x)
       }
 
       result.map { filteredAudits => Json.obj("audits" -> filteredAudits) }
     }
   }
 
-  def fetchOpenAuditsJson: Future[JsValue] = {
-    val baseUrl = config.getString("dashboard.urlPhabricator")
-      .getOrElse(throw new RuntimeException("dashboard.urlPhabricator not configured"))
-
-    val conduit = conduitConnect(baseUrl)
-    conduit.flatMap { conduit =>
-      val params = Json.obj(
-        "__conduit__" -> conduit,
-        "status" -> "audit-status-open")
-
-      WS.url(baseUrl + "api/audit.query")
-        .withQueryString(("params", params.toString()), ("output", "json"))
-        .post("")
-        .map { req =>
-          Json.parse(req.body)
-        }
-    }
-  }
 }

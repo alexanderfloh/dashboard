@@ -4,7 +4,8 @@ define(['react'], function(React) {
   var Avatar = React.createClass({
     propTypes: {
       name: React.PropTypes.string.isRequired,
-      badge: React.PropTypes.any,
+      badgeRight: React.PropTypes.any,
+      badgeLeft: React.PropTypes.any,
     },
 
     urlSafeName: function(name){
@@ -35,9 +36,14 @@ define(['react'], function(React) {
           backgroundSize: 'cover'
       };
 
-      var badge = null;
-      if(this.props.badge) {
-        badge = <div className='avatar-badge'>{this.props.badge}</div>;
+      var badgeRight = null;
+      if(this.props.badgeRight) {
+        badgeRight = <div className='avatar-badge right'>{this.props.badgeRight}</div>;
+      }
+
+      var badgeLeft = null;
+      if(this.props.badgeLeft) {
+        badgeLeft = <div className='avatar-badge left'>{this.props.badgeLeft}</div>
       }
 
       return (
@@ -45,7 +51,8 @@ define(['react'], function(React) {
                className={avatarClass}
                style={avatarUrlStyle}
                title={this.props.name} >
-               {badge}
+               {badgeLeft}
+               {badgeRight}
           </div>
       );
     },

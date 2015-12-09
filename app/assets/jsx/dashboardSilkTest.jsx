@@ -18,7 +18,7 @@ define(['react', 'audits', 'bvtResults', 'devices', 'loaderMixin', 'avatar', 'ci
       });
 
       var audits = this.state.audits.sort(function(a, b){
-        var countDiff = b.count-a.count;
+        var countDiff = (b.auditCount + b.concernCount) - (a.auditCount + a.concernCount);
         if(countDiff !== 0) {
           return countDiff;
         }
