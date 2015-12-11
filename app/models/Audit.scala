@@ -5,16 +5,10 @@ import play.api.Play
 import util.PhabricatorFetcher
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
-//import play.libs.Json._
 import play.api.libs.ws.WS
-
-//implicits
 import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.Play.current
-
-object Phabricator {
-  type PHID = String
-}
+import play.api.mvc.Results
 
 case class Audit(
     id: String,
@@ -26,30 +20,16 @@ case class Audit(
 }
 
 object Audit {
-
+  import Phabricator._
   private def config = Play.current.configuration
 
-  def fetchOpenAudits: Future[List[Audit]] = fetchOpenAuditsJson.map { js =>
-    (js \ "result").asOpt[List[Audit]].getOrElse(List())
-  }
-
-  def fetchOpenAuditsJson: Future[JsValue] = {
-    val baseUrl = config.getString("dashboard.urlPhabricator")
-      .getOrElse(throw new RuntimeException("dashboard.urlPhabricator not configured"))
-
-    val conduit = PhabricatorFetcher.conduitConnect(baseUrl)
-    conduit.flatMap { conduit =>
-      val params = Json.obj(
-        "__conduit__" -> conduit,
-        "status" -> "audit-status-open")
-
-      WS.url(baseUrl + "api/audit.query")
-        .withQueryString(("params", params.toString()), ("output", "json"))
-        .post("")
-        .map { req =>
-          Json.parse(req.body)
-        }
+  def fetchOpenAudits(implicit conduit: Conduit): Future[List[Audit]] =
+    fetchOpenAuditsJson.map { js =>
+      (js \ "result").asOpt[List[Audit]].getOrElse(List())
     }
+
+  def fetchOpenAuditsJson(implicit conduit: Conduit): Future[JsValue] = {
+    Phabricator.query("api/audit.query", Json.obj("status" -> "audit-status-open"))
   }
 
   implicit val reads: Reads[Audit] = (
