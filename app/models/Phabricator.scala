@@ -12,8 +12,9 @@ import play.api.mvc.Results
 
 object Phabricator {
   type PHID = String
+  type UserPHID = String
   type Conduit = JsObject
-
+  
   def query(subUrl: String, parameters: JsObject)(implicit conduit: Conduit): Future[JsValue] = {
     query(subUrl, ("params", makeParams(parameters)))
   }
