@@ -1,7 +1,7 @@
 /** @jsx React.DOM */
 
 define(['react', 'moment'], function(React, Moment) {
-  return React.createClass({
+  var BuildProgress = React.createClass({
     propTypes: {
       lastBuild: React.PropTypes.shape({
         building: React.PropTypes.bool.isRequired,
@@ -43,4 +43,5 @@ define(['react', 'moment'], function(React, Moment) {
       }
     }
   });
+  return BuildProgress;
 });

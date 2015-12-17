@@ -13,8 +13,8 @@ define(['react', 'audits', 'bvtResults', 'devices', 'loaderMixin', 'avatar', 'ci
 
     render: function() {
       var lastBuild = this.state.lastBuild;
-      var ciBuilds = this.state.buildCI.map(function(build) {
-        return <CIBuild build={build} lastBuild={lastBuild} key={build.number} />
+      var ciBuilds = this.state.buildCI.slice().reverse().map(function(build) {
+        return <CIBuild build={build} lastBuild={lastBuild} key={build.buildNumber} />
       });
 
       var audits = this.state.audits.sort(function(a, b){

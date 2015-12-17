@@ -1,7 +1,7 @@
 /** @jsx React.DOM */
 
 define(['react', 'avatar'], function(React, Avatar) {
-  return React.createClass({
+  var Audits = React.createClass({
     propTypes: {
       audits: React.PropTypes.arrayOf(
         React.PropTypes.shape({
@@ -30,4 +30,5 @@ define(['react', 'avatar'], function(React, Avatar) {
       );
     }
   });
+  return Audits;
 });

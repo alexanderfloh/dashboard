@@ -87,18 +87,26 @@ table {
   and (min-device-width: 1009px)
   and (max-device-width: 1599px) {
     .ci-build-list {
-      .build-list-item:first-child {
+      .build-list-item:last-child {
         display: none;
       }
+    }
+
+    .ct-series-a .ct-bar {
+      stroke-width: 10px;
     }
 }
 
 @media screen
   and (min-device-width: 1600px) {
     .ci-build-list {
-      .build-list-item:first-child {
+      .build-list-item:last-child {
         display: flex;
       }
+    }
+
+    .ct-series-a .ct-bar {
+      stroke-width: 50px;
     }
 }
 
@@ -259,22 +267,14 @@ a {
 
 
     &.stable {
-      .build-number {
-        font-size: 6em;
-        font-weight: normal;
-        color: @dark-grey;
+      &.old-build {
+        background-color: lighten(desaturate(@green, 50%), 10%);
       }
     }
 
-    &.latest-build {
-      .build-number {
-        color: @grey;
-      }
-    }
-
-    &.successful, &.failed {
-      .image-container {
-        margin: 4em 5em;
+    &.failed {
+      &.old-build {
+        background-color: lighten(desaturate(@red, 50%), 10%);
       }
     }
 
@@ -295,10 +295,9 @@ a {
       }
 
       .ct-series-a .ct-bar {
-        stroke: @dark-grey;
-        stroke-width: 50px;
+        stroke: @grey;
         &.latest-build {
-          stroke: @grey;
+          stroke: @dark-grey;
         }
       }
       .ct-series-a .ct-label {
