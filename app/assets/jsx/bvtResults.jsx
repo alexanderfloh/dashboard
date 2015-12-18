@@ -32,7 +32,7 @@ define(['react', 'jquery', 'bvtChart'], function(React, $, BvtChart) {
           var latest = result.values[result.values.length-1];
 
           if(latest.failed === 0 && latest.notExecuted === 0) {
-            var classes = "bvtResult stable" + (latest.build === latestBuild ? ' latest-build' : 'old-build');
+            var classes = "bvtResult stable " + (latest.build === latestBuild ? ' latest-build' : 'old-build');
             var link = 'http://lnz-sc/silk/DEF/TM/Execution?nEx=' + latest.nodeId;
             return (
               <li className={classes} key={result.name + latest.build}>
@@ -46,7 +46,7 @@ define(['react', 'jquery', 'bvtChart'], function(React, $, BvtChart) {
           }
 
           else if(latest.failed === -1 || latest.notExecuted > 0) {
-            var classes = "bvtResult failed" + (latest.build === latestBuild ? ' latest-build' : 'old-build');
+            var classes = "bvtResult failed " + (latest.build === latestBuild ? ' latest-build' : 'old-build');
             var link = 'http://lnz-sc/silk/DEF/TM/Execution?nEx=' + latest.nodeId;
             return (
               <li className={classes} key={result.name + latest.build}>
