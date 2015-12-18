@@ -7,7 +7,7 @@ define(['react', 'audits', 'bvtResults', 'devices', 'loaderMixin', 'avatar', 'ci
     mixins: [LoadStatusMixin],
     getDefaultProps: function() {
       return {
-        pollInterval: 10000
+        pollInterval: 30000
       };
     },
 
