@@ -28,13 +28,13 @@ object PhabricatorFetcher {
   private def baseUrl = config.getString("dashboard.urlPhabricator")
     .getOrElse(throw new RuntimeException("dashboard.urlPhabricator not configured"))
 
-  private def fetchCommitsForAuthors(commitIds: Seq[Phabricator.PHID])(implicit conduit: Conduit) = {
-    Phabricator.query("api/diffusion.querycommits", Json.obj("phids" -> commitIds))
-  }
+  private def fetchCommitsForAuthors(commitIds: Seq[Phabricator.PHID])(implicit conduit: Conduit) = 
+    if(!commitIds.isEmpty)
+      Phabricator.query("api/diffusion.querycommits", Json.obj("phids" -> commitIds))
+    else Future(Json.obj())
 
   private def fetchUsersForConcerned(audits: Seq[Audit])(implicit conduit: Conduit) = {
     val commitIdsWithConcerns = audits.filter(_.status == "concerned").map(_.commit)
-
     for {
       commitsWithConcerns <- fetchCommitsForAuthors(commitIdsWithConcerns)
     } yield {
@@ -74,10 +74,11 @@ object PhabricatorFetcher {
         usersWithProblematicCommits <- fetchUsersForConcerned(projectAudits)
         auditors <- fetchAuditors(getUsersForAudits(projectAudits).keySet ++ usersWithProblematicCommits.keySet)
       } yield {
+        //        Logger.info(projectAudits.map(_.commit).mkString("\",\""))
         val openAudits = auditors.map { auditorJson =>
           implicit val reads = Auditor.reads
           implicit val writes = Auditor.writes
-          
+
           auditorJson.asOpt[Auditor].map { auditor =>
             val auditCount = getUsersForAudits(projectAudits).getOrElse(auditor.id, 0)
             val concernCount = usersWithProblematicCommits.getOrElse(auditor.id, 0)

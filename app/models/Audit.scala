@@ -46,7 +46,7 @@ object Audit {
   }
 
   def fetchOpenAuditsJson(implicit conduit: Conduit): Future[JsValue] = {
-    Phabricator.query("api/audit.query", Json.obj("status" -> "audit-status-open"))
+    Phabricator.query("api/audit.query", Json.obj("status" -> "audit-status-open", "limit" -> 1000))
   }
 
   implicit val reads: Reads[Audit] = (
