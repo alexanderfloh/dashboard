@@ -9,12 +9,15 @@ import play.api.libs.ws.WS
 import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.Play.current
 import play.api.mvc.Results
+import play.Logger
+import play.mvc.Http
+import play.api.mvc.Results.Status
 
 object Phabricator {
   type PHID = String
   type UserPHID = String
   type Conduit = JsObject
-  
+
   def query(subUrl: String, parameters: JsObject)(implicit conduit: Conduit): Future[JsValue] = {
     query(subUrl, ("params", makeParams(parameters)))
   }
@@ -28,7 +31,15 @@ object Phabricator {
       .url(baseUrl + subUrl)
       .withQueryString(parametersWithFormatting: _*)
       .post(Results.EmptyContent())
-      .map { r => Json.parse(r.body) }
+      .map { r =>
+        r.status match {
+          case 200 => r.json
+          case _ => {
+            Logger.warn(r.statusText)
+            throw new RuntimeException(s"error when executing query $subUrl: ${r.statusText}; params: $parameters")
+          }
+        }
+      }
   }
 
   private def makeParams(params: JsObject)(implicit conduit: Conduit) = {

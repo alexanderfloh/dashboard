@@ -9,6 +9,7 @@ import play.api.libs.ws.WS
 import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.Play.current
 import play.api.mvc.Results
+import play.Logger
 
 case class Audit(
     id: String,
@@ -29,7 +30,14 @@ object Audit {
     }
 
   def fetchCommits(commitIds: Seq[Phabricator.PHID])(implicit conduit: Conduit) = {
-    Phabricator.query("api/phid.lookup", Json.obj("names" -> commitIds))
+    val results = commitIds.distinct.grouped(100).map { commitGroup =>
+      Phabricator.query("api/phid.lookup", Json.obj("names" -> commitGroup))
+    }
+    Future.sequence(results).map { result =>
+      result.reduce { (left, right) =>
+        left.asInstanceOf[JsObject].deepMerge(right.asInstanceOf[JsObject])
+      }
+    }
   }
 
   def fetchAuditsForProject(project: String)(implicit conduit: Conduit) = {
