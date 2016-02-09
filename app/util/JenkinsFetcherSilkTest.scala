@@ -11,86 +11,80 @@ import models._
 object JenkinsFetcherSilkTest {
   def prefix = "dashboard.silktest."
 
+  def urlNightly = Play.current.configuration.getString(prefix + "urlNightly")
+    .getOrElse(throw new RuntimeException(prefix + "urlNightly not configured"))
+
+  def setupUrl = Play.current.configuration.getString(prefix + "urlSetup")
+    .getOrElse(throw new RuntimeException(prefix + "urlSetup not configured"))
+
+  def urlCi = Play.current.configuration.getString(prefix + "urlCi")
+    .getOrElse(throw new RuntimeException(prefix + "urlTrunk not configured"))
+
+  def nrOfRegressions = Play.current.configuration.getInt("dashboard.silktest.nrOfRegressions")
+    .getOrElse(throw new RuntimeException("dashboard.silktest.nrOfRegressions not configured"))
+
   def fetchCiBuilds(mapName: String, numberOfItems: Integer): Future[String] = {
-    val baseUrl = Play.current.configuration.getString(prefix + "urlCi")
-      .getOrElse(throw new RuntimeException(prefix + "urlTrunk not configured"))
-    val nrOfRegressions = Play.current.configuration.getInt("dashboard.silktest.nrOfRegressions")
-      .getOrElse(throw new RuntimeException("dashboard.silktest.nrOfRegressions not configured"))
+    for {
+      (json, details) <- JenkinsFetcherUtil.getDetailsForJob(urlCi, numberOfItems)
+      regressions <- fetchTests()
+    } yield {
 
-    WS.url(baseUrl + "/api/json").get.flatMap { response =>
-      val json = Json.parse(response.body)
-      val details = JenkinsFetcherUtil.getDetails(json, numberOfItems, baseUrl)
-      val lastBuild = (json \ "lastBuild" \ "number").as[Int]
+      val detailsWithTests = details.map(ciBuild => {
+        val extracted = getTestStatus(regressions, ciBuild.buildNumber)
 
-      val regressionKeys = (1 to nrOfRegressions)
-        .map(i => (s"urlRegressions${i}", s"regressionName${i}"))
+        implicit val writes = CiBuild.writes
+        val ciBuildJson = Json.toJson(ciBuild).asInstanceOf[JsObject]
+        ciBuildJson ++ Json.obj(("regressions", Json.toJson(extracted)))
+      });
+      Json.stringify(Json.obj(mapName -> detailsWithTests))
+    }
+  }
 
-      val regressionConfig = regressionKeys.map {
+  def fetchTests() = {
+    Future.sequence(getTestsConfig().map {
+      case (url, name) => JenkinsFetcherUtil.fetchTests(url, name)
+    })
+  }
+  
+  def getTestsConfig() = {
+    (1 to nrOfRegressions)
+      .map(i => (s"urlRegressions$i", s"regressionName$i"))
+      .toList
+      .map {
         case (urlKey, nameKey) =>
           val config = Play.current.configuration
           val url = config.getString(prefix + urlKey).getOrElse(throw new RuntimeException(s"$urlKey is not configured"))
           val name = config.getString(prefix + nameKey).getOrElse(throw new RuntimeException(s"$nameKey is not configured"))
           (url, name)
       }
+  }
 
-      val regressionResults = Future.sequence(regressionConfig.map {
-        case (url, name) => JenkinsFetcherUtil.fetchTests(url, name)
-      })
-
-      for {
-        regression <- regressionResults
-        lastCompletedDetails <- details
-      } yield {
-        val detailsWithTests = lastCompletedDetails.map(ciBuild => {
-          val buildNumber = ciBuild.buildNumber
-
-          val extracted = regression.map {
-            case (name, result) =>
-              val defaultStatus = Json.obj("status" -> "n/a", "name" -> name)
-              result.getOrElse(buildNumber, defaultStatus)
-          }
-
-          implicit val writes = CiBuild.writes
-          val ciBuildJson = Json.toJson(ciBuild).asInstanceOf[JsObject]
-          ciBuildJson ++ Json.obj(("regressions", Json.toJson(extracted))) 
-        });
-        Json.stringify(Json.obj(mapName -> detailsWithTests))
-      }
+  def getTestStatus(regressions: List[(String, Map[Int, JsValue])], buildNumber: Int) = {
+    regressions.map {
+      case (name, result) =>
+        val defaultStatus = Json.obj("status" -> "n/a", "name" -> name)
+        result.get(buildNumber).getOrElse(defaultStatus)
     }
   }
 
-  def fetchNightlyBuild(mapName: String, numberOfItems: Integer): Future[String] = {
-    val baseUrl = Play.current.configuration.getString(prefix + "urlNightly")
-      .getOrElse(throw new RuntimeException(prefix + "urlNightly not configured"))
-
-    val setupUrl = Play.current.configuration.getString(prefix + "urlSetup")
-      .getOrElse(throw new RuntimeException(prefix + "urlSetup not configured"))
-
-    WS.url(baseUrl + "/api/json").get.flatMap { response =>
-      val json = Json.parse(response.body)
-      val details = JenkinsFetcherUtil.getDetails(json, numberOfItems, baseUrl)
-
-      for {
-        lastCompletedDetails <- details
-        setupResult <- JenkinsFetcherUtil.fetchTests(setupUrl, "Setup")
-      } yield {
-        val lastBuildResultOpt = lastCompletedDetails match {
-          case latest :: tail => Some(latest)
-          case Nil => None
-        }
-        lastBuildResultOpt.map{ lastBuildResult => 
-          val latestBuildNumber = lastBuildResult.buildNumber
-  
-          val setupJson: JsValue = setupResult match {
-            case (name, result) => result.getOrElse(latestBuildNumber, Json.obj("status" -> "n/a", "name" -> name))
-          }
-  
-          implicit val writes = CiBuild.writes
-          val buildWithSetup = Json.obj("setup" -> setupJson) ++ Json.toJson(lastBuildResult).asInstanceOf[JsObject] 
-  
-          Json.stringify(Json.obj(mapName -> buildWithSetup))
-        }.getOrElse(throw new RuntimeException("failed to fetch results"))
+  def fetchNightlyBuild(mapName: String): Future[String] = {
+    for {
+      (_, lastCompletedDetails) <- JenkinsFetcherUtil.getDetailsForJob(urlNightly)
+      (setupJson, _) <- JenkinsFetcherUtil.getDetailsForJob(setupUrl)
+    } yield {
+      val lastBuildResultOpt = lastCompletedDetails match {
+        case latest :: tail => Some(latest)
+        case Nil            => None
       }
+      lastBuildResultOpt.map { lastBuildResult =>
+        val latestBuildNumber = lastBuildResult.buildNumber
+
+        implicit val writes = CiBuild.writes
+        val buildWithSetup = Json.obj("setup" -> setupJson) ++
+          Json.toJson(lastBuildResult).asInstanceOf[JsObject]
+
+        Json.stringify(Json.obj(mapName -> buildWithSetup))
+      }.getOrElse(throw new RuntimeException("failed to fetch results"))
     }
   }
 }

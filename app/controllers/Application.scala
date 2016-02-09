@@ -39,7 +39,7 @@ object Application extends Controller {
 
   def buildAside = Cached.everything(req => "build.nightly", 60 * 20) {
     Action.async {
-      JenkinsFetcherSilkTest.fetchNightlyBuild("buildNightly", 1).map(Ok(_))
+      JenkinsFetcherSilkTest.fetchNightlyBuild("buildNightly").map(Ok(_))
     }
   }
 
