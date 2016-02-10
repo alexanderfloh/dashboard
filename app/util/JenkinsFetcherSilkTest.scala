@@ -70,7 +70,7 @@ object JenkinsFetcherSilkTest {
   def fetchNightlyBuild(mapName: String): Future[String] = {
     for {
       (_, lastCompletedDetails) <- JenkinsFetcherUtil.getDetailsForJob(urlNightly)
-      (setupJson, _) <- JenkinsFetcherUtil.getDetailsForJob(setupUrl)
+      (_, setupDetails) <- JenkinsFetcherUtil.getDetailsForJob(setupUrl)
     } yield {
       val lastBuildResultOpt = lastCompletedDetails match {
         case latest :: tail => Some(latest)
@@ -80,7 +80,8 @@ object JenkinsFetcherSilkTest {
         val latestBuildNumber = lastBuildResult.buildNumber
 
         implicit val writes = CiBuild.writes
-        val buildWithSetup = Json.obj("setup" -> setupJson) ++
+        val buildWithSetup = Json.obj("setup" -> 
+          setupDetails.headOption.getOrElse(throw new RuntimeException("failed to fetch setup results"))) ++
           Json.toJson(lastBuildResult).asInstanceOf[JsObject]
 
         Json.stringify(Json.obj(mapName -> buildWithSetup))
