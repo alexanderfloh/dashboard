@@ -22,14 +22,19 @@ define(['react', 'moment'], function(React, Moment) {
         var widthStyle = {
           width: Math.min(progress, 95) + '%'
         }
+        var duration = Moment(timeLeft).diff(Moment(0), 'minutes');
+
+
         return (
           <div className="buildProgress">
             <div className="label">
               <div className="buildNumber">
                 {this.props.lastBuild.buildNumber}
               </div>
-              <div className="timeLeft">
-                {formatTime(timeLeft)}
+              <div className="time-left">
+                <div className="time-left-label">ETA</div>
+                <span className="time-left-amount">{duration}</span>
+                <span className="time-left-unit">m</span>
               </div>
             </div>
             <div className="progress-bar-background">

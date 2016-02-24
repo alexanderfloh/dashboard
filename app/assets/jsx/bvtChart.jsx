@@ -27,11 +27,11 @@ define(['react', 'jquery', 'chartist-react', 'chartist'], function(React, $, Cha
 
     render: function() {
       var data = {
-        labels: this.props.result.values.map(function(r) {
+        labels: this.props.result.runs.map(function(r) {
           return r.build;
         }),
         series: [
-          this.props.result.values.map(function(r) {
+          this.props.result.runs.map(function(r) {
             return r.failed;
           })
         ]
@@ -39,21 +39,23 @@ define(['react', 'jquery', 'chartist-react', 'chartist'], function(React, $, Cha
       var options = {
         axisX: {
           showGrid: false,
-          showLabel: true,
+          showLabel: false,
         },
 
         axisY: {
           showGrid: false,
           showLabel: false,
-          offset: 10,
+          //offset: -30,
         },
 
         chartPadding: {
-          top: 15,
-          right: 50,
-          bottom: 0,
-          left: 40,
+          top: 10,
+          //right: -70,
+          right: -20,
+          bottom: -20,
+          left: -10,
         },
+        lineSmooth: Chartist.Interpolation.none(),
       };
 
       var latestBuild = this.props.latestBuild;
@@ -72,7 +74,7 @@ define(['react', 'jquery', 'chartist-react', 'chartist'], function(React, $, Cha
         },
       }
 
-      return <ChartistReact data={data} options={options} listener={listener} type={'Bar'} />;
+      return <ChartistReact data={data} options={options} listener={listener} type={'Line'} />;
     },
 
   });

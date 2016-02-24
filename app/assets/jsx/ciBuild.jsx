@@ -101,6 +101,8 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
 
       var c = 'ci-build-item ' + this.props.build.status;
       var arrowClass = 'arrow-down ' + this.props.build.status;
+      var arrowContainerClass = 'arrow-container ' + this.props.build.status;
+      var testContainerClass = 'test-container ' + (this.props.build.building ? 'pending' : '');
       return (
           <li className="build-list-item">
             <div className={c}>
@@ -108,10 +110,10 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
                 {committerNodes}
               </div>
               {this.buildStatus(this.props.build)}
-              <div className="arrow-container">
+              <div className={arrowContainerClass}>
               <div className={arrowClass} />
               </div>
-              <div>
+              <div className={testContainerClass}>
                 <ul className="regression-list">
                   {resultNodes}
                 </ul>

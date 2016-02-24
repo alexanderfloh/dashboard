@@ -1,8 +1,75 @@
 /** @jsx React.DOM */
 
 define(['react', 'jquery', 'bvtChart'], function(React, $, BvtChart) {
-  var BvtResults = React.createClass({
 
+  var BvtGroup = React.createClass({
+    render: function() {
+      var latestBuild = this.props.latestBuild;
+      var configs = this.props.group.configs.map(function(config) {
+        return (<BvtConfig config={config} latestBuild={latestBuild} key={config.name} />);
+      });
+      return (
+        <div className="bvt-group">
+          <div className="bvt-group-header">{this.props.group.name}</div>
+          {configs}
+        </div>);
+    }
+  });
+
+  var BvtConfig = React.createClass({
+    render: function() {
+      var latestBuild = this.props.latestBuild;
+      var config = this.props.config;
+      var imgSrc = '/icon/' + encodeURIComponent(config.name);
+
+      if(config.runs.length > 0) {
+        var latest = config.runs[config.runs.length-1];
+
+        if(latest.failed === 0 && latest.notExecuted === 0) {
+          var classes = "bvtResult stable " + (latest.build === latestBuild ? ' latest-build' : 'old-build');
+          var link = 'http://lnz-sc/silk/DEF/TM/Execution?nEx=' + latest.nodeId;
+          return (
+            <a className={classes} key={config.name + latest.build} href={link} target="_blank">
+              <div className="image-container">
+                <img src={imgSrc} title={config.name} className="bvt-icon-large" />
+
+              </div>
+              <div className="bvt-config-label">{config.name}</div>
+            </a>
+          );
+        }
+
+        else if(latest.failed === -1 || latest.notExecuted > 0) {
+          var classes = "bvtResult failed " + (latest.build === latestBuild ? ' latest-build' : 'old-build');
+          var link = 'http://lnz-sc/silk/DEF/TM/Execution?nEx=' + latest.nodeId;
+          return (
+            <a className={classes} key={config.name + latest.build} href={link} target="_blank">
+              <div className="image-container">
+                <img src={imgSrc} title={config.name} className="bvt-icon-large" />
+
+              </div>
+              <div className="bvt-config-label">{config.name}</div>
+            </a>
+          );
+        }
+
+        var link = 'http://lnz-sc/silk/DEF/TM/Execution?nEx=' + latest.nodeId;
+        return (
+          <a className="bvtResult unstable" key={config.name + latest.build} href={link} target="_blank">
+            <div className="image-container">
+              <img src={imgSrc} title={config.name} className="bvt-icon-medium" />
+            </div>
+            <BvtChart key={config.name} result={config} latestBuild={latestBuild}></BvtChart>
+            <div className="bvt-latest-failed-count">{latest.failed}</div>
+            <div className="bvt-config-label">{config.name}</div>
+          </a>
+        );
+      }
+    }
+  });
+
+  var BvtResults = React.createClass({
+    /*
     propTypes: {
       bvtResults: React.PropTypes.arrayOf(
         React.PropTypes.shape({
@@ -22,55 +89,12 @@ define(['react', 'jquery', 'bvtChart'], function(React, $, BvtChart) {
       ).isRequired,
       latestBuild: React.PropTypes.string.isRequired,
     },
+    */
 
     render: function() {
       var latestBuild = this.props.latestBuild;
-      var bvtNodes = this.props.bvtResults.map(function(result) {
-        var imgSrc = '/icon/' + encodeURIComponent(result.name);
-
-        if(result.values.length > 0) {
-          var latest = result.values[result.values.length-1];
-
-          if(latest.failed === 0 && latest.notExecuted === 0) {
-            var classes = "bvtResult stable " + (latest.build === latestBuild ? ' latest-build' : 'old-build');
-            var link = 'http://lnz-sc/silk/DEF/TM/Execution?nEx=' + latest.nodeId;
-            return (
-              <li className={classes} key={result.name + latest.build}>
-                <a href={link} target="_blank">
-                  <div className="image-container">
-                    <img src={imgSrc} title={result.name} className="bvt-icon-success" />
-                  </div>
-                </a>
-              </li>
-            );
-          }
-
-          else if(latest.failed === -1 || latest.notExecuted > 0) {
-            var classes = "bvtResult failed " + (latest.build === latestBuild ? ' latest-build' : 'old-build');
-            var link = 'http://lnz-sc/silk/DEF/TM/Execution?nEx=' + latest.nodeId;
-            return (
-              <li className={classes} key={result.name + latest.build}>
-                <a href={link} target="_blank">
-                  <div className="image-container">
-                    <img src={imgSrc} title={result.name} className="bvt-icon-success" />
-                  </div>
-                </a>
-              </li>
-            );
-          }
-
-          var link = 'http://lnz-sc/silk/DEF/TM/Execution?nEx=' + latest.nodeId;
-          return (
-            <li className="bvtResult unstable" key={result.name + latest.build}>
-              <a href={link} target="_blank">
-                <div className="image-container">
-                  <img src={imgSrc} title={result.name} className="bvt-icon" />
-                </div>
-                <BvtChart key={result.name} result={result} latestBuild={latestBuild}></BvtChart>
-              </a>
-            </li>
-          );
-        }
+      var bvtNodes = this.props.bvtResults.map(function(group) {
+        return (<BvtGroup group={group} latestBuild={latestBuild} key={group.name} />);
       });
 
       return (
@@ -80,6 +104,18 @@ define(['react', 'jquery', 'bvtChart'], function(React, $, BvtChart) {
           </ul>
         </section>
       );
+
+      /*
+
+
+      return (
+        <section className="bvtResults">
+          <ul className="bvtResults-container">
+            {bvtNodes}
+          </ul>
+        </section>
+      );
+      */
     }
   });
 

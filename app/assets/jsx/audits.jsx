@@ -23,9 +23,11 @@ define(['react', 'avatar'], function(React, Avatar) {
 
       return (
         <section className="audit-section">
-          <ul className="audit-list">
-            {auditNodes}
-          </ul>
+          <a href="http://lnz-phabricator.microfocus.com" target="_blank">
+            <ul className="audit-list">
+              {auditNodes}
+            </ul>
+          </a>
         </section>
       );
     }
