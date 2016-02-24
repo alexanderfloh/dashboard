@@ -44,9 +44,9 @@ object RunConfig {
     val Edge = RunConfig("BVT - Win10 Edge - x64")
     val Firefox = RunConfig("BVT - Win10  FF - x64")
     val Safari = RunConfig("BVT - iOS - Safari - iPad Air")
-    val SafariRemote = RunConfig("Todo")
+    val SafariRemote = RunConfig("BVT - Safari (Remote)")
     val Chrome = RunConfig("BVT - Win10  Chrome - x64")
-    val ChromeMobile = RunConfig("Todo")
+    val ChromeMobile = RunConfig("BVT - Android - Chrome - Nexus")
 
     val all = List(Edge, Firefox, Safari, SafariRemote, Chrome, ChromeMobile)
   }
