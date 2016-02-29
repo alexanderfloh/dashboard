@@ -9,7 +9,8 @@ case class BvtResult(
     passed: Int,
     failed: Int,
     notExecuted: Int,
-    nodeId: String) {
+    nodeId: String,
+    duration: Long) {
 }
 
 object BvtResult {
@@ -19,7 +20,8 @@ object BvtResult {
     (JsPath \ "passed").write[Int] and
     (JsPath \ "failed").write[Int] and
     (JsPath \ "notExecuted").write[Int] and
-    (JsPath \ "nodeId").write[String])(unlift(BvtResult.unapply))
+    (JsPath \ "nodeId").write[String] and
+    (JsPath \ "duration").write[Long])(unlift(BvtResult.unapply))
 }
 
 case class RunConfig(name: String)

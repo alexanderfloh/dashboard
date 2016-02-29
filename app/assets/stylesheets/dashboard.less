@@ -525,10 +525,7 @@ a {
 }
 
 .bvt-group {
-  display: flex;
-  flex-direction: row;
   flex-basis: 50%;
-  flex-wrap: wrap;
   flex-grow: 0;
 }
 
@@ -537,7 +534,17 @@ a {
   text-align: center;
   font-size: 3em;
   line-height: 1.5em;
+  .font-cursive;
+  color: @dark-grey;
 }
+
+.bvt-group-results-container{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-content: stretch;
+}
+
 
 .bvt-config-label {
   color: @dark-grey;
@@ -560,11 +567,18 @@ a {
 
 }
 
+.no-grow {
+  flex: 0;
+}
+
+.grow {
+  flex: 1;
+}
+
 .image-container {
   flex-basis: 5%;
-  flex-grow: 1;
   display: inline-block;
-  padding-bottom: 1em;
+  padding: 0px 0px 6px 9px;
 }
 
 .ct-chart {
@@ -573,10 +587,7 @@ a {
 
   display: inline-block;
   //background-color: fade(black, 5%);
-
-  flex-grow: 0;
-  flex-shrink: 1;
-  flex-basis: 150px;
+  flex: 0 1 150px;
 
   .ct-label {
     fill: @dark-grey;
@@ -617,6 +628,7 @@ a {
   flex-wrap: wrap;
   align-content: stretch;
   align-items: stretch;
+  justify-content: space-between;
 
 
 

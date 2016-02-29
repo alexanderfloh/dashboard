@@ -5,21 +5,26 @@ import scala.xml.XML
 import models.BvtResult
 import models.RunConfig
 import models.RunGroup
+import play.Logger
 
 object BvtParser {
   def parse(nevergreens: String): Seq[BvtResult] = {
     val xml = XML.loadString(nevergreens)
     val rows = xml \ "data" \ "row"
-    rows.map(row => row.child match {
-      case Seq(name, build, passed, failed, notExecuted, nodeId) => {
-        BvtResult(
+    rows.flatMap(row => row.child match {
+      case Seq(name, build, passed, failed, notExecuted, nodeId, duration, _*) => {
+        Some(BvtResult(
           name.text,
-          //s"Build ${build.text}",
           build.text,
           passed.text.toInt,
           failed.text.toInt,
           notExecuted.text.toInt,
-          nodeId.text)
+          nodeId.text,
+          duration.text.toLong))
+      }
+      case other: Any => {
+        Logger.error(s"unknown SC report format - ignoring: '$other'")
+        None
       }
     })
   }

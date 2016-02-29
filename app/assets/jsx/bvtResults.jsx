@@ -11,7 +11,9 @@ define(['react', 'jquery', 'bvtChart'], function(React, $, BvtChart) {
       return (
         <div className="bvt-group">
           <div className="bvt-group-header">{this.props.group.name}</div>
-          {configs}
+          <div className="bvt-group-results-container">
+            {configs}
+          </div>
         </div>);
     }
   });
@@ -30,7 +32,7 @@ define(['react', 'jquery', 'bvtChart'], function(React, $, BvtChart) {
           var link = 'http://lnz-sc/silk/DEF/TM/Execution?nEx=' + latest.nodeId;
           return (
             <a className={classes} key={config.name + latest.build} href={link} target="_blank">
-              <div className="image-container">
+              <div className="image-container grow">
                 <img src={imgSrc} title={config.name} className="bvt-icon-large" />
 
               </div>
@@ -44,7 +46,7 @@ define(['react', 'jquery', 'bvtChart'], function(React, $, BvtChart) {
           var link = 'http://lnz-sc/silk/DEF/TM/Execution?nEx=' + latest.nodeId;
           return (
             <a className={classes} key={config.name + latest.build} href={link} target="_blank">
-              <div className="image-container">
+              <div className="image-container grow">
                 <img src={imgSrc} title={config.name} className="bvt-icon-large" />
 
               </div>
@@ -56,7 +58,7 @@ define(['react', 'jquery', 'bvtChart'], function(React, $, BvtChart) {
         var link = 'http://lnz-sc/silk/DEF/TM/Execution?nEx=' + latest.nodeId;
         return (
           <a className="bvtResult unstable" key={config.name + latest.build} href={link} target="_blank">
-            <div className="image-container">
+            <div className="image-container no-grow">
               <img src={imgSrc} title={config.name} className="bvt-icon-medium" />
             </div>
             <BvtChart key={config.name} result={config} latestBuild={latestBuild}></BvtChart>
