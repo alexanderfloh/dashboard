@@ -2,6 +2,8 @@ package models
 
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
+import play.api.Play
+import play.Logger
 
 case class BvtResult(
     name: String,
@@ -24,35 +26,33 @@ object BvtResult {
     (JsPath \ "duration").write[Long])(unlift(BvtResult.unapply))
 }
 
-case class RunConfig(name: String)
-abstract case class RunGroup(name: String) {
-  def all: List[RunConfig]
+case class RunConfig(id: String)
+case class RunGroup(name: String, all: List[RunConfig]) {
+
 }
 
 object RunConfig {
-  object Native extends RunGroup("Native") {
-    val Stable = RunConfig("BVT - Win10 B - x64")
-    val Unstable = RunConfig("BVT - Win10 A - x64")
-    val Stw = RunConfig("BVT - STW - Win10 - x64")
-    val IE = RunConfig("BVT - Win10  IE - x64")
-    val iOS = RunConfig("BVT - iOS native - iPhone Device")
-    
-    val Android = RunConfig("BVT - Android native - Remote Android Device")
-
-    val all = List(Stable, Unstable, Stw, IE, iOS, Android)
+  def configs(): List[RunConfig] = {
+    groups().map(_.all).reduce((l, r) => { l ++ r })
   }
+  
+  def groups(): List[RunGroup] = {
+    import scala.collection.JavaConverters._
 
-  object Web extends RunGroup("Web") {
-    val Edge = RunConfig("BVT - Win10 Edge - x64")
-    val Firefox = RunConfig("BVT - Win10  FF - x64")
-    val Safari = RunConfig("BVT - iOS - Safari - iPad Air")
-    val SafariRemote = RunConfig("BVT - Mac OS Safari (Remote)")
-    val Chrome = RunConfig("BVT - Win10  Chrome - x64")
-    val ChromeMobile = RunConfig("BVT - Android - Chrome - Nexus")
-
-    val all = List(Edge, Firefox, Safari, SafariRemote, Chrome, ChromeMobile)
+    Play.current.configuration.getObject("dashboard.bvt").map {
+      bvtConfigObj =>
+        val bvtConfig = bvtConfigObj.toConfig
+        val groupOrdering = bvtConfig.getStringList("ordering").asScala.toList
+        val groups = groupOrdering.map { groupKey =>
+          val groupConfig = bvtConfig.getConfig(groupKey)
+          
+          val groupName = groupConfig.getString("caption")
+          
+          val configOrdering = groupConfig.getStringList("ordering").asScala.toList
+          val configs = configOrdering.map { RunConfig.apply }
+          RunGroup(groupName, configs)
+        }
+        groups
+    }.getOrElse(List())
   }
-
-  val all = Native.all ++ Web.all
-  val allGroups = List(Native, Web)
 }

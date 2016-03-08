@@ -31,14 +31,14 @@ object BvtParser {
 
   def classify(results: Seq[BvtResult]): List[(RunConfig, Seq[BvtResult])] = {
     val grouped = results.groupBy { result =>
-      RunConfig.all
-        .find(config => config.name == result.name)
+      RunConfig.configs
+        .find(config => config.id == result.nodeId)
 
     }.collect { case (Some(key), value) => (key, value) }
 
-    RunConfig.all.flatMap(config => grouped.find {
+    RunConfig.configs.flatMap(config => grouped.find {
       case (key, _) => {
-        key.name == config.name
+        key.id == config.id
       }
     })
   }
@@ -46,10 +46,10 @@ object BvtParser {
   def group(results: List[(RunConfig, Seq[BvtResult])]): List[(RunGroup, List[(RunConfig, Seq[BvtResult])])] = {
     val grouped = results.groupBy {
       case (config, results) =>
-        RunConfig.allGroups.find(group => group.all.contains(config))
+        RunConfig.groups.find(group => group.all.contains(config))
     }.collect { case (Some(key), value) => (key, value) }
-    
-    RunConfig.allGroups.flatMap(group => grouped.find {
+
+    RunConfig.groups.flatMap(group => grouped.find {
       case (key, _) => {
         key.name == group.name
       }
