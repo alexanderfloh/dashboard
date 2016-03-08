@@ -81,7 +81,10 @@ object Application extends Controller {
           case (config, runs) => {
             implicit val bvtResultWrites = BvtResult.writes
             val runsSorted = runs.sortBy(v => v.build)
-            Json.obj("name" -> runsSorted.head.name, "runs" -> Json.toJson(runsSorted))
+            Json.obj(
+              "name" -> runsSorted.head.name,
+              "icon" -> config.icon,
+              "runs" -> Json.toJson(runsSorted))
           }
         }
         Json.obj("name" -> group.name, "configs" -> runs)

@@ -26,7 +26,7 @@ object BvtResult {
     (JsPath \ "duration").write[Long])(unlift(BvtResult.unapply))
 }
 
-case class RunConfig(id: String)
+case class RunConfig(id: String, icon: String)
 case class RunGroup(name: String, all: List[RunConfig]) {
 
 }
@@ -49,7 +49,10 @@ object RunConfig {
           val groupName = groupConfig.getString("caption")
           
           val configOrdering = groupConfig.getStringList("ordering").asScala.toList
-          val configs = configOrdering.map { RunConfig.apply }
+          val configs = configOrdering.map { configKey =>
+            val icon = groupConfig.getString(s"$configKey.icon")
+            RunConfig(configKey, icon)
+          }
           RunGroup(groupName, configs)
         }
         groups

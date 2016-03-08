@@ -22,7 +22,7 @@ define(['react', 'jquery', 'bvtChart'], function(React, $, BvtChart) {
     render: function() {
       var latestBuild = this.props.latestBuild;
       var config = this.props.config;
-      var imgSrc = '/icon/' + encodeURIComponent(config.name);
+      var imgSrc = '/assets/images/icons/' + encodeURIComponent(config.icon);
 
       if(config.runs.length > 0) {
         var latest = config.runs[config.runs.length-1];
