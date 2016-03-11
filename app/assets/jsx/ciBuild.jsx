@@ -99,9 +99,9 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
 
       var classesRegressionResult = this.getStatusClassSet(this.props.build.regressions[0], "regression");
 
-      var c = 'ci-build-item ' + this.props.build.status;
-      var arrowClass = 'arrow-down ' + this.props.build.status;
-      var arrowContainerClass = 'arrow-container ' + this.props.build.status;
+      var c = 'ci-build-item ' + (this.props.build.building ? 'pending' : this.props.build.status);
+      var arrowClass = 'arrow-down ' + (this.props.build.building ? 'pending' : this.props.build.status);
+      var arrowContainerClass = 'arrow-container ' + (this.props.build.building ? 'pending' : this.props.build.status);
       var testContainerClass = 'test-container ' + (this.props.build.building ? 'pending' : '');
       return (
           <li className="build-list-item">
