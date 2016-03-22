@@ -55,6 +55,7 @@ define(['react', 'avatar' ], function(React, Avatar) {
             <div className="avatars nightly">
               {committerNodes}
             </div>
+            <div className="build-description">{this.props.build.description}</div>
             <div className={classesStatus}>
               <a className="build-number" href={this.props.build.link} target="_blank">
                 {this.props.build.buildNumber}

@@ -109,6 +109,7 @@ define(['react', 'avatar', 'buildProgress'], function(React, Avatar, BuildProgre
               <div className="avatars">
                 {committerNodes}
               </div>
+              <div className="build-description">{this.props.build.description}</div>
               {this.buildStatus(this.props.build)}
               <div className={arrowContainerClass}>
               <div className={arrowClass} />

@@ -45,7 +45,7 @@ object JenkinsFetcherSilkTest {
       case (url, name) => JenkinsFetcherUtil.fetchTests(url, name)
     })
   }
-  
+
   def getTestsConfig() = {
     (1 to nrOfRegressions)
       .map(i => (s"urlRegressions$i", s"regressionName$i"))
@@ -72,17 +72,14 @@ object JenkinsFetcherSilkTest {
       (_, lastCompletedDetails) <- JenkinsFetcherUtil.getDetailsForJob(urlNightly)
       (_, setupDetails) <- JenkinsFetcherUtil.getDetailsForJob(setupUrl)
     } yield {
-      val lastBuildResultOpt = lastCompletedDetails match {
-        case latest :: tail => Some(latest)
-        case Nil            => None
-      }
-      lastBuildResultOpt.map { lastBuildResult =>
+      lastCompletedDetails.headOption.map { lastBuildResult =>
         val latestBuildNumber = lastBuildResult.buildNumber
 
         implicit val writes = CiBuild.writes
-        val buildWithSetup = Json.obj("setup" -> 
-          setupDetails.headOption.getOrElse(throw new RuntimeException("failed to fetch setup results"))) ++
-          Json.toJson(lastBuildResult).asInstanceOf[JsObject]
+        val buildWithSetup = (Json.obj("setup" ->
+          setupDetails.headOption
+          .getOrElse(throw new RuntimeException("failed to fetch setup results")))
+          ++ Json.toJson(lastBuildResult).asInstanceOf[JsObject])
 
         Json.stringify(Json.obj(mapName -> buildWithSetup))
       }.getOrElse(throw new RuntimeException("failed to fetch results"))

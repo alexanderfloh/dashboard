@@ -420,7 +420,7 @@ a {
       }
       .status, .regression {
         font-size: 1em;
-        padding: 0.2em 0;
+
         text-align: center;
       }
 
@@ -434,6 +434,7 @@ a {
         display: inline-block;
         padding: 10px 0px;
         flex: 1 1 20%;
+        padding: 0.2em 0;
       }
 
       .status, .status-nightly {
@@ -443,6 +444,7 @@ a {
 
       .status {
         flex-grow: 0;
+        padding: 0;
       }
 
       .status-nightly {
@@ -643,6 +645,12 @@ a {
   &.unstable.old-build {
     background-color: lighten(desaturate(@orange, 50%), 10%);
   }
+}
+
+.build-description {
+  font-size: 0.5em;
+  color: white;
+  padding: 0em 1em;
 }
 
 .bvt-icon-small {

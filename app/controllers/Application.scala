@@ -69,30 +69,33 @@ object Application extends Controller {
     }
   }
 
-  def getBvtResult = Action.async {
-    val grouped = ScFetcher.fetchWin10BVTs()
-      .map(BvtParser.parse)
-      .map(BvtParser.classify)
-      .map(BvtParser.group)
+  def getBvtResult = Cached.everything(req => "bvtresult", 60 * 5) {
+    Action.async {
 
-    val r = grouped.map(_.map {
-      case (group, configs) => {
-        val runs = configs.map {
-          case (config, runs) => {
-            implicit val bvtResultWrites = BvtResult.writes
-            val runsSorted = runs.sortBy(v => v.build)
-            Json.obj(
-              "name" -> runsSorted.head.name,
-              "icon" -> config.icon,
-              "runs" -> Json.toJson(runsSorted))
+      val grouped = ScFetcher.fetchWin10BVTs()
+        .map(BvtParser.parse)
+        .map(BvtParser.classify)
+        .map(BvtParser.group)
+
+      val r = grouped.map(_.map {
+        case (group, configs) => {
+          val runs = configs.map {
+            case (config, runs) => {
+              implicit val bvtResultWrites = BvtResult.writes
+              val runsSorted = runs.sortBy(v => v.build)
+              Json.obj(
+                "name" -> runsSorted.head.name,
+                "icon" -> config.icon,
+                "runs" -> Json.toJson(runsSorted))
+            }
           }
+          Json.obj("name" -> group.name, "configs" -> runs)
         }
-        Json.obj("name" -> group.name, "configs" -> runs)
-      }
-    }).map { results => Json.obj("bvtResults" -> results) }
-      .map { Ok(_) }
-    r
-    //Future(Ok(""))
+      }).map { results => Json.obj("bvtResults" -> results) }
+        .map { Ok(_) }
+      r
+      //Future(Ok(""))
+    }
   }
 
   def setDevice() = Action { implicit request =>

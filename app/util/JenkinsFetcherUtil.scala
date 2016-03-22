@@ -90,7 +90,7 @@ object JenkinsFetcherUtil {
   }
 
   private def fetchBuild(baseUrl: String, buildNumber: Int): Future[CiBuild] = {
-    val url = s"$baseUrl/$buildNumber/api/json?tree=timestamp,estimatedDuration,building,result,culprits[fullName],actions[parameters[value]]"
+    val url = s"$baseUrl/$buildNumber/api/json?tree=timestamp,description,estimatedDuration,building,result,culprits[fullName],actions[parameters[value]]"
     WS.url(url).get.map { responseDetails =>
       val json = Json.parse(responseDetails.body)
 
@@ -102,6 +102,7 @@ object JenkinsFetcherUtil {
       CiBuild(
         buildNumber,
         status,
+        (json \ "description").as[Option[String]],
         culprits,
         s"$baseUrl/$buildNumber",
         (json \ "building").as[Boolean],
