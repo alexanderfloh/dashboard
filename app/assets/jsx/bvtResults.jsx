@@ -55,9 +55,10 @@ define(['react', 'jquery', 'bvtChart'], function(React, $, BvtChart) {
           );
         }
 
+        var classes = "bvtResult unstable " + (latest.build === latestBuild ? ' latest-build' : 'old-build');
         var link = 'http://lnz-sc/silk/DEF/TM/Execution?nEx=' + latest.nodeId;
         return (
-          <a className="bvtResult unstable" key={config.name + latest.build} href={link} target="_blank">
+          <a className={classes} key={config.name + latest.build} href={link} target="_blank">
             <div className="image-container no-grow">
               <img src={imgSrc} title={config.name} className="bvt-icon-medium" />
             </div>
