@@ -7,6 +7,8 @@ import play.api.libs.json._
 import scala.concurrent.ExecutionContext.Implicits.global
 import models.CiBuild
 import play.api.Play
+import play.mvc.Http
+import play.Logger
 
 object JenkinsFetcherUtil {
 
@@ -22,11 +24,16 @@ object JenkinsFetcherUtil {
   }
 
   def getDetailsForJob(baseUrl: String, numberOfItems: Int = 1) = {
-    WS.url(baseUrl + "/api/json").get.flatMap { response =>
-      val json = Json.parse(response.body)
-      val details = JenkinsFetcherUtil.getDetails(json, numberOfItems, baseUrl)
-      for { details <- details } yield {
-        (json, details)
+    val url = baseUrl + "/api/json"
+    WS.url(url).get.flatMap { response =>
+      if (response.status == 200) {
+    	  val json = Json.parse(response.body)
+    			  val details = JenkinsFetcherUtil.getDetails(json, numberOfItems, baseUrl)
+    			  for { details <- details } yield {
+    				  (json, details)
+    			  }
+      } else {
+    	  throw new RuntimeException(s"error getting $url: ${response.statusText}")
       }
     }
   }
@@ -90,15 +97,18 @@ object JenkinsFetcherUtil {
   }
 
   private def fetchBuild(baseUrl: String, buildNumber: Int): Future[CiBuild] = {
-    val url = s"$baseUrl/$buildNumber/api/json?tree=timestamp,description,estimatedDuration,building,result,culprits[fullName],actions[parameters[value]]"
+    val url = s"$baseUrl/$buildNumber/api/json?tree=timestamp,description,estimatedDuration,building,result,culprits[fullName],changeSets[items[author[fullName]]],actions[parameters[value]]"
     WS.url(url).get.map { responseDetails =>
       val json = Json.parse(responseDetails.body)
 
       val status = mapBuildStatus((json \ "result").asOpt[String])
-      val culprits = ((json \ "culprits").as[List[JsValue]]).map { value =>
-        (value \ "fullName").as[String]
-      }
-
+      val culpritsPipeline = (json \\ "author" ).map(jsValue => (jsValue\ "fullName").asOpt[String]).distinct.toList.flatten
+      
+      val culpritsOld = ((json \ "culprits").asOpt[List[JsValue]]).map(_.map { value =>
+      (value \ "fullName").as[String]}).getOrElse(List())
+      
+      val culprits = culpritsPipeline ++ culpritsOld
+      
       CiBuild(
         buildNumber,
         status,
