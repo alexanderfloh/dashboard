@@ -67,7 +67,7 @@ object JenkinsFetcherUtil {
     } yield {
       val buildsToJson = details.flatten
         .groupBy { case (buildNumber, json) => buildNumber }
-        .map { case (buildNumber, List((_, json))) => (buildNumber, json) }
+        .map { case (buildNumber, (_, json) :: _) => (buildNumber, json) }
       (testName, buildsToJson)
     }
   }
