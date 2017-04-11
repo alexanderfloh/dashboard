@@ -10,7 +10,7 @@ define(['react', 'jquery', 'bvtChart'], function(React, $, BvtChart) {
       });
       return (
         <div className="bvt-group">
-          <div className="bvt-group-header">{this.props.group.name}</div>
+          <div className="bvt-group-header font-cursive">{this.props.group.name}</div>
           <div className="bvt-group-results-container">
             {configs}
           </div>

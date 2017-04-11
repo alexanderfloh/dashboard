@@ -8,13 +8,17 @@ requirejs.config({
     'c3': '../lib/c3/c3',
     'chartist-react': '../jsx/thirdparty/chartist',
     'audits': '../jsx/audits',
+    'auditsLoading': '../jsx/auditsLoading',
     'bvtResults': '../jsx/bvtResults',
+    'bvtResultsLoading': '../jsx/bvtResultsLoading',
     'bvtChart': '../jsx/bvtChart',
     'devices': '../jsx/devices',
     'loaderMixin': '../jsx/loaderMixin',
     'avatar': '../jsx/avatar',
     'ciBuild': '../jsx/ciBuild',
+    'ciBuildLoading': '../jsx/ciBuildLoading',
     'nightlyBuild': '../jsx/nightlyBuild',
+    'nightlyBuildLoading': '../jsx/nightlyBuildLoading',
     'buildProgress': '../jsx/buildProgress',
     'dashboardSilkTest' : '../jsx/dashboardSilkTest'
   }

@@ -30,7 +30,7 @@ define(['react'], function(React) {
 
     render: function(auditor){
       var avatarClass = this.getAvatarClassSet();
-      var picture = '/user/' + this.urlSafeName() + '.jpg';
+      var picture = '/user/' + this.urlSafeName();
       var avatarUrlStyle = {
           backgroundImage: 'url(' + picture + ')',
           backgroundSize: 'cover'

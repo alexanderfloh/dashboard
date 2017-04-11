@@ -9,6 +9,9 @@ import models.CiBuild
 import play.api.Play
 import play.mvc.Http
 import play.Logger
+import scala.util.Try
+import scala.util.Failure
+import scala.util.Success
 
 object JenkinsFetcherUtil {
 
@@ -24,14 +27,22 @@ object JenkinsFetcherUtil {
   }
 
   def getDetailsForJob(baseUrl: String, numberOfItems: Int = 1) = {
-    val url = baseUrl + "/api/json"
+    val url = s"$baseUrl/api/json?tree=builds[number,url]%7B,$numberOfItems%7D"
     WS.url(url).get.flatMap { response =>
       if (response.status == 200) {
-    	  val json = Json.parse(response.body)
+        Try {
+      	  val json = Json.parse(response.body)
     			  val details = JenkinsFetcherUtil.getDetails(json, numberOfItems, baseUrl)
     			  for { details <- details } yield {
     				  (json, details)
     			  }
+        } match {
+          case Failure(e) => {
+            Logger.warn(s"error parsing json from $url: ${response.body}", e)
+            throw new RuntimeException(s"error getting $url: invalid JSON was returned")
+          }
+          case Success(s) => s
+        }
       } else {
     	  throw new RuntimeException(s"error getting $url: ${response.statusText}")
       }
@@ -99,25 +110,34 @@ object JenkinsFetcherUtil {
   private def fetchBuild(baseUrl: String, buildNumber: Int): Future[CiBuild] = {
     val url = s"$baseUrl/$buildNumber/api/json?tree=timestamp,description,estimatedDuration,building,result,culprits[fullName],changeSets[items[author[fullName]]],actions[parameters[value]]"
     WS.url(url).get.map { responseDetails =>
-      val json = Json.parse(responseDetails.body)
-
-      val status = mapBuildStatus((json \ "result").asOpt[String])
-      val culpritsPipeline = (json \\ "author" ).map(jsValue => (jsValue\ "fullName").asOpt[String]).distinct.toList.flatten
-      
-      val culpritsOld = ((json \ "culprits").asOpt[List[JsValue]]).map(_.map { value =>
-      (value \ "fullName").as[String]}).getOrElse(List())
-      
-      val culprits = culpritsPipeline ++ culpritsOld
-      
-      CiBuild(
-        buildNumber,
-        status,
-        (json \ "description").as[Option[String]],
-        culprits,
-        s"$baseUrl/$buildNumber",
-        (json \ "building").as[Boolean],
-        (json \ "timestamp").as[Long],
-        (json \ "estimatedDuration").as[Long])
-    }
+      (for {
+        json <- Try(Json.parse(responseDetails.body))
+  
+        status = mapBuildStatus((json \ "result").asOpt[String])
+        culpritsPipeline = (json \\ "author" ).map(jsValue => (jsValue\ "fullName").asOpt[String]).distinct.toList.flatten
+        
+        culpritsOld = ((json \ "culprits").asOpt[List[JsValue]]).map(_.map { value =>
+          (value \ "fullName").as[String]}).getOrElse(List())
+        
+        culprits = culpritsPipeline ++ culpritsOld
+        
+      } yield CiBuild(
+          buildNumber,
+          status,
+          (json \ "description").as[Option[String]],
+          culprits,
+          s"$baseUrl/$buildNumber",
+          (json \ "building").as[Boolean],
+          (json \ "timestamp").as[Long],
+          (json \ "estimatedDuration").as[Long])
+      ) 
+        match {
+          case Failure(e) => {
+            Logger.warn(s"Failed to fetch build from url '$url'", e)
+            throw new RuntimeException(s"Failed to fetch build from url '$url'", e)
+          }
+          case Success(result) => result
+        }
+      } 
   }
 }

@@ -4,9 +4,9 @@ define(['react', 'jquery'], function(React, $) {
   var LoadStatusMixin = {
     getInitialState: function() {
       return {
-        buildCI: [],
-        audits:[],
-        bvtResults:[]
+        buildCI: null,
+        audits: null,
+        bvtResults: null
       };
     },
 
@@ -20,6 +20,9 @@ define(['react', 'jquery'], function(React, $) {
         }.bind(this),
         error: function(xhr, status, err) {
           console.error(this.props.url, status, err.toString());
+          var newState = this.state;
+          newState.buildCI = null;
+          this.setState(newState);
         }.bind(this)
       });
 
@@ -31,6 +34,9 @@ define(['react', 'jquery'], function(React, $) {
           }.bind(this),
           error: function(xhr, status, err) {
             console.error(this.props.url, status, err.toString());
+            var newState = this.state;
+            newState.buildNightly = null;
+            this.setState(newState);
           }.bind(this)
         });
 

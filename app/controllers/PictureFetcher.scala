@@ -7,25 +7,41 @@ import play.api.Play.current
 import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.Play
 import java.io.File
+import com.typesafe.config.Config
 
 object PictureFetcher extends Controller {
   def getPicture(name: String) = Action.async {
-    val defaultUrl = Play.current.configuration.getString("dashboard.users.forwardUrl").getOrElse(throw new RuntimeException("dashboard.users.forwardUrl not set"))
-    WS.url(s"$defaultUrl$name")
+    val commonUrl = Play.current.configuration.getString("dashboard.users.forwardUrl").getOrElse(throw new RuntimeException("dashboard.users.forwardUrl not set"))
+    Play.current.configuration.getObject("dashboard.users").map {
+      userConfigsObj =>
+      val userConfigs = userConfigsObj.toConfig()
+      if(userConfigs.hasPath(name)) {
+        redirectToCustomUrl(userConfigs, name)
+      } else {
+        redirectToCommonUrl(commonUrl, name)
+      }
+    }.getOrElse(Future(redirectToFallback()))
+  }
+  
+  private def redirectToCustomUrl(userConfigs: Config, name: String): Future[Result] = {
+    val targetUrl = userConfigs.getString(name)
+    Future(Redirect(targetUrl))
+  }
+  
+  private def redirectToCommonUrl(commonUrl: String, name: String) : Future[Result] = {
+    val redirectUrl = s"$commonUrl$name.jpg" 
+    WS.url(redirectUrl)
       .get
       .map { response => 
         if(response.status == 404) { 
-          Play.current.configuration.getObject("dashboard.users").map {
-            userConfigs =>
-              
-            val targetUrl = userConfigs.toConfig().getString(name)
-            Redirect(targetUrl)
-          }.getOrElse(Redirect("/assets/images/avatars/default.jpg"))
+          redirectToFallback()
         }
-        else Redirect(s"$defaultUrl$name")
-    }
-    
-    
+        else Redirect(redirectUrl)
+      }
+  }
+  
+  private def redirectToFallback() : Result = {
+    Redirect("/assets/images/avatars/default.jpg")
   }
   
   def getIcon(name: String) = Action {
